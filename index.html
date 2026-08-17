@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>人狼ゲーム司会アプリ</title>
+
+<style>
+
+body {
+
+  font-family: sans-serif;
+
+  background: #f5f5f5;
+
+  margin: 0;
+
+  padding: 20px;
+
+  text-align: center;
+
+}
+
+.container {
+
+  max-width: 600px;
+
+  margin: auto;
+
+  background: white;
+
+  padding: 25px;
+
+  border-radius: 20px;
+
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+
+}
+
+h1 {
+
+  margin-top: 0;
+
+}
+
+input, button {
+
+  font-size: 18px;
+
+  padding: 12px;
+
+  margin: 8px;
+
+  border-radius: 10px;
+
+  border: 1px solid #ccc;
+
+}
+
+button {
+
+  cursor: pointer;
+
+  background: #333;
+
+  color: white;
+
+}
+
+#game {
+
+  display: none;
+
+}
+
+.role {
+
+  font-size: 28px;
+
+  font-weight: bold;
+
+  margin: 25px 0;
+
+}
+
+.info {
+
+  font-size: 18px;
+
+  line-height: 1.7;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🐺 人狼ゲーム司会アプリ</h1>
+
+<div id="setup">
+
+<p>参加人数を入力してください</p>
+
+<input id="playerCount" type="number" min="4" max="20" value="6">
+
+<br>
+
+<button onclick="startGame()">ゲーム開始</button>
+
+</div>
+
+<div id="game">
+
+<h2 id="playerTitle"></h2>
+
+<div id="roleArea" class="role"></div>
+
+<p id="info" class="info"></p>
+
+<button id="mainButton" onclick="showRole()">役職を見る</button>
+
+</div>
+
+</div>
+
+<script>
+
+let players = [];
+
+let currentPlayer = 0;
+
+function startGame() {
+
+  const count = Number(document.getElementById("playerCount").value);
+
+  if (count < 4 || count > 20) {
+
+    alert("4人〜20人で入力してください");
+
+    return;
+
+  }
+
+  players = [];
+
+  const wolfCount = count >= 8 ? 2 : 1;
+
+  for (let i = 0; i < wolfCount; i++) {
+
+    players.push("人狼");
+
+  }
+
+  players.push("占い師");
+
+  if (count >= 5) {
+
+    players.push("騎士");
+
+  }
+
+  while (players.length < count) {
+
+    players.push("村人");
+
+  }
+
+  players.sort(() => Math.random() - 0.5);
+
+  currentPlayer = 0;
+
+  document.getElementById("setup").style.display = "none";
+
+  document.getElementById("game").style.display = "block";
+
+  showPlayer();
+
+}
+
+function showPlayer() {
+
+  document.getElementById("playerTitle").textContent =
+
+    "プレイヤー " + (currentPlayer + 1);
+
+  document.getElementById("roleArea").textContent = "？？？";
+
+  document.getElementById("info").textContent =
+
+    "役職を見るボタンを押してください。";
+
+  const button = document.getElementById("mainButton");
+
+  button.textContent = "役職を見る";
+
+  button.onclick = showRole;
+
+}
+
+function showRole() {
+
+  const role = players[currentPlayer];
+
+  document.getElementById("roleArea").textContent = role;
+
+  if (role === "人狼") {
+
+    document.getElementById("info").textContent =
+
+      "あなたは人狼です。村人にバレないように行動しましょう。";
+
+  } else if (role === "占い師") {
+
+    document.getElementById("info").textContent =
+
+      "あなたは占い師です。毎晩1人を占うことができます。";
+
+  } else if (role === "騎士") {
+
+    document.getElementById("info").textContent =
+
+      "あなたは騎士です。毎晩1人を守ることができます。";
+
+  } else {
+
+    document.getElementById("info").textContent =
+
+      "あなたは村人です。話し合いで人狼を見つけましょう。";
+
+  }
+
+  const button = document.getElementById("mainButton");
+
+  button.textContent = "次の人";
+
+  button.onclick = nextPlayer;
+
+}
+
+function nextPlayer() {
+
+  currentPlayer++;
+
+  if (currentPlayer >= players.length) {
+
+    document.getElementById("playerTitle").textContent =
+
+      "役職確認完了！";
+
+    document.getElementById("roleArea").textContent =
+
+      "🎮 ゲームスタート！";
+
+    document.getElementById("info").textContent =
+
+      "全員の役職確認が終わりました。司会者はゲームを進行してください。";
+
+    document.getElementById("mainButton").style.display = "none";
+
+    return;
+
+  }
+
+  showPlayer();
+
+}
+
+</script>
+
+</body>
+
+</html>
