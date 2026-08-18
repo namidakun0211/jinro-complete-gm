@@ -12,181 +12,201 @@
 
 <style>
 
-body {
+body{
 
-  font-family: sans-serif;
+  font-family:sans-serif;
 
-  background: #f5f5f5;
+  background:#f5f5f5;
 
-  margin: 0;
+  margin:0;
 
-  padding: 20px;
+  padding:20px;
 
-  text-align: center;
-
-}
-
-.container {
-
-  max-width: 650px;
-
-  margin: auto;
-
-  background: white;
-
-  padding: 25px;
-
-  border-radius: 20px;
-
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  text-align:center;
 
 }
 
-h1 {
+.container{
 
-  margin-top: 0;
+  max-width:650px;
 
-}
+  margin:auto;
 
-h2 {
+  background:white;
 
-  margin-top: 25px;
+  padding:25px;
 
-}
+  border-radius:20px;
 
-input, select, button {
-
-  font-size: 18px;
-
-  padding: 12px;
-
-  margin: 8px;
-
-  border-radius: 10px;
-
-  border: 1px solid #ccc;
+  box-shadow:0 4px 15px rgba(0,0,0,.15);
 
 }
 
-input {
+h1{
 
-  width: 80%;
-
-  box-sizing: border-box;
+  margin-top:0;
 
 }
 
-button {
+input,button{
 
-  cursor: pointer;
+  font-size:18px;
 
-  background: #333;
+  padding:10px;
 
-  color: white;
+  margin:6px;
 
-  border: none;
+  border-radius:10px;
 
-}
-
-button:hover {
-
-  opacity: 0.85;
+  border:1px solid #ccc;
 
 }
 
-.hidden {
+button{
 
-  display: none;
+  cursor:pointer;
 
-}
+  background:#333;
 
-.role {
+  color:white;
 
-  font-size: 30px;
-
-  font-weight: bold;
-
-  margin: 25px 0;
+  border:none;
 
 }
 
-.info {
+button:disabled{
 
-  font-size: 18px;
+  background:#aaa;
 
-  line-height: 1.7;
-
-}
-
-.role-list {
-
-  text-align: left;
-
-  max-height: 400px;
-
-  overflow-y: auto;
-
-  border: 1px solid #ddd;
-
-  padding: 10px;
-
-  border-radius: 10px;
+  cursor:not-allowed;
 
 }
 
-.role-item {
+.hidden{
 
-  padding: 8px;
-
-  border-bottom: 1px solid #eee;
+  display:none;
 
 }
 
-.role-item label {
+.info{
 
-  display: flex;
+  font-size:18px;
 
-  align-items: center;
-
-  gap: 8px;
+  line-height:1.7;
 
 }
 
-.role-item input {
+.role-list{
 
-  width: auto;
+  text-align:left;
 
-  margin: 0;
+  max-height:500px;
 
-}
+  overflow-y:auto;
 
-.player-box {
+  border:1px solid #ddd;
 
-  margin: 15px 0;
+  padding:10px;
 
-}
-
-.small {
-
-  font-size: 14px;
-
-  color: #666;
+  border-radius:10px;
 
 }
 
-.danger {
+.role-item{
 
-  color: #c00;
+  display:flex;
 
-  font-weight: bold;
+  align-items:center;
+
+  justify-content:space-between;
+
+  padding:10px 5px;
+
+  border-bottom:1px solid #eee;
+
+  gap:5px;
 
 }
 
-.success {
+.role-name{
 
-  color: #080;
+  flex:1;
 
-  font-weight: bold;
+  font-size:17px;
+
+}
+
+.counter{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:3px;
+
+}
+
+.counter button{
+
+  width:42px;
+
+  height:42px;
+
+  padding:0;
+
+  margin:0;
+
+  font-size:24px;
+
+}
+
+.count{
+
+  width:35px;
+
+  text-align:center;
+
+  font-size:20px;
+
+  font-weight:bold;
+
+}
+
+.total{
+
+  font-size:22px;
+
+  font-weight:bold;
+
+  margin:15px 0;
+
+}
+
+.ok{
+
+  color:green;
+
+}
+
+.ng{
+
+  color:red;
+
+}
+
+.player-box{
+
+  margin:15px 0;
+
+}
+
+.role{
+
+  font-size:30px;
+
+  font-weight:bold;
+
+  margin:25px 0;
 
 }
 
@@ -200,17 +220,13 @@ button:hover {
 
 <h1>🐺 人狼コンプリートGM</h1>
 
-<!-- ==================== -->
-
-<!-- ゲーム設定 -->
-
-<!-- ==================== -->
+<!-- ==================== 設定画面 ==================== -->
 
 <div id="setup">
 
 <h2>🎮 ゲーム設定</h2>
 
-<p>参加人数</p>
+<p>参加人数を入力してください</p>
 
 <input
 
@@ -223,6 +239,8 @@ button:hover {
   max="20"
 
   value="6"
+
+  onchange="resetRoleCounts()"
 
 >
 
@@ -242,7 +260,7 @@ button:hover {
 
 >
 
-なし（標準）
+なし
 
 </label>
 
@@ -262,19 +280,19 @@ button:hover {
 
 </label>
 
-<h3>🎭 使用する役職</h3>
+<h3>🎭 役職と人数</h3>
 
-<p class="small">
+<div id="totalDisplay" class="total ng">
 
-人数と同じ人数になるように役職を選択してください。
+配役：0 / 6人
 
-</p>
+</div>
 
 <div id="roleList" class="role-list"></div>
 
 <br>
 
-<button onclick="preparePlayers()">
+<button id="nextButton" onclick="preparePlayers()" disabled>
 
 プレイヤー名を入力
 
@@ -282,11 +300,7 @@ button:hover {
 
 </div>
 
-<!-- ==================== -->
-
-<!-- プレイヤー名入力 -->
-
-<!-- ==================== -->
+<!-- ==================== 名前入力 ==================== -->
 
 <div id="playerSetup" class="hidden">
 
@@ -308,11 +322,7 @@ button:hover {
 
 </div>
 
-<!-- ==================== -->
-
-<!-- 役職確認 -->
-
-<!-- ==================== -->
+<!-- ==================== 役職確認 ==================== -->
 
 <div id="game" class="hidden">
 
@@ -338,15 +348,11 @@ button:hover {
 
 </div>
 
-<!-- ==================== -->
-
-<!-- ゲーム開始後 -->
-
-<!-- ==================== -->
+<!-- ==================== ゲーム開始 ==================== -->
 
 <div id="gameReady" class="hidden">
 
-<h2>🎮 ゲーム開始！</h2>
+<h2>🎮 ゲームスタート！</h2>
 
 <p class="info">
 
@@ -366,469 +372,79 @@ button:hover {
 
 <script>
 
-/* ==================================================
+/* =========================================
 
-   役職データ
+   役職一覧
 
-================================================== */
+========================================= */
 
 const ROLES = [
 
-  {
+  ["werewolf","🐺 人狼"],
 
-    id: "werewolf",
+  ["wolfChild","👶 人狼の子ども"],
 
-    name: "🐺 人狼",
+  ["betrayer","😈 裏切り者"],
 
-    team: "人狼",
+  ["betrayShared","🤝 裏切りの共有者"],
 
-    fortune: "人狼",
+  ["informant","👁️ 内通者"],
 
-    medium: "人狼",
+  ["betrayAttacker","⚔️ 裏切りの襲撃者"],
 
-    count: "人狼"
+  ["spy","🕵️ スパイ"],
 
-  },
+  ["villager","👤 市民"],
 
-  {
+  ["seer","🔮 予言者"],
 
-    id: "wolfChild",
+  ["bodyguard","🛡️ ボディーガード"],
 
-    name: "👶 人狼の子ども",
+  ["medium","👻 霊媒師"],
 
-    team: "人狼",
+  ["hunter","🔫 ハンター"],
 
-    fortune: "人狼",
+  ["shared","🤝 共有者"],
 
-    medium: "人狼",
+  ["dictator","👑 独裁者"],
 
-    count: "人狼"
+  ["tough","💪 タフガイ"],
 
-  },
+  ["counselor","🩺 カウンセラー"],
 
-  {
+  ["magician","🎩 奇術師"],
 
-    id: "betrayer",
+  ["trapper","🪤 罠師"],
 
-    name: "😈 裏切り者",
+  ["knights","🛡️ 騎士団"],
 
-    team: "人狼",
+  ["shadow","🪞 影武者"],
 
-    fortune: "人間",
+  ["king","👑 王様"],
 
-    medium: "人間",
+  ["cursed","🧟 呪われた者"],
 
-    count: "人間"
+  ["fox","🦊 妖狐"],
 
-  },
+  ["god","🙏 神様"],
 
-  {
+  ["lover","❤️ 恋人"],
 
-    id: "betrayShared",
+  ["loneWolf","🐺 一匹狼"],
 
-    name: "🤝 裏切りの共有者",
+  ["android","🤖 アンドロイド"],
 
-    team: "人狼",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "informant",
-
-    name: "👁️ 内通者",
-
-    team: "人狼",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "betrayAttacker",
-
-    name: "⚔️ 裏切りの襲撃者",
-
-    team: "人狼",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "spy",
-
-    name: "🕵️ スパイ",
-
-    team: "人狼",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "villager",
-
-    name: "👤 市民",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "seer",
-
-    name: "🔮 予言者",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "bodyguard",
-
-    name: "🛡️ ボディーガード",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "medium",
-
-    name: "👻 霊媒師",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "hunter",
-
-    name: "🔫 ハンター",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "shared",
-
-    name: "🤝 共有者",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "dictator",
-
-    name: "👑 独裁者",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "tough",
-
-    name: "💪 タフガイ",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "counselor",
-
-    name: "🩺 カウンセラー",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "magician",
-
-    name: "🎩 奇術師",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "trapper",
-
-    name: "🪤 罠師",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "knights",
-
-    name: "🛡️ 騎士団",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "shadow",
-
-    name: "🪞 影武者",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "king",
-
-    name: "👑 王様",
-
-    team: "市民",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "cursed",
-
-    name: "🧟 呪われた者",
-
-    team: "特殊",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "fox",
-
-    name: "🦊 妖狐",
-
-    team: "単独",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "god",
-
-    name: "🙏 神様",
-
-    team: "単独",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "lover",
-
-    name: "❤️ 恋人",
-
-    team: "単独",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "loneWolf",
-
-    name: "🐺 一匹狼",
-
-    team: "単独",
-
-    fortune: "人狼",
-
-    medium: "人狼",
-
-    count: "人狼"
-
-  },
-
-  {
-
-    id: "android",
-
-    name: "🤖 アンドロイド",
-
-    team: "単独",
-
-    fortune: "人間",
-
-    medium: "人間",
-
-    count: "人間"
-
-  },
-
-  {
-
-    id: "scarecrow",
-
-    name: "🌾 案山子",
-
-    team: "単独",
-
-    fortune: "人狼",
-
-    medium: "人狼",
-
-    count: "人間"
-
-  }
+  ["scarecrow","🌾 案山子"]
 
 ];
 
-/* ==================================================
+/* =========================================
 
-   ゲーム状態
+   変数
 
-================================================== */
+========================================= */
+
+let roleCounts = {};
 
 let players = [];
 
@@ -838,99 +454,255 @@ let currentPlayer = 0;
 
 let loverMode = false;
 
-/* ==================================================
+/* =========================================
 
-   役職一覧を表示
+   役職人数を0にする
 
-================================================== */
+========================================= */
 
-function renderRoleList() {
+function resetRoleCounts(){
 
-  const list = document.getElementById("roleList");
+  roleCounts = {};
 
-  list.innerHTML = "";
+  ROLES.forEach(role=>{
 
-  ROLES.forEach(role => {
-
-    const div = document.createElement("div");
-
-    div.className = "role-item";
-
-    div.innerHTML = `
-
-      <label>
-
-        <input
-
-          type="checkbox"
-
-          value="${role.id}"
-
-          onchange="updateSelectedRoles()"
-
-        >
-
-        ${role.name}
-
-      </label>
-
-    `;
-
-    list.appendChild(div);
+    roleCounts[role[0]] = 0;
 
   });
 
-}
-
-/* ==================================================
-
-   選択された役職を取得
-
-================================================== */
-
-function updateSelectedRoles() {
-
-  selectedRoles = Array.from(
-
-    document.querySelectorAll(
-
-      '#roleList input[type="checkbox"]:checked'
-
-    )
-
-  ).map(input => input.value);
+  renderRoleList();
 
 }
 
-/* ==================================================
+/* =========================================
 
-   プレイヤー名入力画面
+   役職一覧を表示
 
-================================================== */
+========================================= */
 
-function preparePlayers() {
+function renderRoleList(){
 
-  const count =
+  const list =
 
-    Number(document.getElementById("playerCount").value);
+    document.getElementById("roleList");
 
-  updateSelectedRoles();
+  list.innerHTML = "";
 
-  if (count < 4 || count > 20) {
+  ROLES.forEach(role=>{
 
-    alert("4人〜20人で入力してください");
+    const id = role[0];
+
+    const name = role[1];
+
+    const item =
+
+      document.createElement("div");
+
+    item.className = "role-item";
+
+    item.innerHTML = `
+
+      <div class="role-name">
+
+        ${name}
+
+      </div>
+
+      <div class="counter">
+
+        <button
+
+          onclick="changeRoleCount('${id}',-1)"
+
+        >
+
+          −
+
+        </button>
+
+        <div
+
+          class="count"
+
+          id="count-${id}"
+
+        >
+
+          0
+
+        </div>
+
+        <button
+
+          onclick="changeRoleCount('${id}',1)"
+
+        >
+
+          ＋
+
+        </button>
+
+      </div>
+
+    `;
+
+    list.appendChild(item);
+
+  });
+
+  updateTotal();
+
+}
+
+/* =========================================
+
+   役職人数変更
+
+========================================= */
+
+function changeRoleCount(id,change){
+
+  const playerCount =
+
+    Number(
+
+      document.getElementById("playerCount").value
+
+    );
+
+  const current =
+
+    roleCounts[id] || 0;
+
+  const next =
+
+    current + change;
+
+  if(next < 0){
 
     return;
 
   }
 
-  if (selectedRoles.length !== count) {
+  if(next > playerCount){
+
+    return;
+
+  }
+
+  roleCounts[id] = next;
+
+  document.getElementById(
+
+    "count-"+id
+
+  ).textContent = next;
+
+  updateTotal();
+
+}
+
+/* =========================================
+
+   合計人数を表示
+
+========================================= */
+
+function updateTotal(){
+
+  const playerCount =
+
+    Number(
+
+      document.getElementById("playerCount").value
+
+    );
+
+  let total = 0;
+
+  Object.values(roleCounts)
+
+    .forEach(count=>{
+
+      total += count;
+
+    });
+
+  const display =
+
+    document.getElementById("totalDisplay");
+
+  const button =
+
+    document.getElementById("nextButton");
+
+  display.textContent =
+
+    `配役：${total} / ${playerCount}人`;
+
+  if(total === playerCount){
+
+    display.className =
+
+      "total ok";
+
+    button.disabled = false;
+
+  }else{
+
+    display.className =
+
+      "total ng";
+
+    button.disabled = true;
+
+  }
+
+}
+
+/* =========================================
+
+   プレイヤー名入力画面
+
+========================================= */
+
+function preparePlayers(){
+
+  const count =
+
+    Number(
+
+      document.getElementById("playerCount").value
+
+    );
+
+  if(count < 4 || count > 20){
 
     alert(
 
-      `参加人数は${count}人です。\n` +
+      "4人〜20人で入力してください"
 
-      `役職も${count}個選択してください。`
+    );
+
+    return;
+
+  }
+
+  let total = 0;
+
+  Object.values(roleCounts)
+
+    .forEach(c=>{
+
+      total += c;
+
+    });
+
+  if(total !== count){
+
+    alert(
+
+      "参加人数と配役人数を同じにしてください。"
 
     );
 
@@ -946,17 +718,43 @@ function preparePlayers() {
 
     ).value === "true";
 
+  selectedRoles = [];
+
+  ROLES.forEach(role=>{
+
+    const id = role[0];
+
+    const count =
+
+      roleCounts[id] || 0;
+
+    for(let i=0;i<count;i++){
+
+      selectedRoles.push(id);
+
+    }
+
+  });
+
   const area =
 
-    document.getElementById("playerInputs");
+    document.getElementById(
+
+      "playerInputs"
+
+    );
 
   area.innerHTML = "";
 
-  for (let i = 0; i < count; i++) {
+  for(let i=0;i<count;i++){
 
     const oldName =
 
-      localStorage.getItem("jinroPlayer" + i) || "";
+      localStorage.getItem(
+
+        "jinroPlayer"+i
+
+      ) || "";
 
     area.innerHTML += `
 
@@ -964,7 +762,7 @@ function preparePlayers() {
 
         <label>
 
-          プレイヤー${i + 1}
+          プレイヤー${i+1}
 
         </label>
 
@@ -990,65 +788,79 @@ function preparePlayers() {
 
   }
 
-  document.getElementById("setup")
+  document
+
+    .getElementById("setup")
 
     .classList.add("hidden");
 
-  document.getElementById("playerSetup")
+  document
+
+    .getElementById("playerSetup")
 
     .classList.remove("hidden");
 
 }
 
-/* ==================================================
+/* =========================================
 
    HTMLエスケープ
 
-================================================== */
+========================================= */
 
-function escapeHtml(text) {
+function escapeHtml(text){
 
   return text
 
-    .replace(/&/g, "&amp;")
+    .replace(/&/g,"&amp;")
 
-    .replace(/</g, "&lt;")
+    .replace(/</g,"&lt;")
 
-    .replace(/>/g, "&gt;")
+    .replace(/>/g,"&gt;")
 
-    .replace(/"/g, "&quot;")
+    .replace(/"/g,"&quot;")
 
-    .replace(/'/g, "&#039;");
+    .replace(/'/g,"&#039;");
 
 }
 
-/* ==================================================
+/* =========================================
 
    ゲーム開始
 
-================================================== */
+========================================= */
 
-function startGame() {
-
-  const count = selectedRoles.length;
+function startGame(){
 
   const names = [];
 
-  for (let i = 0; i < count; i++) {
+  for(
+
+    let i=0;
+
+    i<selectedRoles.length;
+
+    i++
+
+  ){
 
     const input =
 
-      document.getElementById("playerName" + i);
+      document.getElementById(
+
+        "playerName"+i
+
+      );
 
     const name =
 
       input.value.trim();
 
-    if (!name) {
+    if(!name){
 
       alert(
 
-        `プレイヤー${i + 1}の名前を入力してください。`
+        `プレイヤー${i+1}の名前を入力してください。`
 
       );
 
@@ -1062,7 +874,7 @@ function startGame() {
 
     localStorage.setItem(
 
-      "jinroPlayer" + i,
+      "jinroPlayer"+i,
 
       name
 
@@ -1072,59 +884,59 @@ function startGame() {
 
   /*
 
-   * 役職をシャッフル
+     役職をシャッフル
 
-   */
+  */
 
   const shuffledRoles =
 
     [...selectedRoles]
 
-      .sort(() => Math.random() - 0.5);
+      .sort(
 
-  players = names.map((name, index) => {
+        ()=>Math.random()-0.5
 
-    const roleId = shuffledRoles[index];
+      );
 
-    const role =
+  players =
 
-      ROLES.find(r => r.id === roleId);
+    names.map((name,index)=>{
 
-    return {
+      return {
 
-      id: index,
+        id:index,
 
-      name: name,
+        name:name,
 
-      roleId: roleId,
+        roleId:
 
-      role: role,
+          shuffledRoles[index],
 
-      alive: true,
+        alive:true,
 
-      revealed: false,
+        abilitiesUsed:{},
 
-      lover: null,
+        lastTrapTarget:null,
 
-      copiedRole: null,
+        copiedRole:null,
 
-      cursedAwakened: false,
+        cursedAwakened:false
 
-      abilitiesUsed: {},
+      };
 
-      lastTrapTarget: null
-
-    };
-
-  });
+    });
 
   currentPlayer = 0;
 
-  document.getElementById("playerSetup")
+  document
+
+    .getElementById("playerSetup")
 
     .classList.add("hidden");
 
-  document.getElementById("game")
+  document
+
+    .getElementById("game")
 
     .classList.remove("hidden");
 
@@ -1132,37 +944,49 @@ function startGame() {
 
 }
 
-/* ==================================================
+/* =========================================
 
-   プレイヤーごとの役職確認
+   プレイヤー表示
 
-================================================== */
+========================================= */
 
-function showPlayer() {
+function showPlayer(){
 
   const player =
 
     players[currentPlayer];
 
-  document.getElementById("playerTitle")
+  document
+
+    .getElementById("playerTitle")
 
     .textContent =
 
-    player.name + " さん";
+      player.name+" さん";
 
-  document.getElementById("roleArea")
+  document
 
-    .textContent = "？？？";
-
-  document.getElementById("info")
+    .getElementById("roleArea")
 
     .textContent =
 
-    "役職を見るボタンを押してください。";
+      "？？？";
+
+  document
+
+    .getElementById("info")
+
+    .textContent =
+
+      "役職を見るボタンを押してください。";
 
   const button =
 
-    document.getElementById("mainButton");
+    document.getElementById(
+
+      "mainButton"
+
+    );
 
   button.textContent =
 
@@ -1174,33 +998,53 @@ function showPlayer() {
 
 }
 
-/* ==================================================
+/* =========================================
 
-   役職を見る
+   役職表示
 
-================================================== */
+========================================= */
 
-function showRole() {
+function showRole(){
 
   const player =
 
     players[currentPlayer];
 
-  document.getElementById("roleArea")
+  const role =
+
+    getRoleName(
+
+      player.roleId
+
+    );
+
+  document
+
+    .getElementById("roleArea")
 
     .textContent =
 
-    player.role.name;
+      role;
 
-  document.getElementById("info")
+  document
+
+    .getElementById("info")
 
     .textContent =
 
-    getRoleDescription(player);
+      getRoleDescription(
+
+        player.roleId
+
+      );
 
   const button =
 
-    document.getElementById("mainButton");
+    document.getElementById(
+
+      "mainButton"
+
+    );
 
   button.textContent =
 
@@ -1212,153 +1056,33 @@ function showRole() {
 
 }
 
-/* ==================================================
-
-   役職説明
-
-================================================== */
-
-function getRoleDescription(player) {
-
-  switch (player.roleId) {
-
-    case "werewolf":
-
-      return "🐺 毎夜1人を襲撃します。人狼陣営の勝利を目指します。";
-
-    case "wolfChild":
-
-      return "👶 人狼と共に襲撃します。人狼として扱われます。";
-
-    case "betrayer":
-
-      return "😈 能力はありません。人狼陣営の勝利を目指します。";
-
-    case "betrayShared":
-
-      return "🤝 相方を知っています。人狼陣営の勝利を目指します。";
-
-    case "informant":
-
-      return "👁️ 人狼を知っています。人狼陣営の勝利を目指します。";
-
-    case "betrayAttacker":
-
-      return "⚔️ 毎夜、人狼とは別に1人を襲撃します。";
-
-    case "spy":
-
-      return "🕵️ 毎夜、市民側の役職1人の能力を妨害します。同じ人には1回までです。";
-
-    case "villager":
-
-      return "👤 特別な能力はありません。議論と投票で人狼を見つけます。";
-
-    case "seer":
-
-      return "🔮 毎夜1人を占います。";
-
-    case "bodyguard":
-
-      return "🛡️ 毎夜1人を人狼の襲撃から守ります。";
-
-    case "medium":
-
-      return "👻 前日に追放された人の正体を確認します。";
-
-    case "hunter":
-
-      return "🔫 死亡時に1人を道連れにできます。";
-
-    case "shared":
-
-      return "🤝 相方を知っています。";
-
-    case "dictator":
-
-      return "👑 1回だけ昼の議論を強制終了し、追放者を独断で決定できます。";
-
-    case "tough":
-
-      return "💪 襲撃されてもその夜は死亡せず、翌日の議論に参加できます。その後死亡します。";
-
-    case "counselor":
-
-      return "🩺 毎夜1人を選び、裏切り者系なら市民に戻します。人狼を選ぶと自分が死亡します。";
-
-    case "magician":
-
-      return "🎩 2日目以降、1回だけ人狼の襲撃先を別の生存者にすり替えます。";
-
-    case "trapper":
-
-      return "🪤 毎夜、自分以外の1人に罠を仕掛けます。同じ相手に2夜連続では仕掛けられません。";
-
-    case "knights":
-
-      return "🛡️ 2〜3人で対象を守ります。自分たちも守れます。";
-
-    case "shadow":
-
-      return "🪞 1回だけ昼の議論を強制終了し、自分自身が追放されます。";
-
-    case "king":
-
-      return "👑 投票を2票分として数えます。";
-
-    case "cursed":
-
-      return "🧟 襲撃されてもその夜は死亡せず、翌夜から人狼になります。";
-
-    case "fox":
-
-      return "🦊 人狼の襲撃では死亡しません。占われると死亡します。";
-
-    case "god":
-
-      return "🙏 全役職を知っています。ゲーム終了時まで生き残ることを目指します。";
-
-    case "lover":
-
-      return "❤️ 相方を知っています。どちらかが死亡すると、もう一方も後追い死亡します。";
-
-    case "loneWolf":
-
-      return "🐺 人狼と共に行動します。他の人狼が追放された状態で生き残ることを目指します。";
-
-    case "android":
-
-      return "🤖 ゲーム開始時に誰か1人の役職をコピーします。";
-
-    case "scarecrow":
-
-      return "🌾 案山子同士を知っています。ゲーム終了までに案山子が全員いなくなると勝利します。";
-
-    default:
-
-      return "役職の説明はありません。";
-
-  }
-
-}
-
-/* ==================================================
+/* =========================================
 
    次のプレイヤー
 
-================================================== */
+========================================= */
 
-function nextPlayer() {
+function nextPlayer(){
 
   currentPlayer++;
 
-  if (currentPlayer >= players.length) {
+  if(
 
-    document.getElementById("game")
+    currentPlayer >=
+
+    players.length
+
+  ){
+
+    document
+
+      .getElementById("game")
 
       .classList.add("hidden");
 
-    document.getElementById("gameReady")
+    document
+
+      .getElementById("gameReady")
 
       .classList.remove("hidden");
 
@@ -1370,31 +1094,183 @@ function nextPlayer() {
 
 }
 
-/* ==================================================
+/* =========================================
+
+   役職名
+
+========================================= */
+
+function getRoleName(id){
+
+  const role =
+
+    ROLES.find(
+
+      r=>r[0]===id
+
+    );
+
+  return role
+
+    ? role[1]
+
+    : "不明";
+
+}
+
+/* =========================================
+
+   役職説明
+
+========================================= */
+
+function getRoleDescription(id){
+
+  const descriptions = {
+
+    werewolf:
+
+      "🐺 毎夜1人を襲撃します。",
+
+    wolfChild:
+
+      "👶 人狼と共に襲撃します。",
+
+    betrayer:
+
+      "😈 能力はありません。人狼陣営です。",
+
+    betrayShared:
+
+      "🤝 相方を知っている人狼陣営です。",
+
+    informant:
+
+      "👁️ 人狼を知っています。",
+
+    betrayAttacker:
+
+      "⚔️ 人狼とは別に毎夜1人を襲撃します。",
+
+    spy:
+
+      "🕵️ 市民側の役職能力を妨害します。1役職につき1回までです。",
+
+    villager:
+
+      "👤 特別な能力はありません。",
+
+    seer:
+
+      "🔮 毎夜1人を占います。",
+
+    bodyguard:
+
+      "🛡️ 人狼の襲撃から1人を守ります。",
+
+    medium:
+
+      "👻 前日に追放された人を確認できます。",
+
+    hunter:
+
+      "🔫 死亡時に1人を道連れにできます。",
+
+    shared:
+
+      "🤝 相方を知っています。",
+
+    dictator:
+
+      "👑 1回だけ昼の議論を強制終了し、追放者を独断で決定できます。",
+
+    tough:
+
+      "💪 襲撃を受けても翌日の議論に参加できます。その後死亡します。",
+
+    counselor:
+
+      "🩺 裏切り者系を改心させられます。人狼を選ぶと自分が犠牲になります。",
+
+    magician:
+
+      "🎩 2日目以降に1回だけ、人狼の襲撃先を変更できます。",
+
+    trapper:
+
+      "🪤 毎晩1人に罠を仕掛けます。同じ人には2夜連続で仕掛けられません。",
+
+    knights:
+
+      "🛡️ 2〜3人で守ります。自分たちも守れます。",
+
+    shadow:
+
+      "🪞 1回だけ議論を強制終了し、自分自身が追放されます。",
+
+    king:
+
+      "👑 投票を2票分として数えます。",
+
+    cursed:
+
+      "🧟 襲撃された夜は死亡せず、翌夜に人狼になります。",
+
+    fox:
+
+      "🦊 人狼の襲撃では死亡せず、占われると死亡します。",
+
+    god:
+
+      "🙏 全員の役職を知っています。ゲーム終了時まで生き残ると勝利です。",
+
+    lover:
+
+      "❤️ 相方を知っています。片方が死亡するともう片方も後追い死亡します。",
+
+    loneWolf:
+
+      "🐺 人狼と共に行動し、他の人狼がいなくなった状態で生き残ることを目指します。",
+
+    android:
+
+      "🤖 ゲーム開始時に誰か1人の役職をコピーします。",
+
+    scarecrow:
+
+      "🌾 案山子同士を知っています。案山子全員がいなくなると勝利します。"
+
+  };
+
+  return descriptions[id]
+
+    || "役職の説明はありません。";
+
+}
+
+/* =========================================
 
    夜開始
 
-================================================== */
+========================================= */
 
-function startNight() {
+function startNight(){
 
   alert(
 
-    "🌙 夜の処理システムは次の段階で実装します。\n\n" +
-
-    "今回決めた13段階の順番に沿って追加していきます。"
+    "🌙 夜の行動システムは次の段階で追加します。"
 
   );
 
 }
 
-/* ==================================================
+/* =========================================
 
    初期表示
 
-================================================== */
+========================================= */
 
-renderRoleList();
+resetRoleCounts();
 
 </script>
 
