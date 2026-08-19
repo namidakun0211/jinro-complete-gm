@@ -28,7 +28,7 @@ body{
 
 .container{
 
-  max-width:650px;
+  max-width:680px;
 
   margin:auto;
 
@@ -42,9 +42,13 @@ body{
 
 }
 
-h1{margin-top:0;}
+h1{
 
-input,button{
+  margin-top:0;
+
+}
+
+input,button,select{
 
   font-size:18px;
 
@@ -78,13 +82,59 @@ button:disabled{
 
 }
 
-.hidden{display:none;}
+.hidden{
+
+  display:none;
+
+}
 
 .info{
 
   font-size:18px;
 
   line-height:1.7;
+
+}
+
+.mode-box{
+
+  display:flex;
+
+  justify-content:center;
+
+  gap:15px;
+
+  margin:15px 0;
+
+  flex-wrap:wrap;
+
+}
+
+.mode-option{
+
+  border:2px solid #ddd;
+
+  border-radius:15px;
+
+  padding:15px;
+
+  min-width:130px;
+
+  cursor:pointer;
+
+}
+
+.mode-option.selected{
+
+  border-color:#333;
+
+  background:#f0f0f0;
+
+}
+
+.mode-option input{
+
+  transform:scale(1.3);
 
 }
 
@@ -174,9 +224,17 @@ button:disabled{
 
 }
 
-.ok{color:green;}
+.ok{
 
-.ng{color:red;}
+  color:green;
+
+}
+
+.ng{
+
+  color:red;
+
+}
 
 .player-box{
 
@@ -198,7 +256,7 @@ button:disabled{
 
   color:#d63384;
 
-  font-size:22px;
+  font-size:23px;
 
   font-weight:bold;
 
@@ -214,6 +272,62 @@ button:disabled{
 
 }
 
+.card-box{
+
+  margin:20px 0;
+
+  padding:20px;
+
+  border:2px solid #ddd;
+
+  border-radius:15px;
+
+}
+
+.card-select{
+
+  width:90%;
+
+  max-width:450px;
+
+}
+
+.status{
+
+  font-size:18px;
+
+  font-weight:bold;
+
+  margin:15px;
+
+}
+
+.warning{
+
+  color:#c00;
+
+  font-weight:bold;
+
+}
+
+.success{
+
+  color:green;
+
+  font-weight:bold;
+
+}
+
+hr{
+
+  border:none;
+
+  border-top:1px solid #ddd;
+
+  margin:25px 0;
+
+}
+
 </style>
 
 </head>
@@ -224,7 +338,11 @@ button:disabled{
 
 <h1>🐺 人狼コンプリートGM</h1>
 
-<!-- ==================== 設定 ==================== -->
+<!-- =========================
+
+     ゲーム設定
+
+========================= -->
 
 <div id="setup">
 
@@ -247,6 +365,50 @@ button:disabled{
  onchange="resetRoleCounts()"
 
 >
+
+<h3>🃏 ゲームモード</h3>
+
+<div class="mode-box">
+
+<label class="mode-option selected" id="modeNoCard">
+
+<input
+
+ type="radio"
+
+ name="gameMode"
+
+ value="noCard"
+
+ checked
+
+ onchange="changeGameMode()"
+
+>
+
+📱 カードなし
+
+</label>
+
+<label class="mode-option" id="modeCard">
+
+<input
+
+ type="radio"
+
+ name="gameMode"
+
+ value="card"
+
+ onchange="changeGameMode()"
+
+>
+
+🃏 カードあり
+
+</label>
+
+</div>
 
 <h3>❤️ 恋人の役職兼用</h3>
 
@@ -316,7 +478,11 @@ button:disabled{
 
 </div>
 
-<!-- ==================== 名前入力 ==================== -->
+<!-- =========================
+
+     プレイヤー名
+
+========================= -->
 
 <div id="playerSetup" class="hidden">
 
@@ -324,7 +490,7 @@ button:disabled{
 
 <p>
 
-ゲームで使用する名前を入力してください。
+プレイヤーの名前を入力してください。
 
 </p>
 
@@ -338,7 +504,75 @@ button:disabled{
 
 </div>
 
-<!-- ==================== 役職確認 ==================== -->
+<!-- =========================
+
+     カード入力
+
+========================= -->
+
+<div id="cardSetup" class="hidden">
+
+<h2>🃏 カード登録</h2>
+
+<div id="cardPlayerTitle"></div>
+
+<div class="card-box">
+
+<p class="info">
+
+このプレイヤーに実際に配ったカードを選んでください。
+
+</p>
+
+<select
+
+ id="cardSelect"
+
+ class="card-select"
+
+ onchange="cardSelectionChanged()"
+
+>
+
+<option value="">
+
+役職を選択してください
+
+</option>
+
+</select>
+
+<div
+
+ id="cardStatus"
+
+ class="status"
+
+></div>
+
+</div>
+
+<button
+
+ id="cardNextButton"
+
+ onclick="confirmCard()"
+
+ disabled
+
+>
+
+このカードで登録
+
+</button>
+
+</div>
+
+<!-- =========================
+
+     役職確認
+
+========================= -->
 
 <div id="game" class="hidden">
 
@@ -372,7 +606,11 @@ button:disabled{
 
 </div>
 
-<!-- ==================== ゲーム準備完了 ==================== -->
+<!-- =========================
+
+     ゲーム開始
+
+========================= -->
 
 <div id="gameReady" class="hidden">
 
@@ -392,15 +630,13 @@ button:disabled{
 
 </div>
 
-</div>
-
 <script>
 
-/* =========================================
+/* ==================================================
 
    役職一覧
 
-========================================= */
+================================================== */
 
 const ROLES = [
 
@@ -462,11 +698,11 @@ const ROLES = [
 
 ];
 
-/* =========================================
+/* ==================================================
 
    変数
 
-========================================= */
+================================================== */
 
 let roleCounts = {};
 
@@ -476,13 +712,59 @@ let selectedRoles = [];
 
 let currentPlayer = 0;
 
+let currentCardPlayer = 0;
+
 let loverMode = false;
 
-/* =========================================
+let gameMode = "noCard";
 
-   恋人兼用モード変更
+/* ==================================================
 
-========================================= */
+   ゲームモード変更
+
+================================================== */
+
+function changeGameMode(){
+
+ gameMode =
+
+   document.querySelector(
+
+     'input[name="gameMode"]:checked'
+
+   ).value;
+
+ document
+
+   .getElementById("modeNoCard")
+
+   .classList.toggle(
+
+     "selected",
+
+     gameMode === "noCard"
+
+   );
+
+ document
+
+   .getElementById("modeCard")
+
+   .classList.toggle(
+
+     "selected",
+
+     gameMode === "card"
+
+   );
+
+}
+
+/* ==================================================
+
+   恋人モード変更
+
+================================================== */
 
 function updateLoverMode(){
 
@@ -498,11 +780,11 @@ function updateLoverMode(){
 
 }
 
-/* =========================================
+/* ==================================================
 
-   初期化
+   役職人数初期化
 
-========================================= */
+================================================== */
 
 function resetRoleCounts(){
 
@@ -518,11 +800,11 @@ function resetRoleCounts(){
 
 }
 
-/* =========================================
+/* ==================================================
 
    役職一覧表示
 
-========================================= */
+================================================== */
 
 function renderRoleList(){
 
@@ -540,9 +822,9 @@ function renderRoleList(){
 
    /*
 
-     恋人兼用ありの場合、
+      恋人兼用ありなら
 
-     恋人は通常の人数枠から外す
+      恋人は人数枠に入れない
 
    */
 
@@ -612,11 +894,11 @@ function renderRoleList(){
 
 }
 
-/* =========================================
+/* ==================================================
 
-   人数変更
+   役職人数変更
 
-========================================= */
+================================================== */
 
 function changeRoleCount(id,change){
 
@@ -624,7 +906,11 @@ function changeRoleCount(id,change){
 
    Number(
 
-     document.getElementById("playerCount").value
+     document.getElementById(
+
+       "playerCount"
+
+     ).value
 
    );
 
@@ -668,11 +954,11 @@ function changeRoleCount(id,change){
 
 }
 
-/* =========================================
+/* ==================================================
 
-   合計表示
+   合計人数
 
-========================================= */
+================================================== */
 
 function updateTotal(){
 
@@ -680,7 +966,11 @@ function updateTotal(){
 
    Number(
 
-     document.getElementById("playerCount").value
+     document.getElementById(
+
+       "playerCount"
+
+     ).value
 
    );
 
@@ -690,15 +980,13 @@ function updateTotal(){
 
    .forEach(([id,count])=>{
 
-     /*
+     if(
 
-       恋人兼用ありの場合、
+       id === "lover" &&
 
-       恋人は人数にカウントしない
+       loverMode
 
-     */
-
-     if(id === "lover" && loverMode){
+     ){
 
        return;
 
@@ -710,11 +998,19 @@ function updateTotal(){
 
  const display =
 
-   document.getElementById("totalDisplay");
+   document.getElementById(
+
+     "totalDisplay"
+
+   );
 
  const button =
 
-   document.getElementById("nextButton");
+   document.getElementById(
+
+     "nextButton"
+
+   );
 
  display.textContent =
 
@@ -740,11 +1036,11 @@ function updateTotal(){
 
 }
 
-/* =========================================
+/* ==================================================
 
-   名前入力
+   名前入力準備
 
-========================================= */
+================================================== */
 
 function preparePlayers(){
 
@@ -752,7 +1048,11 @@ function preparePlayers(){
 
    Number(
 
-     document.getElementById("playerCount").value
+     document.getElementById(
+
+       "playerCount"
+
+     ).value
 
    );
 
@@ -760,7 +1060,7 @@ function preparePlayers(){
 
    alert(
 
-     "4人〜20人で入力してください"
+     "4人〜20人で入力してください。"
 
    );
 
@@ -774,7 +1074,13 @@ function preparePlayers(){
 
    .forEach(([id,c])=>{
 
-     if(id === "lover" && loverMode){
+     if(
+
+       id === "lover" &&
+
+       loverMode
+
+     ){
 
        return;
 
@@ -796,25 +1102,19 @@ function preparePlayers(){
 
  }
 
- /*
-
-   選択された役職を配列化
-
- */
-
  selectedRoles = [];
 
  ROLES.forEach(role=>{
 
    const id = role[0];
 
-   /*
+   if(
 
-     兼用ありの恋人はここでは配らない
+     id === "lover" &&
 
-   */
+     loverMode
 
-   if(id === "lover" && loverMode){
+   ){
 
      return;
 
@@ -824,7 +1124,15 @@ function preparePlayers(){
 
      roleCounts[id] || 0;
 
-   for(let i=0;i<count;i++){
+   for(
+
+     let i=0;
+
+     i<count;
+
+     i++
+
+   ){
 
      selectedRoles.push(id);
 
@@ -842,7 +1150,15 @@ function preparePlayers(){
 
  area.innerHTML = "";
 
- for(let i=0;i<count;i++){
+ for(
+
+   let i=0;
+
+   i<count;
+
+   i++
+
+ ){
 
    const oldName =
 
@@ -898,11 +1214,11 @@ function preparePlayers(){
 
 }
 
-/* =========================================
+/* ==================================================
 
    HTMLエスケープ
 
-========================================= */
+================================================== */
 
 function escapeHtml(text){
 
@@ -920,11 +1236,11 @@ function escapeHtml(text){
 
 }
 
-/* =========================================
+/* ==================================================
 
    ゲーム開始
 
-========================================= */
+================================================== */
 
 function startGame(){
 
@@ -980,19 +1296,9 @@ function startGame(){
 
  /*
 
-   役職をシャッフル
+    プレイヤーデータ作成
 
  */
-
- const shuffledRoles =
-
-   [...selectedRoles]
-
-    .sort(
-
-      ()=>Math.random()-0.5
-
-    );
 
  players =
 
@@ -1004,9 +1310,7 @@ function startGame(){
 
        name:name,
 
-       roleId:
-
-         shuffledRoles[index],
+       roleId:null,
 
        alive:true,
 
@@ -1028,9 +1332,355 @@ function startGame(){
 
  /*
 
-   ❤️ 兼用ありなら、
+    カードなしなら
 
-   配役決定後にランダムで2人を恋人にする
+    ここでランダム配役
+
+ */
+
+ if(gameMode === "noCard"){
+
+   assignRandomRoles();
+
+   finishRoleAssignment();
+
+   return;
+
+ }
+
+ /*
+
+    カードありなら
+
+    カード登録画面へ
+
+ */
+
+ currentCardPlayer = 0;
+
+ document
+
+   .getElementById("playerSetup")
+
+   .classList.add("hidden");
+
+ document
+
+   .getElementById("cardSetup")
+
+   .classList.remove("hidden");
+
+ showCardPlayer();
+
+}
+
+/* ==================================================
+
+   ランダム配役
+
+================================================== */
+
+function assignRandomRoles(){
+
+ const shuffledRoles =
+
+   [...selectedRoles]
+
+    .sort(
+
+      ()=>Math.random()-0.5
+
+    );
+
+ players.forEach(
+
+   (player,index)=>{
+
+     player.roleId =
+
+       shuffledRoles[index];
+
+   }
+
+ );
+
+}
+
+/* ==================================================
+
+   カード入力画面
+
+================================================== */
+
+function showCardPlayer(){
+
+ const player =
+
+   players[currentCardPlayer];
+
+ document
+
+   .getElementById(
+
+     "cardPlayerTitle"
+
+   )
+
+   .innerHTML =
+
+   `<h3>${escapeHtml(player.name)} さん</h3>`;
+
+ const select =
+
+   document.getElementById(
+
+     "cardSelect"
+
+   );
+
+ select.innerHTML =
+
+   `<option value="">
+
+     配られたカードを選択してください
+
+   </option>`;
+
+ ROLES.forEach(role=>{
+
+   const id = role[0];
+
+   /*
+
+      恋人兼用ありの場合、
+
+      恋人カードは通常配役に含まれない
+
+   */
+
+   if(
+
+     id === "lover" &&
+
+     loverMode
+
+   ){
+
+     return;
+
+   }
+
+   const remaining =
+
+     getRemainingRoleCount(id);
+
+   if(remaining <= 0){
+
+     return;
+
+   }
+
+   const option =
+
+     document.createElement("option");
+
+   option.value = id;
+
+   option.textContent =
+
+     `${role[1]}（残り${remaining}枚）`;
+
+   select.appendChild(option);
+
+ });
+
+ document
+
+   .getElementById("cardStatus")
+
+   .textContent =
+
+   "配られたカードを選択してください。";
+
+ document
+
+   .getElementById("cardNextButton")
+
+   .disabled = true;
+
+}
+
+/* ==================================================
+
+   残りカード枚数
+
+================================================== */
+
+function getRemainingRoleCount(id){
+
+ const total =
+
+   roleCounts[id] || 0;
+
+ let used = 0;
+
+ players.forEach(player=>{
+
+   if(player.roleId === id){
+
+     used++;
+
+   }
+
+ });
+
+ return total - used;
+
+}
+
+/* ==================================================
+
+   カード選択
+
+================================================== */
+
+function cardSelectionChanged(){
+
+ const value =
+
+   document.getElementById(
+
+     "cardSelect"
+
+   ).value;
+
+ const button =
+
+   document.getElementById(
+
+     "cardNextButton"
+
+   );
+
+ button.disabled =
+
+   !value;
+
+ if(value){
+
+   document
+
+     .getElementById(
+
+       "cardStatus"
+
+     )
+
+     .textContent =
+
+       `選択：${getRoleName(value)}`;
+
+ }
+
+}
+
+/* ==================================================
+
+   カード登録
+
+================================================== */
+
+function confirmCard(){
+
+ const roleId =
+
+   document.getElementById(
+
+     "cardSelect"
+
+   ).value;
+
+ if(!roleId){
+
+   return;
+
+ }
+
+ /*
+
+    本当に残りがあるか再確認
+
+ */
+
+ if(
+
+   getRemainingRoleCount(roleId)
+
+   <= 0
+
+ ){
+
+   alert(
+
+     "その役職のカードは設定枚数分すべて登録されています。"
+
+   );
+
+   showCardPlayer();
+
+   return;
+
+ }
+
+ players[currentCardPlayer].roleId =
+
+   roleId;
+
+ currentCardPlayer++;
+
+ /*
+
+    全員登録完了
+
+ */
+
+ if(
+
+   currentCardPlayer >=
+
+   players.length
+
+ ){
+
+   document
+
+     .getElementById("cardSetup")
+
+     .classList.add("hidden");
+
+   finishRoleAssignment();
+
+   return;
+
+ }
+
+ showCardPlayer();
+
+}
+
+/* ==================================================
+
+   恋人決定＋役職確認へ
+
+================================================== */
+
+function finishRoleAssignment(){
+
+ /*
+
+    ❤️ 兼用ありなら
+
+    配役決定後にランダムで2人
 
  */
 
@@ -1044,25 +1694,19 @@ function startGame(){
 
  document
 
-  .getElementById("playerSetup")
+   .getElementById("game")
 
-  .classList.add("hidden");
-
- document
-
-  .getElementById("game")
-
-  .classList.remove("hidden");
+   .classList.remove("hidden");
 
  showPlayer();
 
 }
 
-/* =========================================
+/* ==================================================
 
-   ❤️ 恋人をランダム決定
+   恋人ランダム決定
 
-========================================= */
+================================================== */
 
 function assignRandomLovers(){
 
@@ -1086,13 +1730,9 @@ function assignRandomLovers(){
 
  );
 
- const a =
+ const a = indexes[0];
 
-   indexes[0];
-
- const b =
-
-   indexes[1];
+ const b = indexes[1];
 
  players[a].lover = true;
 
@@ -1108,11 +1748,11 @@ function assignRandomLovers(){
 
 }
 
-/* =========================================
+/* ==================================================
 
    プレイヤー表示
 
-========================================= */
+================================================== */
 
 function showPlayer(){
 
@@ -1122,35 +1762,49 @@ function showPlayer(){
 
  document
 
-  .getElementById("playerTitle")
+   .getElementById(
 
-  .textContent =
+     "playerTitle"
 
-    player.name+" さん";
+   )
 
- document
+   .textContent =
 
-  .getElementById("roleArea")
-
-  .textContent =
-
-    "？？？";
+   `${escapeHtml(player.name)} さん`;
 
  document
 
-  .getElementById("loverArea")
+   .getElementById(
 
-  .innerHTML =
+     "roleArea"
 
-    "";
+   )
+
+   .textContent =
+
+   "？？？";
 
  document
 
-  .getElementById("info")
+   .getElementById(
 
-  .textContent =
+     "loverArea"
 
-    "役職を見るボタンを押してください。";
+   )
+
+   .innerHTML = "";
+
+ document
+
+   .getElementById(
+
+     "info"
+
+   )
+
+   .textContent =
+
+   "役職を見るボタンを押してください。";
 
  const button =
 
@@ -1170,11 +1824,11 @@ function showPlayer(){
 
 }
 
-/* =========================================
+/* ==================================================
 
-   役職表示
+   役職確認
 
-========================================= */
+================================================== */
 
 function showRole(){
 
@@ -1184,25 +1838,29 @@ function showRole(){
 
  /*
 
-   本来の役職
+    本来の役職
 
  */
 
  document
 
-  .getElementById("roleArea")
+   .getElementById(
 
-  .textContent =
+     "roleArea"
 
-    getRoleName(
+   )
 
-      player.roleId
+   .textContent =
 
-    );
+   getRoleName(
+
+     player.roleId
+
+   );
 
  /*
 
-   ❤️ 恋人なら追加表示
+    ❤️ 恋人なら追加表示
 
  */
 
@@ -1210,9 +1868,13 @@ function showRole(){
 
    document
 
-    .getElementById("loverArea")
+     .getElementById(
 
-    .innerHTML = `
+       "loverArea"
+
+     )
+
+     .innerHTML = `
 
       <div class="lover">
 
@@ -1236,25 +1898,31 @@ function showRole(){
 
    document
 
-    .getElementById("loverArea")
+     .getElementById(
 
-    .innerHTML =
+       "loverArea"
 
-      "";
+     )
+
+     .innerHTML = "";
 
  }
 
  document
 
-  .getElementById("info")
+   .getElementById(
 
-  .textContent =
+     "info"
 
-    getRoleDescription(
+   )
 
-      player.roleId
+   .textContent =
 
-    );
+   getRoleDescription(
+
+     player.roleId
+
+   );
 
  const button =
 
@@ -1274,11 +1942,11 @@ function showRole(){
 
 }
 
-/* =========================================
+/* ==================================================
 
    次のプレイヤー
 
-========================================= */
+================================================== */
 
 function nextPlayer(){
 
@@ -1294,15 +1962,23 @@ function nextPlayer(){
 
    document
 
-    .getElementById("game")
+     .getElementById(
 
-    .classList.add("hidden");
+       "game"
+
+     )
+
+     .classList.add("hidden");
 
    document
 
-    .getElementById("gameReady")
+     .getElementById(
 
-    .classList.remove("hidden");
+       "gameReady"
+
+     )
+
+     .classList.remove("hidden");
 
    return;
 
@@ -1312,11 +1988,11 @@ function nextPlayer(){
 
 }
 
-/* =========================================
+/* ==================================================
 
    役職名
 
-========================================= */
+================================================== */
 
 function getRoleName(id){
 
@@ -1324,7 +2000,7 @@ function getRoleName(id){
 
    ROLES.find(
 
-     r=>r[0]===id
+     r=>r[0] === id
 
    );
 
@@ -1336,141 +2012,141 @@ function getRoleName(id){
 
 }
 
-/* =========================================
+/* ==================================================
 
    役職説明
 
-========================================= */
+================================================== */
 
 function getRoleDescription(id){
 
  const descriptions = {
 
-   werewolf:
+  werewolf:
 
-    "🐺 毎夜1人を襲撃します。",
+   "🐺 毎夜1人を襲撃します。",
 
-   wolfChild:
+  wolfChild:
 
-    "👶 人狼と共に襲撃します。",
+   "👶 人狼と共に襲撃します。",
 
-   betrayer:
+  betrayer:
 
-    "😈 能力はありません。人狼陣営です。",
+   "😈 能力はありません。人狼陣営です。",
 
-   betrayShared:
+  betrayShared:
 
-    "🤝 相方を知っている人狼陣営です。",
+   "🤝 相方を知っている人狼陣営です。",
 
-   informant:
+  informant:
 
-    "👁️ 人狼を知っています。",
+   "👁️ 人狼を知っています。",
 
-   betrayAttacker:
+  betrayAttacker:
 
-    "⚔️ 人狼とは別に毎夜1人を襲撃します。",
+   "⚔️ 人狼とは別に毎夜1人を襲撃します。",
 
-   spy:
+  spy:
 
-    "🕵️ 市民側の役職能力を妨害します。1役職につき1回までです。",
+   "🕵️ 市民側の役職能力を妨害します。",
 
-   villager:
+  villager:
 
-    "👤 特別な能力はありません。",
+   "👤 特別な能力はありません。",
 
-   seer:
+  seer:
 
-    "🔮 毎夜1人を占います。",
+   "🔮 毎夜1人を占います。",
 
-   bodyguard:
+  bodyguard:
 
-    "🛡️ 人狼の襲撃から1人を守ります。",
+   "🛡️ 人狼の襲撃から守ります。",
 
-   medium:
+  medium:
 
-    "👻 前日に追放された人を確認できます。",
+   "👻 前日の追放者を確認できます。",
 
-   hunter:
+  hunter:
 
-    "🔫 死亡時に1人を道連れにできます。",
+   "🔫 死亡時に1人を道連れにできます。",
 
-   shared:
+  shared:
 
-    "🤝 相方を知っています。",
+   "🤝 相方を知っています。",
 
-   dictator:
+  dictator:
 
-    "👑 1回だけ昼の議論を強制終了し、追放者を独断で決定できます。",
+   "👑 1回だけ昼の議論を強制終了し、追放者を独断で決定します。",
 
-   tough:
+  tough:
 
-    "💪 襲撃を受けても翌日の議論に参加できます。その後死亡します。",
+   "💪 襲撃を受けても翌日の議論に参加できます。その後死亡します。",
 
-   counselor:
+  counselor:
 
-    "🩺 裏切り者系を改心させられます。人狼を選ぶと自分が犠牲になります。",
+   "🩺 裏切り者系を改心させます。人狼を選ぶと自身が犠牲になります。",
 
-   magician:
+  magician:
 
-    "🎩 2日目以降に1回だけ、人狼の襲撃先を変更できます。",
+   "🎩 2日目以降に1回だけ人狼の襲撃先を変更します。",
 
-   trapper:
+  trapper:
 
-    "🪤 毎晩1人に罠を仕掛けます。同じ人には2夜連続で仕掛けられません。",
+   "🪤 毎晩1人に罠を仕掛けます。",
 
-   knights:
+  knights:
 
-    "🛡️ 2〜3人で守ります。自分たちも守れます。",
+   "🛡️ 2〜3人で守ります。自分たちも守れます。",
 
-   shadow:
+  shadow:
 
-    "🪞 1回だけ議論を強制終了し、自分自身が追放されます。",
+   "🪞 1回だけ議論を強制終了し、自身が追放されます。",
 
-   king:
+  king:
 
-    "👑 投票を2票分として数えます。",
+   "👑 投票を2票分として数えます。",
 
-   cursed:
+  cursed:
 
-    "🧟 襲撃された夜は死亡せず、翌夜に人狼になります。",
+   "🧟 襲撃された夜は死亡せず、翌日の夜に人狼になります。",
 
-   fox:
+  fox:
 
-    "🦊 人狼の襲撃では死亡せず、占われると死亡します。",
+   "🦊 人狼の襲撃では死亡せず、占われると死亡します。",
 
-   god:
+  god:
 
-    "🙏 全員の役職を知っています。ゲーム終了時まで生き残ると勝利です。",
+   "🙏 全員の役職を知っています。",
 
-   lover:
+  lover:
 
-    "❤️ 恋人同士はお互いを知っています。片方が死亡するともう片方も後追い死亡します。",
+   "❤️ 恋人同士はお互いを知っています。片方が死亡するともう片方も後追い死亡します。",
 
-   loneWolf:
+  loneWolf:
 
-    "🐺 人狼と共に行動し、他の人狼がいなくなった状態で生き残ることを目指します。",
+   "🐺 人狼と共に行動します。",
 
-   android:
+  android:
 
-    "🤖 ゲーム開始時に誰か1人の役職をコピーします。",
+   "🤖 ゲーム開始時に誰か1人の役職をコピーします。",
 
-   scarecrow:
+  scarecrow:
 
-    "🌾 案山子同士を知っています。案山子全員がいなくなると勝利します。"
+   "🌾 案山子同士を知っています。案山子全員がいなくなると勝利します。"
 
  };
 
  return descriptions[id]
 
-  || "役職の説明はありません。";
+   || "役職の説明はありません。";
 
 }
 
-/* =========================================
+/* ==================================================
 
    夜開始
 
-========================================= */
+================================================== */
 
 function startNight(){
 
@@ -1482,11 +2158,11 @@ function startNight(){
 
 }
 
-/* =========================================
+/* ==================================================
 
-   初期表示
+   初期化
 
-========================================= */
+================================================== */
 
 resetRoleCounts();
 
