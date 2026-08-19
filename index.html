@@ -14,7 +14,7 @@
 
 body{
 
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  font-family:sans-serif;
 
   background:#f5f5f5;
 
@@ -34,7 +34,7 @@ body{
 
   background:white;
 
-  padding:22px;
+  padding:20px;
 
   border-radius:20px;
 
@@ -42,7 +42,11 @@ body{
 
 }
 
-h1{margin-top:0}
+h1{
+
+  margin-top:0;
+
+}
 
 input,button,select{
 
@@ -55,6 +59,8 @@ input,button,select{
   border-radius:10px;
 
   border:1px solid #ccc;
+
+  box-sizing:border-box;
 
 }
 
@@ -78,7 +84,11 @@ button:disabled{
 
 }
 
-.hidden{display:none!important}
+.hidden{
+
+  display:none!important;
+
+}
 
 .info{
 
@@ -210,11 +220,23 @@ button:disabled{
 
 }
 
-.ok{color:green}
+.ok{
 
-.ng{color:red}
+  color:green;
 
-.player-box{margin:15px 0}
+}
+
+.ng{
+
+  color:red;
+
+}
+
+.player-box{
+
+  margin:15px 0;
+
+}
 
 .role{
 
@@ -250,7 +272,17 @@ button:disabled{
 
 }
 
-.card-box,.action-box{
+.lover-partner{
+
+  font-size:20px;
+
+  margin-top:8px;
+
+}
+
+.card-box,
+
+.action-box{
 
   margin:20px 0;
 
@@ -352,9 +384,17 @@ button:disabled{
 
 }
 
+.small{
+
+  font-size:14px;
+
+  color:#666;
+
+}
+
 .timer{
 
-  font-size:64px;
+  font-size:58px;
 
   font-weight:bold;
 
@@ -362,47 +402,55 @@ button:disabled{
 
 }
 
-.timer.running{
+.timer.warning{
 
-  animation:pulse 1s infinite;
-
-}
-
-@keyframes pulse{
-
-  50%{opacity:.5}
+  color:red;
 
 }
 
-.timer-buttons button{
+.night-title{
 
-  min-width:120px;
+  font-size:28px;
+
+  font-weight:bold;
+
+  margin:20px 0;
 
 }
 
 .gm-message{
 
-  background:#f0f0f0;
-
-  border-radius:15px;
+  background:#f1f1f1;
 
   padding:20px;
 
+  border-radius:15px;
+
+  font-size:21px;
+
+  line-height:1.7;
+
   margin:20px 0;
-
-  font-size:22px;
-
-  line-height:1.6;
-
-  font-weight:bold;
 
 }
 
-.small{
+.big-button{
 
-  font-size:14px;
+  width:90%;
 
-  color:#666;
+  max-width:500px;
+
+  padding:15px;
+
+  font-size:21px;
+
+}
+
+.death-list{
+
+  font-size:21px;
+
+  line-height:1.8;
 
 }
 
@@ -413,28 +461,6 @@ hr{
   border-top:1px solid #ddd;
 
   margin:25px 0;
-
-}
-
-.dead{
-
-  text-decoration:line-through;
-
-  color:#888;
-
-}
-
-.special{
-
-  background:#fff8df;
-
-  border:2px solid #e0c45c;
-
-  padding:15px;
-
-  border-radius:15px;
-
-  margin:15px 0;
 
 }
 
@@ -450,7 +476,7 @@ hr{
 
 <!-- =========================
 
-ゲーム設定
+     設定
 
 ========================= -->
 
@@ -562,17 +588,19 @@ hr{
 
 <h3>⏱️ 昼の議論時間</h3>
 
-<select id="discussionMinutes">
+<select id="discussionTime">
 
-<option value="1">1分</option>
+<option value="60">1分</option>
 
-<option value="3" selected>3分</option>
+<option value="180">3分</option>
 
-<option value="5">5分</option>
+<option value="300" selected>5分</option>
 
-<option value="10">10分</option>
+<option value="600">10分</option>
 
-<option value="15">15分</option>
+<option value="900">15分</option>
+
+<option value="0">タイマーなし</option>
 
 </select>
 
@@ -606,7 +634,7 @@ hr{
 
 <!-- =========================
 
-プレイヤー名
+     プレイヤー名
 
 ========================= -->
 
@@ -628,7 +656,7 @@ hr{
 
 <!-- =========================
 
-カード
+     カード登録
 
 ========================= -->
 
@@ -642,13 +670,19 @@ hr{
 
 <p class="info">
 
-このプレイヤーに実際に配ったカードを選択してください。
+このプレイヤーに実際に配ったカードを選んでください。
 
 </p>
 
-<select id="cardSelect" class="card-select"
+<select
 
-onchange="cardSelectionChanged()">
+ id="cardSelect"
+
+ class="card-select"
+
+ onchange="cardSelectionChanged()"
+
+>
 
 <option value="">
 
@@ -680,7 +714,7 @@ onchange="cardSelectionChanged()">
 
 <!-- =========================
 
-カード確認
+     カード確認
 
 ========================= -->
 
@@ -722,7 +756,7 @@ onchange="cardSelectionChanged()">
 
 <!-- =========================
 
-役職確認
+     役職確認
 
 ========================= -->
 
@@ -744,7 +778,13 @@ onchange="cardSelectionChanged()">
 
 </p>
 
-<button id="mainButton" onclick="showRole()">
+<button
+
+ id="mainButton"
+
+ onclick="showRole()"
+
+>
 
 役職を見る
 
@@ -754,21 +794,33 @@ onchange="cardSelectionChanged()">
 
 <!-- =========================
 
-夜前・初日占い
+     初日死亡発表
 
 ========================= -->
 
-<div id="initialNight" class="hidden">
+<div id="initialDeathAnnouncement" class="hidden">
 
-<h2>🌙 ゲーム開始</h2>
+<h2>🌅 ゲーム開始</h2>
 
-<div id="initialNightContent"></div>
+<div id="initialDeathText" class="gm-message"></div>
+
+<button
+
+ class="big-button"
+
+ onclick="beginFirstDay()"
+
+>
+
+昼へ進む
+
+</button>
 
 </div>
 
 <!-- =========================
 
-昼
+     昼
 
 ========================= -->
 
@@ -778,43 +830,45 @@ onchange="cardSelectionChanged()">
 
 <div id="dayInfo" class="info"></div>
 
-<div id="dayDeaths"></div>
-
-<hr>
+<div id="timerArea" class="hidden">
 
 <div id="timer" class="timer">
 
-03:00
+05:00
 
 </div>
 
-<div class="timer-buttons">
-
 <button onclick="startTimer()">
 
-▶️ 議論開始
+⏱️ 議論スタート
 
 </button>
 
-<button onclick="pauseTimer()">
+<button onclick="stopTimer()">
 
 ⏸️ 一時停止
 
 </button>
 
-<button onclick="resetTimer()">
-
-🔄 リセット
-
-</button>
-
 </div>
 
-<br>
+<hr>
 
-<button onclick="endDiscussion()">
+<p class="info">
 
-⏭️ 議論を終えて投票へ
+みんなで議論してください。
+
+</p>
+
+<button
+
+ onclick="startVoting()"
+
+ class="big-button"
+
+>
+
+🗳️ 投票へ
 
 </button>
 
@@ -822,7 +876,7 @@ onchange="cardSelectionChanged()">
 
 <!-- =========================
 
-投票
+     投票
 
 ========================= -->
 
@@ -830,13 +884,19 @@ onchange="cardSelectionChanged()">
 
 <h2>🗳️ 投票</h2>
 
-<div id="voteSpecial"></div>
-
 <p id="voteInstruction" class="info"></p>
+
+<div id="specialVoteArea"></div>
 
 <div id="votePlayers"></div>
 
-<button onclick="finishVoting()">
+<button
+
+ onclick="finishVoting()"
+
+ class="big-button"
+
+>
 
 ⚖️ 投票を集計する
 
@@ -846,7 +906,7 @@ onchange="cardSelectionChanged()">
 
 <!-- =========================
 
-投票結果
+     投票結果
 
 ========================= -->
 
@@ -866,7 +926,7 @@ onchange="cardSelectionChanged()">
 
 <!-- =========================
 
-夜開始
+     夜開始
 
 ========================= -->
 
@@ -880,7 +940,13 @@ onchange="cardSelectionChanged()">
 
 </p>
 
-<button onclick="startNight()">
+<button
+
+ onclick="startNight()"
+
+ class="big-button"
+
+>
 
 🌙 夜を開始
 
@@ -890,15 +956,19 @@ onchange="cardSelectionChanged()">
 
 <!-- =========================
 
-夜
+     夜
 
 ========================= -->
 
 <div id="night" class="hidden">
 
-<h2 id="nightTitle">🌙 夜</h2>
+<div id="nightTitle" class="night-title">
 
-<div id="nightInfo" class="info"></div>
+🌙 夜
+
+</div>
+
+<div id="nightInfo" class="gm-message"></div>
 
 <div id="nightAction" class="action-box"></div>
 
@@ -906,7 +976,7 @@ onchange="cardSelectionChanged()">
 
 <!-- =========================
 
-ゲーム終了
+     ゲーム終了
 
 ========================= -->
 
@@ -916,13 +986,19 @@ onchange="cardSelectionChanged()">
 
 <div id="winner" class="result"></div>
 
+<button onclick="location.reload()">
+
+🔄 もう一度ゲームする
+
+</button>
+
 </div>
 
 <script>
 
 /* ==================================================
 
-役職
+   役職一覧
 
 ================================================== */
 
@@ -986,31 +1062,9 @@ const ROLES=[
 
 ];
 
-const WOLF_ROLES=[
-
-"werewolf",
-
-"wolfChild",
-
-"loneWolf"
-
-];
-
-const BETRAYER_ROLES=[
-
-"betrayer",
-
-"betrayShared",
-
-"informant",
-
-"betrayAttacker"
-
-];
-
 /* ==================================================
 
-変数
+   変数
 
 ================================================== */
 
@@ -1034,23 +1088,51 @@ let nightStep=0;
 
 let nightData={};
 
-let voteData={};
-
-let discussionSeconds=180;
+let discussionSeconds=300;
 
 let timerInterval=null;
 
-let dictatorChoice=null;
+let hunterQueue=[];
 
-let shadowActive=false;
-
-let lastDeaths=[];
-
-let previousVoteDeath=null;
+let initialDeathNames=[];
 
 /* ==================================================
 
-基本
+   人狼
+
+================================================== */
+
+const WOLF_ROLES=[
+
+"werewolf",
+
+"wolfChild",
+
+"loneWolf"
+
+];
+
+/* ==================================================
+
+   裏切り者系
+
+================================================== */
+
+const BETRAYER_ROLES=[
+
+"betrayer",
+
+"betrayShared",
+
+"informant",
+
+"betrayAttacker"
+
+];
+
+/* ==================================================
+
+   共通
 
 ================================================== */
 
@@ -1078,21 +1160,21 @@ return String(text)
 
 function getRoleName(id){
 
-const r=ROLES.find(x=>x[0]===id);
+const role=ROLES.find(r=>r[0]===id);
 
-return r?r[1]:"不明";
-
-}
-
-function isWolf(p){
-
-return WOLF_ROLES.includes(p.roleId);
+return role ? role[1] : "不明";
 
 }
 
-function isBetrayer(p){
+function isWolf(player){
 
-return BETRAYER_ROLES.includes(p.roleId);
+return WOLF_ROLES.includes(player.roleId);
+
+}
+
+function isBetrayer(player){
+
+return BETRAYER_ROLES.includes(player.roleId);
 
 }
 
@@ -1102,69 +1184,63 @@ return players.filter(p=>p.alive);
 
 }
 
-function getTargets(exclude=null){
+function getTargets(excludeId=null){
 
-return alivePlayers().filter(p=>p.id!==exclude);
+return alivePlayers().filter(
+
+p=>p.id!==excludeId
+
+);
 
 }
 
 /* ==================================================
 
-GM音声
+   GM音声
 
 ================================================== */
 
 function speak(text){
 
-if(!("speechSynthesis" in window)) return;
+if(!("speechSynthesis" in window)){
+
+return;
+
+}
 
 window.speechSynthesis.cancel();
 
-const u=new SpeechSynthesisUtterance(text);
+const utter=new SpeechSynthesisUtterance(text);
 
-u.lang="ja-JP";
+utter.lang="ja-JP";
 
-u.rate=.9;
+utter.rate=0.9;
 
-u.pitch=1;
+utter.pitch=1;
 
-window.speechSynthesis.speak(u);
-
-}
-
-function gm(text){
-
-$("nightInfo").textContent=text;
-
-speak(text);
-
-}
-
-function gmBox(text){
-
-$("initialNightContent").innerHTML=
-
-`<div class="gm-message">${text}</div>`;
-
-speak(text);
+window.speechSynthesis.speak(utter);
 
 }
 
 /* ==================================================
 
-モード
+   ゲームモード
 
 ================================================== */
 
 function changeGameMode(){
 
-gameMode=document.querySelector(
+gameMode=
+
+document.querySelector(
 
 'input[name="gameMode"]:checked'
 
 ).value;
 
-$("modeNoCard").classList.toggle(
+$("modeNoCard")
+
+.classList.toggle(
 
 "selected",
 
@@ -1172,7 +1248,9 @@ gameMode==="noCard"
 
 );
 
-$("modeCard").classList.toggle(
+$("modeCard")
+
+.classList.toggle(
 
 "selected",
 
@@ -1182,9 +1260,17 @@ gameMode==="card"
 
 }
 
+/* ==================================================
+
+   恋人
+
+================================================== */
+
 function updateLoverMode(){
 
-loverMode=document.querySelector(
+loverMode=
+
+document.querySelector(
 
 'input[name="loverMode"]:checked'
 
@@ -1196,7 +1282,7 @@ renderRoleList();
 
 /* ==================================================
 
-役職設定
+   役職初期化
 
 ================================================== */
 
@@ -1204,9 +1290,9 @@ function resetRoleCounts(){
 
 roleCounts={};
 
-ROLES.forEach(r=>{
+ROLES.forEach(role=>{
 
-roleCounts[r[0]]=0;
+roleCounts[role[0]]=0;
 
 });
 
@@ -1214,29 +1300,57 @@ renderRoleList();
 
 }
 
+/* ==================================================
+
+   役職一覧
+
+================================================== */
+
 function renderRoleList(){
 
 const list=$("roleList");
 
 list.innerHTML="";
 
-ROLES.forEach(r=>{
+ROLES.forEach(role=>{
 
-if(r[0]==="lover" && loverMode)return;
+const id=role[0];
+
+if(id==="lover" && loverMode){
+
+return;
+
+}
 
 list.innerHTML+=`
 
 <div class="role-item">
 
-<div class="role-name">${r[1]}</div>
+<div class="role-name">
+
+${role[1]}
+
+</div>
 
 <div class="counter">
 
-<button onclick="changeRoleCount('${r[0]}',-1)">−</button>
+<button onclick="changeRoleCount('${id}',-1)">
 
-<div class="count">${roleCounts[r[0]]||0}</div>
+−
 
-<button onclick="changeRoleCount('${r[0]}',1)">＋</button>
+</button>
+
+<div class="count">
+
+${roleCounts[id]||0}
+
+</div>
+
+<button onclick="changeRoleCount('${id}',1)">
+
+＋
+
+</button>
 
 </div>
 
@@ -1250,15 +1364,25 @@ updateTotal();
 
 }
 
-function changeRoleCount(id,n){
+/* ==================================================
 
-const max=Number($("playerCount").value);
+   人数変更
 
-const next=(roleCounts[id]||0)+n;
+================================================== */
+
+function changeRoleCount(id,change){
+
+const playerCount=
+
+Number($("playerCount").value);
+
+const next=
+
+(roleCounts[id]||0)+change;
 
 if(next<0)return;
 
-if(next>max)return;
+if(next>playerCount)return;
 
 roleCounts[id]=next;
 
@@ -1266,71 +1390,117 @@ renderRoleList();
 
 }
 
+/* ==================================================
+
+   合計
+
+================================================== */
+
 function updateTotal(){
 
-const max=Number($("playerCount").value);
+const playerCount=
+
+Number($("playerCount").value);
 
 let total=0;
 
-Object.entries(roleCounts).forEach(([id,n])=>{
+Object.entries(roleCounts).forEach(
 
-if(id==="lover" && loverMode)return;
+([id,count])=>{
 
-total+=n;
+if(id==="lover" && loverMode){
+
+return;
+
+}
+
+total+=count;
 
 });
 
 $("totalDisplay").textContent=
 
-`配役：${total} / ${max}人`;
+`配役：${total} / ${playerCount}人`;
 
 $("totalDisplay").className=
 
-"total "+(total===max?"ok":"ng");
+"total "+(
 
-$("nextButton").disabled=total!==max;
+total===playerCount
+
+?"ok"
+
+:"ng"
+
+);
+
+$("nextButton").disabled=
+
+total!==playerCount;
 
 }
 
 /* ==================================================
 
-プレイヤー準備
+   プレイヤー準備
 
 ================================================== */
 
 function preparePlayers(){
 
-const count=Number($("playerCount").value);
+const count=
+
+Number($("playerCount").value);
+
+if(count<4 || count>20){
+
+alert("4人〜20人で入力してください。");
+
+return;
+
+}
 
 selectedRoles=[];
 
-ROLES.forEach(r=>{
+ROLES.forEach(role=>{
 
-if(r[0]==="lover" && loverMode)return;
+const id=role[0];
 
-for(let i=0;i<(roleCounts[r[0]]||0);i++){
+if(id==="lover" && loverMode){
 
-selectedRoles.push(r[0]);
+return;
+
+}
+
+for(let i=0;i<(roleCounts[id]||0);i++){
+
+selectedRoles.push(id);
 
 }
 
 });
 
-$("playerInputs").innerHTML="";
+const area=$("playerInputs");
+
+area.innerHTML="";
 
 for(let i=0;i<count;i++){
 
-const old=localStorage.getItem(
+const oldName=
 
-"jinroPlayer"+i
+localStorage.getItem("jinroPlayer"+i)||"";
 
-)||"";
-
-$("playerInputs").innerHTML+=`
+area.innerHTML+=`
 
 <div class="player-box">
 
-<label>プレイヤー${i+1}</label><br>
+<label>
+
+プレイヤー${i+1}
+
+</label>
+
+<br>
 
 <input
 
@@ -1342,7 +1512,7 @@ maxlength="20"
 
 placeholder="名前を入力"
 
-value="${escapeHtml(old)}"
+value="${escapeHtml(oldName)}"
 
 >
 
@@ -1360,7 +1530,7 @@ $("playerSetup").classList.remove("hidden");
 
 /* ==================================================
 
-ゲーム開始
+   ゲーム開始
 
 ================================================== */
 
@@ -1376,7 +1546,11 @@ const name=input.value.trim();
 
 if(!name){
 
-alert(`プレイヤー${i+1}の名前を入力してください。`);
+alert(
+
+`プレイヤー${i+1}の名前を入力してください。`
+
+);
 
 input.focus();
 
@@ -1396,11 +1570,11 @@ name
 
 }
 
-players=names.map((name,id)=>({
+players=names.map((name,index)=>({
 
-id,
+id:index,
 
-name,
+name:name,
 
 roleId:null,
 
@@ -1412,15 +1586,19 @@ loverPartner:null,
 
 abilitiesUsed:{},
 
+copiedRole:null,
+
 cursedAwakened:false,
 
 toughHit:false,
 
 lastDeathReason:null,
 
-androidCopy:null,
+wolfChildExtraAttack:false,
 
-spyUsed:{}
+spyUsedRoles:{},
+
+initialSeerDone:false
 
 }));
 
@@ -1446,7 +1624,7 @@ showCardPlayer();
 
 /* ==================================================
 
-ランダム配役
+   ランダム配役
 
 ================================================== */
 
@@ -1454,11 +1632,11 @@ function assignRandomRoles(){
 
 const shuffled=[...selectedRoles]
 
-.sort(()=>Math.random()-.5);
+.sort(()=>Math.random()-0.5);
 
-players.forEach((p,i)=>{
+players.forEach((player,index)=>{
 
-p.roleId=shuffled[i];
+player.roleId=shuffled[index];
 
 });
 
@@ -1466,39 +1644,61 @@ p.roleId=shuffled[i];
 
 /* ==================================================
 
-カード
+   カード
 
 ================================================== */
 
 function showCardPlayer(){
 
-const p=players[currentCardPlayer];
+const player=players[currentCardPlayer];
 
 $("cardPlayerTitle").innerHTML=
 
-`<h3>${escapeHtml(p.name)} さん</h3>`;
+`<h3>${escapeHtml(player.name)} さん</h3>`;
 
 $("cardSelect").innerHTML=
 
-`<option value="">配られたカードを選択してください</option>`;
+`
 
-ROLES.forEach(r=>{
+<option value="">
 
-if(r[0]==="lover" && loverMode)return;
+配られたカードを選択してください
 
-const o=document.createElement("option");
+</option>
 
-o.value=r[0];
+`;
 
-o.textContent=r[1];
+ROLES.forEach(role=>{
 
-$("cardSelect").appendChild(o);
+if(role[0]==="lover" && loverMode){
+
+return;
+
+}
+
+const option=document.createElement("option");
+
+option.value=role[0];
+
+option.textContent=role[1];
+
+$("cardSelect").appendChild(option);
 
 });
+
+$("cardStatus").textContent=
+
+"配られたカードを選択してください。";
 
 $("cardNextButton").disabled=true;
 
 }
+
+/* ==================================================
+
+   カード選択
+
+================================================== */
 
 function cardSelectionChanged(){
 
@@ -1508,13 +1708,19 @@ $("cardNextButton").disabled=
 
 }
 
+/* ==================================================
+
+   カード登録
+
+================================================== */
+
 function confirmCard(){
 
-const role=$("cardSelect").value;
+const roleId=$("cardSelect").value;
 
-if(!role)return;
+if(!roleId)return;
 
-players[currentCardPlayer].roleId=role;
+players[currentCardPlayer].roleId=roleId;
 
 currentCardPlayer++;
 
@@ -1534,15 +1740,29 @@ checkCards();
 
 }
 
+/* ==================================================
+
+   カード確認
+
+================================================== */
+
 function checkCards(){
 
-const entered={};
+const enteredCounts={};
 
-ROLES.forEach(r=>entered[r[0]]=0);
+ROLES.forEach(role=>{
 
-players.forEach(p=>{
+enteredCounts[role[0]]=0;
 
-if(p.roleId)entered[p.roleId]++;
+});
+
+players.forEach(player=>{
+
+if(player.roleId){
+
+enteredCounts[player.roleId]++;
+
+}
 
 });
 
@@ -1550,21 +1770,27 @@ let correct=true;
 
 let messages=[];
 
-ROLES.forEach(r=>{
+ROLES.forEach(role=>{
 
-if(r[0]==="lover" && loverMode)return;
+const id=role[0];
 
-const expected=roleCounts[r[0]]||0;
+if(id==="lover" && loverMode){
 
-const actual=entered[r[0]]||0;
+return;
 
-if(expected!==actual){
+}
+
+const expected=roleCounts[id]||0;
+
+const entered=enteredCounts[id]||0;
+
+if(expected!==entered){
 
 correct=false;
 
 messages.push(
 
-`${r[1]}：設定 ${expected}枚 / 入力 ${actual}枚`
+`${role[1]}：設定 ${expected}枚 / 入力 ${entered}枚`
 
 );
 
@@ -1576,15 +1802,27 @@ if(correct){
 
 $("cardCheckResult").innerHTML=`
 
-<div class="success">🎉 カード登録完了！</div>
+<div class="success">
 
-<p>設定した配役とカードが一致しました。</p>
+🎉 カード登録完了！
+
+</div>
+
+<p>
+
+設定した役職と入力したカードが一致しました。
+
+</p>
 
 `;
 
-$("cardCheckNextButton").classList.remove("hidden");
+$("cardCheckNextButton")
 
-$("retryCardButton").classList.add("hidden");
+.classList.remove("hidden");
+
+$("retryCardButton")
+
+.classList.add("hidden");
 
 }else{
 
@@ -1598,23 +1836,41 @@ $("cardCheckResult").innerHTML=`
 
 </div>
 
-<p>${messages.join("<br>")}</p>
+<p>
+
+${messages.join("<br>")}
+
+</p>
 
 </div>
 
 `;
 
-$("retryCardButton").classList.remove("hidden");
+$("retryCardButton")
 
-$("cardCheckNextButton").classList.add("hidden");
+.classList.remove("hidden");
+
+$("cardCheckNextButton")
+
+.classList.add("hidden");
 
 }
 
 }
+
+/* ==================================================
+
+   カードやり直し
+
+================================================== */
 
 function retryCardInput(){
 
-players.forEach(p=>p.roleId=null);
+players.forEach(player=>{
+
+player.roleId=null;
+
+});
 
 currentCardPlayer=0;
 
@@ -1626,6 +1882,12 @@ showCardPlayer();
 
 }
 
+/* ==================================================
+
+   役職決定
+
+================================================== */
+
 function finishCardCheck(){
 
 $("cardCheck").classList.add("hidden");
@@ -1636,17 +1898,23 @@ finishRoleAssignment();
 
 /* ==================================================
 
-役職決定
+   役職決定後
 
 ================================================== */
 
 function finishRoleAssignment(){
 
+/* 恋人 */
+
 if(loverMode){
 
-const shuffled=[...players]
+const shuffled=
 
-.sort(()=>Math.random()-.5);
+[...players].sort(
+
+()=>Math.random()-0.5
+
+);
 
 const a=shuffled[0];
 
@@ -1662,77 +1930,33 @@ b.loverPartner=a.name;
 
 }
 
-/* 裏切りの共有者 */
-
-const betrayShared=players.filter(
-
-p=>p.roleId==="betrayShared"
-
-);
-
-if(betrayShared.length>1){
-
-const names=betrayShared
-
-.map(p=>escapeHtml(p.name))
-
-.join("、");
-
-betrayShared.forEach(p=>{
-
-p.sharedPartners=names;
-
-});
-
-}
-
 /* 共有者 */
 
-const shared=players.filter(
+setupSharedInfo();
 
-p=>p.roleId==="shared"
+/* 裏切りの共有者 */
 
-);
+setupBetraySharedInfo();
 
-if(shared.length>1){
+/* 内通者 */
 
-const names=shared
+setupInformantInfo();
 
-.map(p=>escapeHtml(p.name))
+/* 騎士団 */
 
-.join("、");
-
-shared.forEach(p=>{
-
-p.sharedPartners=names;
-
-});
-
-}
+setupKnightInfo();
 
 /* 案山子 */
 
-const scare=players.filter(
+setupScarecrowInfo();
 
-p=>p.roleId==="scarecrow"
+/* 神様 */
 
-);
+setupGodInfo();
 
-if(scare.length>1){
+/* アンドロイド */
 
-const names=scare
-
-.map(p=>escapeHtml(p.name))
-
-.join("、");
-
-scare.forEach(p=>{
-
-p.sharedPartners=names;
-
-});
-
-}
+setupAndroid();
 
 currentPlayer=0;
 
@@ -1744,17 +1968,189 @@ showPlayer();
 
 /* ==================================================
 
-役職確認
+   共有者・特殊情報
+
+================================================== */
+
+function setupSharedInfo(){
+
+const members=players.filter(
+
+p=>p.roleId==="shared"
+
+);
+
+members.forEach(p=>{
+
+p.sharedPartners=
+
+members
+
+.filter(x=>x.id!==p.id)
+
+.map(x=>x.name);
+
+});
+
+}
+
+function setupBetraySharedInfo(){
+
+const members=players.filter(
+
+p=>p.roleId==="betrayShared"
+
+);
+
+members.forEach(p=>{
+
+p.betraySharedPartners=
+
+members
+
+.filter(x=>x.id!==p.id)
+
+.map(x=>x.name);
+
+});
+
+}
+
+function setupInformantInfo(){
+
+const wolves=players.filter(p=>isWolf(p));
+
+players
+
+.filter(p=>p.roleId==="informant")
+
+.forEach(p=>{
+
+p.informantWolves=
+
+wolves.map(x=>x.name);
+
+});
+
+}
+
+function setupKnightInfo(){
+
+const members=players.filter(
+
+p=>p.roleId==="knights"
+
+);
+
+members.forEach(p=>{
+
+p.knightPartners=
+
+members
+
+.filter(x=>x.id!==p.id)
+
+.map(x=>x.name);
+
+});
+
+}
+
+function setupScarecrowInfo(){
+
+const members=players.filter(
+
+p=>p.roleId==="scarecrow"
+
+);
+
+members.forEach(p=>{
+
+p.scarecrowPartners=
+
+members
+
+.filter(x=>x.id!==p.id)
+
+.map(x=>x.name);
+
+});
+
+}
+
+function setupGodInfo(){
+
+const gods=players.filter(
+
+p=>p.roleId==="god"
+
+);
+
+gods.forEach(g=>{
+
+g.allRoles=players.map(
+
+p=>`${p.name}：${getRoleName(p.roleId)}`
+
+);
+
+});
+
+}
+
+/* ==================================================
+
+   アンドロイド
+
+================================================== */
+
+function setupAndroid(){
+
+const androids=players.filter(
+
+p=>p.roleId==="android"
+
+);
+
+androids.forEach(android=>{
+
+const targets=players.filter(
+
+p=>p.id!==android.id
+
+);
+
+if(targets.length){
+
+const target=
+
+targets[
+
+Math.floor(Math.random()*targets.length)
+
+];
+
+android.copiedRole=target.roleId;
+
+}
+
+});
+
+}
+
+/* ==================================================
+
+   プレイヤー表示
 
 ================================================== */
 
 function showPlayer(){
 
-const p=players[currentPlayer];
+const player=players[currentPlayer];
 
 $("playerTitle").textContent=
 
-`${p.name} さん`;
+`${player.name} さん`;
 
 $("roleArea").textContent="？？？";
 
@@ -1764,41 +2160,63 @@ $("info").textContent=
 
 "役職を見るボタンを押してください。";
 
-$("mainButton").style.display="inline-block";
+$("mainButton").textContent=
 
-$("mainButton").textContent="役職を見る";
+"役職を見る";
 
 $("mainButton").onclick=showRole;
 
 }
 
+/* ==================================================
+
+   役職確認
+
+================================================== */
+
 function showRole(){
 
-const p=players[currentPlayer];
+const player=players[currentPlayer];
 
 $("roleArea").textContent=
 
-getRoleName(p.roleId);
+getRoleName(player.roleId);
 
 let extra="";
 
-if(p.lover){
+/* 恋人 */
+
+if(player.lover){
 
 extra+=`
 
-<div class="lover">❤️ 恋人</div>
+<div class="lover">
 
-<div>恋人：${escapeHtml(p.loverPartner)}</div>
+❤️ 恋人
+
+</div>
+
+<div class="lover-partner">
+
+恋人：${escapeHtml(player.loverPartner)}
+
+</div>
 
 `;
 
 }
 
-if(isWolf(p)){
+/* 人狼仲間 */
+
+if(isWolf(player)){
 
 const wolves=players.filter(
 
-x=>x.id!==p.id && isWolf(x)
+p=>
+
+p.id!==player.id &&
+
+isWolf(p)
 
 );
 
@@ -1806,11 +2224,19 @@ if(wolves.length){
 
 extra+=`
 
-<div class="wolf-info">🐺 人狼仲間</div>
+<div class="wolf-info">
 
-<div>
+🐺 人狼仲間
 
-${wolves.map(x=>escapeHtml(x.name)).join("<br>")}
+</div>
+
+<div class="lover-partner">
+
+${wolves
+
+.map(p=>escapeHtml(p.name))
+
+.join("<br>")}
 
 </div>
 
@@ -1822,21 +2248,23 @@ ${wolves.map(x=>escapeHtml(x.name)).join("<br>")}
 
 /* 内通者 */
 
-if(p.roleId==="informant"){
-
-const wolves=players.filter(x=>isWolf(x));
-
-if(wolves.length){
+if(player.roleId==="informant"){
 
 extra+=`
 
-<div class="special">
+<div class="wolf-info">
 
-👁️ あなたが知っている人狼
+👁️ 知っている人狼
 
-<br>
+</div>
 
-${wolves.map(x=>escapeHtml(x.name)).join("、")}
+<div class="lover-partner">
+
+${player.informantWolves
+
+.map(n=>escapeHtml(n))
+
+.join("<br>")}
 
 </div>
 
@@ -1844,25 +2272,37 @@ ${wolves.map(x=>escapeHtml(x.name)).join("、")}
 
 }
 
-}
-
 /* 裏切りの共有者 */
 
-if(p.roleId==="betrayShared" && p.sharedPartners){
+if(player.roleId==="betrayShared"){
 
 extra+=`
 
-<div class="special">
+<div class="wolf-info">
 
 🤝 裏切りの共有者
 
-<br>
+</div>
 
-お互いの名前：
+<div class="lover-partner">
 
-<br>
+仲間：
 
-${p.sharedPartners}
+${player.betraySharedPartners
+
+.length
+
+?
+
+player.betraySharedPartners
+
+.map(n=>escapeHtml(n))
+
+.join("、")
+
+:
+
+"なし"}
 
 </div>
 
@@ -1872,17 +2312,69 @@ ${p.sharedPartners}
 
 /* 共有者 */
 
-if(p.roleId==="shared" && p.sharedPartners){
+if(player.roleId==="shared"){
 
 extra+=`
 
-<div class="special">
+<div class="wolf-info">
 
 🤝 共有者
 
-<br>
+</div>
 
-${p.sharedPartners}
+<div class="lover-partner">
+
+仲間：
+
+${player.sharedPartners.length
+
+?
+
+player.sharedPartners
+
+.map(n=>escapeHtml(n))
+
+.join("、")
+
+:
+
+"なし"}
+
+</div>
+
+`;
+
+}
+
+/* 騎士団 */
+
+if(player.roleId==="knights"){
+
+extra+=`
+
+<div class="wolf-info">
+
+🛡️ 騎士団
+
+</div>
+
+<div class="lover-partner">
+
+仲間：
+
+${player.knightPartners.length
+
+?
+
+player.knightPartners
+
+.map(n=>escapeHtml(n))
+
+.join("、")
+
+:
+
+"なし"}
 
 </div>
 
@@ -1892,17 +2384,33 @@ ${p.sharedPartners}
 
 /* 案山子 */
 
-if(p.roleId==="scarecrow" && p.sharedPartners){
+if(player.roleId==="scarecrow"){
 
 extra+=`
 
-<div class="special">
+<div class="wolf-info">
 
-🌾 案山子仲間
+🌾 案山子
 
-<br>
+</div>
 
-${p.sharedPartners}
+<div class="lover-partner">
+
+仲間：
+
+${player.scarecrowPartners.length
+
+?
+
+player.scarecrowPartners
+
+.map(n=>escapeHtml(n))
+
+.join("、")
+
+:
+
+"なし"}
 
 </div>
 
@@ -1912,21 +2420,23 @@ ${p.sharedPartners}
 
 /* 神様 */
 
-if(p.roleId==="god"){
+if(player.roleId==="god"){
 
 extra+=`
 
-<div class="special">
+<div class="wolf-info">
 
-🙏 神様は全員の役職を知っています。
+🙏 神様
 
-<hr>
+</div>
 
-${players.map(x=>
+<div class="lover-partner">
 
-`${escapeHtml(x.name)}：${getRoleName(x.roleId)}`
+${player.allRoles
 
-).join("<br>")}
+.map(n=>escapeHtml(n))
+
+.join("<br>")}
 
 </div>
 
@@ -1936,17 +2446,19 @@ ${players.map(x=>
 
 /* アンドロイド */
 
-if(p.roleId==="android"){
+if(player.roleId==="android"){
 
 extra+=`
 
-<div class="special">
+<div class="wolf-info">
 
-🤖 アンドロイド
+🤖 コピーした役職
 
-<br>
+</div>
 
-妖狐・神様・案山子・恋人のいずれかをコピーできます。
+<div class="lover-partner">
+
+${getRoleName(player.copiedRole)}
 
 </div>
 
@@ -1958,23 +2470,23 @@ $("loverArea").innerHTML=extra;
 
 $("info").textContent=
 
-getRoleDescription(p.roleId);
+getRoleDescription(player.roleId);
 
-$("mainButton").textContent="次の人";
+$("mainButton").textContent=
 
-$("mainButton").onclick=nextPlayer;
+"次の人";
 
-/* 預言者はこの場で1回だけ占う */
+$("mainButton").onclick=
 
-if(p.roleId==="seer"){
-
-$("mainButton").textContent="🔮 初日の占いへ";
-
-$("mainButton").onclick=initialSeerNow;
+nextPlayer;
 
 }
 
-}
+/* ==================================================
+
+   次のプレイヤー
+
+================================================== */
 
 function nextPlayer(){
 
@@ -1984,7 +2496,7 @@ if(currentPlayer>=players.length){
 
 $("game").classList.add("hidden");
 
-startGameIntro();
+prepareInitialNight();
 
 return;
 
@@ -1996,7 +2508,7 @@ showPlayer();
 
 /* ==================================================
 
-役職説明
+   役職説明
 
 ================================================== */
 
@@ -2004,1179 +2516,151 @@ function getRoleDescription(id){
 
 const d={
 
-werewolf:"🐺 毎夜1人を襲撃します。人狼仲間を知っています。",
+werewolf:
 
-wolfChild:"👶 人狼と共に行動します。昼に追放された夜は人狼が2回襲撃できます。",
+"🐺 毎夜、人狼側で襲撃先を決めます。",
 
-loneWolf:"🐺 人狼として行動します。最後に自分以外の人狼が全滅した状態で人狼陣営が勝利すると単独勝利です。",
+wolfChild:
 
-betrayer:"😈 人狼陣営の裏切り者です。",
+"👶 人狼と共に行動します。昼に追放された場合、その夜は人狼側が2回襲撃できます。",
 
-betrayShared:"🤝 裏切りの共有者です。仲間を知っています。",
+loneWolf:
 
-informant:"👁️ 人狼が誰かを知っている裏切り者です。",
+"🐺 人狼側として行動します。自分以外の人狼が全ていなくなった状態で人狼陣営が勝利すると単独勝利です。",
 
-betrayAttacker:"⚔️ 毎夜1人を襲撃します。",
+betrayer:
 
-spy:"🕵️ 毎夜1人を選び、市民陣営の役職ならその能力を1回防ぎます。",
+"😈 人狼陣営の裏切り者です。",
 
-villager:"👤 特別な能力はありません。",
+betrayShared:
 
-seer:"🔮 毎夜1人を占います。妖狐は人間と判定します。",
+"🤝 裏切り者同士を知っています。",
 
-bodyguard:"🛡️ 毎夜1人を守ります。自分も守れます。罠の影響を受けません。",
+informant:
 
-medium:"👻 前日に追放された人の陣営を確認します。",
+"👁️ 人狼が誰かを知っている裏切り者です。",
 
-hunter:"🔫 死亡時に1人を道連れにできます。死亡時はハンターであることを公開します。",
+betrayAttacker:
 
-shared:"🤝 共有者同士を知っています。",
+"⚔️ 毎夜、1人を襲撃します。",
 
-dictator:"👑 1回だけ昼の議論を終了し、指定した人を強制追放できます。",
+spy:
 
-tough:"💪 襲撃されてもその夜は死亡せず、翌日の議論に参加できます。",
+"🕵️ 毎夜1人を選び、その人が市民陣営の役職なら、その役職の行動を防止します。1役職につき1回までです。",
 
-counselor:"🩺 裏切り者系を改心させ、ただの市民にします。",
+villager:
 
-magician:"🎩 1回だけ人狼系の襲撃先を変更できます。",
+"👤 特別な能力はありません。",
 
-trapper:"🪤 毎夜1人に罠を仕掛けます。人狼が襲撃すると人狼側が死亡します。",
+seer:
 
-knights:"🛡️ 騎士団です。仲間を知っています。",
+"🔮 夜に1人を占います。妖狐は人間と出ますが、占われた妖狐は死亡します。",
 
-shadow:"🪞 1回だけ議論を強制終了できます。使用すると自分自身が追放されます。",
+bodyguard:
 
-king:"👑 通常投票で自分が選んだ人への票を2票として扱います。",
+"🛡️ 夜に1人を守ります。自分を守ることもできます。罠の影響を受けません。",
 
-cursed:"🧟 襲撃されてもその夜は死亡せず、翌夜に人狼になります。",
+medium:
 
-fox:"🦊 人狼の襲撃では死亡しません。占われると死亡します。占い結果は人間です。",
+"👻 前日に追放された人が人狼かどうか確認できます。",
 
-god:"🙏 単独陣営です。全員の役職を知り、自分が最後まで生き残れば勝利です。",
+hunter:
 
-lover:"❤️ 恋人です。2人とも最後まで生き残れば単独勝利です。",
+"🔫 死亡時に1人を道連れにできます。道連れ対象を決める時だけ役職を公開します。",
 
-android:"🤖 妖狐・神様・案山子・恋人のいずれかをコピーします。",
+shared:
 
-scarecrow:"🌾 案山子全員が追放・襲撃されると単独勝利です。占い・霊能結果は人狼です。"
+"🤝 共有者同士がお互いを知っています。",
+
+dictator:
+
+"👑 ゲーム中1回、議論を終了し、自分が指定した人を強制的に追放できます。",
+
+tough:
+
+"💪 人狼の襲撃を1度だけ耐えます。",
+
+counselor:
+
+"🩺 裏切り者系を改心させ、ただの市民にします。",
+
+magician:
+
+"🎩 人狼側の襲撃先だけを変更できます。",
+
+trapper:
+
+"🪤 夜に1人へ罠を仕掛けます。罠にかかった人を人狼が襲撃すると、人狼側が死亡します。",
+
+knights:
+
+"🛡️ 騎士団で守ります。",
+
+shadow:
+
+"🪞 1回だけ議論を強制終了できます。影武者自身が追放されます。",
+
+king:
+
+"👑 通常投票で自分の投票を2票として扱います。",
+
+cursed:
+
+"🧟 人狼に襲撃された夜は死亡せず、翌夜に人狼になります。",
+
+fox:
+
+"🦊 人狼の襲撃では死亡しません。占われると死亡します。占い結果は人間です。",
+
+god:
+
+"🙏 全員の役職を知っています。最後まで生き残れば単独勝利です。",
+
+lover:
+
+"❤️ 恋人同士はお互いを知っています。どちらかが死亡するともう1人も後追いします。最後まで2人とも生き残れば単独勝利です。",
+
+android:
+
+"🤖 ゲーム開始時にランダムな1人の役職をコピーします。",
+
+scarecrow:
+
+"🌾 案山子同士を知っています。全ての案山子が追放・襲撃されると単独勝利です。"
 
 };
 
-return d[id]||"役職の説明はありません。";
+return d[id]||
+
+"役職の説明はありません。";
 
 }
 
 /* ==================================================
 
-初日預言者
+   初日の夜へ
 
 ================================================== */
 
-function initialSeerNow(){
-
-const p=players[currentPlayer];
-
-const targets=getTargets(p.id);
-
-$("info").textContent=
-
-"🔮 初日に占う相手を1人選んでください。";
-
-$("mainButton").style.display="none";
-
-let html="";
-
-targets.forEach(t=>{
-
-html+=`
-
-<button
-
-class="choice"
-
-onclick="initialSeerResult(${t.id})"
-
->
-
-${escapeHtml(t.name)}
-
-</button>
-
-`;
-
-});
-
-$("info").insertAdjacentHTML(
-
-"afterend",
-
-`<div id="initialTargets">${html}</div>`
-
-);
-
-}
-
-function initialSeerResult(id){
-
-const target=players.find(p=>p.id===id);
-
-const result=
-
-isWolf(target)?"人狼":
-
-"人間";
-
-/* 妖狐は人間 */
-
-$("initialTargets").innerHTML=`
-
-<div class="result">
-
-🔮 占い結果
-
-</div>
-
-<p>${escapeHtml(target.name)}さんは</p>
-
-<div class="result">
-
-「${result}」
-
-</div>
-
-<button onclick="finishInitialSeer(${target.id})">
-
-結果を確認して次へ
-
-</button>
-
-`;
-
-}
-
-function finishInitialSeer(targetId){
-
-const target=players.find(p=>p.id===targetId);
-
-/* 妖狐死亡 */
-
-if(target.roleId==="fox"){
-
-target.alive=false;
-
-target.lastDeathReason="seer";
-
-}
-
-currentPlayer++;
-
-if(currentPlayer>=players.length){
-
-$("game").classList.add("hidden");
-
-startGameIntro();
-
-}else{
-
-$("game").classList.remove("hidden");
-
-showPlayer();
-
-}
-
-}
-
-/* ==================================================
-
-ゲーム開始アナウンス
-
-================================================== */
-
-function startGameIntro(){
-
-$("initialNight").classList.remove("hidden");
-
-const dead=players.filter(
-
-p=>!p.alive
-
-);
-
-if(dead.length){
-
-const names=dead
-
-.map(p=>p.name)
-
-.join("、");
-
-gmBox(
-
-`ゲームを開始します。<br><br>
-
-残念ながら ${escapeHtml(names)} さんが死亡しています。<br>
-
-理由は伏せます。`
-
-);
-
-$("initialNightContent").innerHTML+=`
-
-<br>
-
-<button onclick="beginFirstDay()">
-
-☀️ 昼へ
-
-</button>
-
-`;
-
-}else{
-
-gmBox(
-
-`ゲームを開始します。<br><br>
-
-全員、生存しています。`
-
-);
-
-$("initialNightContent").innerHTML+=`
-
-<br>
-
-<button onclick="beginFirstDay()">
-
-☀️ 昼へ
-
-</button>
-
-`;
-
-}
-
-}
-
-/* ==================================================
-
-昼
-
-================================================== */
-
-function beginFirstDay(){
-
-$("initialNight").classList.add("hidden");
+function prepareInitialNight(){
 
 day=1;
 
-showDay([]);
-
-}
-
-function showDay(newDeaths){
-
-$("day").classList.remove("hidden");
-
-lastDeaths=newDeaths||[];
-
-let html=`
-
-<h3>☀️ ${day}日目の昼</h3>
-
-`;
-
-if(lastDeaths.length){
-
-html+=`
-
-<p class="gm-message">
-
-残念ながら ${lastDeaths.map(p=>
-
-escapeHtml(p.name)).join("、")}
-
-さんが亡くなってしまいました。
-
-</p>
-
-`;
-
-}
-
-html+=`
-
-<p>
-
-生存者：
-
-${alivePlayers().map(p=>
-
-escapeHtml(p.name)).join("、")}
-
-</p>
-
-`;
-
-$("dayInfo").innerHTML=html;
-
-setDiscussionTimer();
+startNight();
 
 }
 
 /* ==================================================
 
-タイマー
+   夜開始
 
 ================================================== */
-
-function setDiscussionTimer(){
-
-clearInterval(timerInterval);
-
-const minutes=
-
-Number($("discussionMinutes").value);
-
-discussionSeconds=minutes*60;
-
-renderTimer();
-
-}
-
-function renderTimer(){
-
-const m=Math.floor(discussionSeconds/60)
-
-.toString().padStart(2,"0");
-
-const s=(discussionSeconds%60)
-
-.toString().padStart(2,"0");
-
-$("timer").textContent=`${m}:${s}`;
-
-}
-
-function startTimer(){
-
-if(timerInterval)return;
-
-$("timer").classList.add("running");
-
-timerInterval=setInterval(()=>{
-
-if(discussionSeconds<=0){
-
-clearInterval(timerInterval);
-
-timerInterval=null;
-
-$("timer").classList.remove("running");
-
-speak("議論時間終了です。投票へ進んでください。");
-
-return;
-
-}
-
-discussionSeconds--;
-
-renderTimer();
-
-},1000);
-
-}
-
-function pauseTimer(){
-
-clearInterval(timerInterval);
-
-timerInterval=null;
-
-$("timer").classList.remove("running");
-
-}
-
-function resetTimer(){
-
-pauseTimer();
-
-setDiscussionTimer();
-
-}
-
-function endDiscussion(){
-
-pauseTimer();
-
-$("day").classList.add("hidden");
-
-startVoting();
-
-}
-
-/* ==================================================
-
-独裁者・影武者
-
-================================================== */
-
-function dictatorAction(){
-
-const d=players.find(
-
-p=>p.roleId==="dictator" && p.alive
-
-);
-
-if(!d)return;
-
-const targets=getTargets(d.id);
-
-let html=`
-
-<h3>👑 独裁者</h3>
-
-<p>強制的に追放する人を選んでください。</p>
-
-`;
-
-targets.forEach(t=>{
-
-html+=`
-
-<button
-
-class="choice"
-
-onclick="dictatorChoose(${t.id})"
-
->
-
-${escapeHtml(t.name)}
-
-</button>
-
-`;
-
-});
-
-$("voteSpecial").innerHTML=html;
-
-}
-
-function dictatorChoose(id){
-
-dictatorChoice=id;
-
-const target=players.find(p=>p.id===id);
-
-$("voteSpecial").innerHTML=`
-
-<div class="special">
-
-👑 ${escapeHtml(target.name)}さんを
-
-強制追放します。
-
-</div>
-
-`;
-
-}
-
-function shadowAction(){
-
-const s=players.find(
-
-p=>p.roleId==="shadow" && p.alive
-
-);
-
-if(!s)return;
-
-shadowActive=true;
-
-$("voteSpecial").innerHTML=`
-
-<div class="special">
-
-🪞 影武者が能力を使用します。
-
-<br>
-
-今回の投票で影武者自身が追放されます。
-
-</div>
-
-`;
-
-}
-
-/* ==================================================
-
-投票
-
-================================================== */
-
-function startVoting(){
-
-$("vote").classList.remove("hidden");
-
-voteData={};
-
-dictatorChoice=null;
-
-shadowActive=false;
-
-const d=players.find(
-
-p=>p.roleId==="dictator" && p.alive &&
-
-!p.abilitiesUsed.dictator
-
-);
-
-const s=players.find(
-
-p=>p.roleId==="shadow" && p.alive &&
-
-!p.abilitiesUsed.shadow
-
-);
-
-$("voteSpecial").innerHTML="";
-
-if(d){
-
-$("voteSpecial").innerHTML+=`
-
-<button onclick="dictatorAction()">
-
-👑 独裁者：能力を使う
-
-</button>
-
-`;
-
-}
-
-if(s){
-
-$("voteSpecial").innerHTML+=`
-
-<button onclick="shadowAction()">
-
-🪞 影武者：能力を使う
-
-</button>
-
-`;
-
-}
-
-const alive=alivePlayers();
-
-$("votePlayers").innerHTML="";
-
-alive.forEach(voter=>{
-
-const targets=alive.filter(
-
-t=>t.id!==voter.id
-
-);
-
-$("votePlayers").innerHTML+=`
-
-<div class="vote-player">
-
-<strong>
-
-🗳️ ${escapeHtml(voter.name)}さん
-
-</strong>
-
-<br>
-
-<select id="vote-${voter.id}">
-
-<option value="">
-
-投票先を選択
-
-</option>
-
-${targets.map(t=>`
-
-<option value="${t.id}">
-
-${escapeHtml(t.name)}
-
-</option>
-
-`).join("")}
-
-</select>
-
-</div>
-
-`;
-
-});
-
-}
-
-/* ==================================================
-
-投票集計
-
-================================================== */
-
-function finishVoting(){
-
-const alive=alivePlayers();
-
-/* 独裁者 */
-
-if(dictatorChoice!==null){
-
-const d=players.find(
-
-p=>p.roleId==="dictator" && p.alive
-
-);
-
-if(d)d.abilitiesUsed.dictator=true;
-
-const target=players.find(
-
-p=>p.id===dictatorChoice
-
-);
-
-eliminatePlayer(target,"vote");
-
-$("vote").classList.add("hidden");
-
-$("voteResult").classList.remove("hidden");
-
-$("voteResultText").innerHTML=`
-
-<div class="result">
-
-👑 独裁者により
-
-${escapeHtml(target.name)}さんが追放されました。
-
-</div>
-
-`;
-
-return;
-
-}
-
-/* 影武者 */
-
-if(shadowActive){
-
-const s=players.find(
-
-p=>p.roleId==="shadow" && p.alive
-
-);
-
-if(s){
-
-s.abilitiesUsed.shadow=true;
-
-eliminatePlayer(s,"vote");
-
-$("vote").classList.add("hidden");
-
-$("voteResult").classList.remove("hidden");
-
-$("voteResultText").innerHTML=`
-
-<div class="result">
-
-🪞 影武者の能力により
-
-影武者自身が追放されました。
-
-</div>
-
-`;
-
-return;
-
-}
-
-}
-
-/* 通常投票 */
-
-const counts={};
-
-alive.forEach(p=>counts[p.id]=0);
-
-for(const voter of alive){
-
-const select=$(`vote-${voter.id}`);
-
-if(!select.value){
-
-alert(
-
-`${voter.name}さんの投票先を選択してください。`
-
-);
-
-select.focus();
-
-return;
-
-}
-
-let targetId=Number(select.value);
-
-let votes=1;
-
-/* 王様の2票 */
-
-if(voter.roleId==="king"){
-
-votes=2;
-
-}
-
-counts[targetId]+=votes;
-
-}
-
-let max=Math.max(...Object.values(counts));
-
-let top=Object.entries(counts)
-
-.filter(([id,n])=>n===max)
-
-.map(([id])=>Number(id));
-
-let text="<h3>🗳️ 投票結果</h3>";
-
-alive.forEach(p=>{
-
-text+=`
-
-<p>
-
-${escapeHtml(p.name)}：
-
-<strong>${counts[p.id]}票</strong>
-
-</p>
-
-`;
-
-});
-
-if(top.length>1){
-
-text+=`
-
-<hr>
-
-<div class="warning">
-
-⚠️ 同票のため、今回は追放なしです。
-
-</div>
-
-`;
-
-}else{
-
-const target=players.find(
-
-p=>p.id===top[0]
-
-);
-
-eliminatePlayer(target,"vote");
-
-text+=`
-
-<hr>
-
-<div class="result">
-
-⚖️ ${escapeHtml(target.name)}さんが追放されました。
-
-</div>
-
-`;
-
-}
-
-$("vote").classList.add("hidden");
-
-$("voteResult").classList.remove("hidden");
-
-$("voteResultText").innerHTML=text;
-
-}
-
-/* ==================================================
-
-死亡
-
-================================================== */
-
-function eliminatePlayer(p,reason){
-
-if(!p || !p.alive)return;
-
-p.alive=false;
-
-p.lastDeathReason=reason;
-
-/* 恋人後追い */
-
-if(p.lover){
-
-const partner=players.find(
-
-x=>x.name===p.loverPartner && x.alive
-
-);
-
-if(partner){
-
-partner.alive=false;
-
-partner.lastDeathReason="lover";
-
-}
-
-}
-
-/* ハンター */
-
-if(p.roleId==="hunter"){
-
-setTimeout(()=>{
-
-hunterAction(p);
-
-},300);
-
-}
-
-}
-
-function hunterAction(hunter){
-
-if(!$("voteResult").classList.contains("hidden")){
-
-$("voteResult").classList.add("hidden");
-
-}
-
-if($("night").classList.contains("hidden") &&
-
-$("day").classList.contains("hidden")){
-
-$("night").classList.remove("hidden");
-
-}
-
-$("nightTitle").textContent="🔫 ハンター";
-
-$("nightInfo").innerHTML=`
-
-<div class="special">
-
-🔫 ${escapeHtml(hunter.name)}さんは
-
-ハンターでした。
-
-<br>
-
-道連れにする人を選んでください。
-
-</div>
-
-`;
-
-showTargetButtons(
-
-"🔫 道連れにする相手",
-
-alivePlayers().filter(p=>p.id!==hunter.id),
-
-"setHunter"
-
-);
-
-}
-
-function setHunter(id){
-
-const target=players.find(p=>p.id===Number(id));
-
-eliminatePlayer(target,"hunter");
-
-$("nightAction").innerHTML=`
-
-<div class="result">
-
-🔫 ${escapeHtml(target.name)}さんを
-
-道連れにしました。
-
-</div>
-
-<button onclick="finishHunter()">
-
-次へ
-
-</button>
-
-`;
-
-}
-
-function finishHunter(){
-
-$("night").classList.add("hidden");
-
-if(checkWin())return;
-
-if(day===1){
-
-showDay([]);
-
-}else{
-
-showDay([]);
-
-}
-
-}
-
-/* ==================================================
-
-投票後
-
-================================================== */
-
-function afterVote(){
-
-$("voteResult").classList.add("hidden");
-
-if(checkWin())return;
-
-$("gameReady").classList.remove("hidden");
-
-}
-
-/* ==================================================
-
-勝利判定
-
-================================================== */
-
-function checkWin(){
-
-const alive=alivePlayers();
-
-const wolves=alive.filter(p=>isWolf(p));
-
-/* 神様 */
-
-const god=alive.find(
-
-p=>p.roleId==="god"
-
-);
-
-if(god && alive.length===1){
-
-showWinner("🙏 神様の単独勝利！");
-
-return true;
-
-}
-
-/* 恋人 */
-
-const lovers=alive.filter(p=>p.lover);
-
-if(lovers.length===2 &&
-
-lovers[0].loverPartner===lovers[1].name &&
-
-alive.length===2){
-
-showWinner("❤️ 恋人の単独勝利！");
-
-return true;
-
-}
-
-/* 案山子 */
-
-const scare=players.filter(
-
-p=>p.roleId==="scarecrow"
-
-);
-
-if(
-
-scare.length>0 &&
-
-scare.every(p=>!p.alive)
-
-){
-
-showWinner("🌾 案山子の単独勝利！");
-
-return true;
-
-}
-
-/* 一匹狼 */
-
-const lone=alive.filter(
-
-p=>p.roleId==="loneWolf"
-
-);
-
-if(
-
-lone.length===1 &&
-
-wolves.length===1 &&
-
-alive.length===1
-
-){
-
-showWinner("🐺 一匹狼の単独勝利！");
-
-return true;
-
-}
-
-/* 人狼全滅 */
-
-if(wolves.length===0){
-
-showWinner("🎉 市民陣営の勝利！");
-
-return true;
-
-}
-
-/* 一匹狼以外の人狼勝利 */
-
-const nonWolf=alive.filter(
-
-p=>!isWolf(p)
-
-);
-
-if(wolves.length>=nonWolf.length){
-
-if(lone.length===1 && wolves.length===1){
-
-showWinner("🐺 一匹狼の単独勝利！");
-
-}else{
-
-showWinner("🐺 人狼陣営の勝利！");
-
-}
-
-return true;
-
-}
-
-return false;
-
-}
-
-/* ==================================================
-
-勝利表示
-
-================================================== */
-
-function showWinner(text){
-
-clearInterval(timerInterval);
-
-$("day").classList.add("hidden");
-
-$("night").classList.add("hidden");
-
-$("gameReady").classList.add("hidden");
-
-$("vote").classList.add("hidden");
-
-$("voteResult").classList.add("hidden");
-
-$("gameOver").classList.remove("hidden");
-
-$("winner").textContent=text;
-
-speak(text);
-
-}
-
-/* ==================================================
-
-夜
-
-================================================== */
-
-const NIGHT_STEPS=[
-
-"🧟 呪われた者",
-
-"🕵️ スパイ",
-
-"🤖 アンドロイド",
-
-"🪤 罠師",
-
-"🛡️ ボディーガード",
-
-"🛡️ 騎士団",
-
-"🐺 人狼／人狼の子ども／一匹狼",
-
-"⚔️ 裏切りの襲撃者",
-
-"🩺 カウンセラー",
-
-"😈 裏切り者系",
-
-"🎩 奇術師",
-
-"🔮 預言者",
-
-"👻 霊媒師"
-
-];
 
 function startNight(){
 
 $("gameReady").classList.add("hidden");
+
+$("day").classList.add("hidden");
 
 $("night").classList.remove("hidden");
 
@@ -3196,21 +2680,73 @@ bodyguard:null,
 
 knights:null,
 
-wolfAttack:[],
+wolfAttacks:[],
 
 betrayAttack:null,
 
-changedTarget:null,
-
 counselor:null,
 
-childBonus:false
+changedTarget:null,
+
+seerTarget:null,
+
+medium:null
 
 };
 
 runNightStep();
 
 }
+
+/* ==================================================
+
+   夜13段階
+
+================================================== */
+
+const NIGHT_STEPS=[
+
+"🧟 呪われた者",
+
+"🕵️ スパイ",
+
+"🤖 アンドロイド",
+
+"🪤 罠師",
+
+"🛡️ ボディーガード",
+
+"🛡️ 騎士団",
+
+"🐺 人狼・人狼の子ども・一匹狼",
+
+"⚔️ 裏切りの襲撃者",
+
+"🩺 カウンセラー",
+
+"😈 裏切り者系",
+
+"🎩 奇術師",
+
+"🔮 預言者",
+
+"👻 霊媒師"
+
+];
+
+function nextNight(){
+
+nightStep++;
+
+runNightStep();
+
+}
+
+/* ==================================================
+
+   夜ステップ
+
+================================================== */
 
 function runNightStep(){
 
@@ -3260,71 +2796,77 @@ handlers[nightStep]();
 
 }
 
-function nextNight(){
-
-nightStep++;
-
-runNightStep();
-
-}
-
 /* ==================================================
 
-1 呪われた者
+   夜① 呪われた者
 
 ================================================== */
 
 function nightCursed(){
 
-const p=players.find(
+const cursed=players.find(
 
-p=>p.roleId==="cursed" && p.alive
+p=>
+
+p.roleId==="cursed" &&
+
+p.alive
 
 );
 
-if(p && p.cursedAwakened){
+if(cursed && cursed.cursedAwakened){
 
-p.roleId="werewolf";
+cursed.roleId="werewolf";
 
-p.cursedAwakened=false;
-
-}
-
-if(!p){
-
-nextNight();
-
-return;
+cursed.cursedAwakened=false;
 
 }
 
-gm("呪われた者の方、目を開けてください。");
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🧟 呪われた者の方、目を開けてください。
+
+</div>
+
+`;
 
 $("nightAction").innerHTML=`
 
-<p>夜の状態を確認してください。</p>
+<p>
 
-<button onclick="nextNight()">次へ</button>
+確認が終わったら次へ進んでください。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
+
+speak("呪われた者の方、目を開けてください。確認してください。目を閉じてください。");
 
 }
 
 /* ==================================================
 
-2 スパイ
+   夜② スパイ
 
 ================================================== */
 
 function nightSpy(){
 
-const spy=players.find(
+const spies=players.filter(
 
 p=>p.roleId==="spy" && p.alive
 
 );
 
-if(!spy){
+if(!spies.length){
 
 nextNight();
 
@@ -3332,27 +2874,35 @@ return;
 
 }
 
-gm("スパイの方、目を開けてください。");
+const spy=spies[0];
 
-const targets=alivePlayers().filter(
+$("nightInfo").innerHTML=`
 
-p=>p.id!==spy.id
+<div class="gm-message">
 
-);
+🕵️ スパイの方、目を開けてください。<br>
+
+能力を使う相手を選んでください。
+
+</div>
+
+`;
 
 showTargetButtons(
 
-"🕵️ 能力を防ぐ相手を選択",
+"🕵️ 能力を妨害する相手",
 
-targets,
+getTargets(spy.id),
 
-"spyChoose"
+"spyTarget"
 
 );
 
+speak("スパイの方、目を開けてください。能力を使う相手を選んでください。");
+
 }
 
-function spyChoose(id){
+function spyTarget(id){
 
 const spy=players.find(
 
@@ -3366,187 +2916,69 @@ p=>p.id===Number(id)
 
 );
 
-if(!spy||!target){
-
-nextNight();
-
-return;
-
-}
+if(spy && target){
 
 const role=target.roleId;
 
-if(
+if([
 
-["villager","wolfChild","loneWolf","werewolf",
+"seer",
 
-"betrayer","betrayShared","informant",
+"bodyguard",
 
-"betrayAttacker","lover","god"].includes(role)
+"medium",
 
-){
+"trapper",
+
+"counselor",
+
+"magician",
+
+"dictator",
+
+"shadow"
+
+].includes(role)){
+
+target.spyBlockedTonight=true;
+
+}
+
+}
 
 $("nightAction").innerHTML=`
 
 <p>
 
-対象は市民陣営の能力役職ではありません。
+🕵️ 能力妨害を設定しました。
 
 </p>
 
-<button onclick="nextNight()">次へ</button>
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
-
-}else{
-
-if(spy.spyUsed[role]){
-
-$("nightAction").innerHTML=`
-
-<p>その役職の能力はすでに防がれています。</p>
-
-<button onclick="nextNight()">次へ</button>
-
-`;
-
-}else{
-
-spy.spyUsed[role]=true;
-
-target.abilitiesUsed.blocked=true;
-
-$("nightAction").innerHTML=`
-
-<p>
-
-🕵️ ${escapeHtml(target.name)}さんの
-
-能力を今回防止しました。
-
-</p>
-
-<button onclick="nextNight()">次へ</button>
-
-`;
-
-}
-
-}
 
 }
 
 /* ==================================================
 
-3 アンドロイド
+   夜③ アンドロイド
 
 ================================================== */
 
 function nightAndroid(){
 
-const a=players.find(
-
-p=>p.roleId==="android" &&
-
-p.alive &&
-
-!p.androidCopy
-
-);
-
-if(!a){
-
-nextNight();
-
-return;
-
-}
-
-gm("アンドロイドの方、目を開けてください。");
-
-const targets=alivePlayers().filter(
-
-p=>p.id!==a.id &&
-
-["fox","god","scarecrow","lover"].includes(p.roleId)
-
-);
-
-if(!targets.length){
-
-$("nightAction").innerHTML=`
-
-<p>コピーできる対象がいません。</p>
-
-<button onclick="nextNight()">次へ</button>
-
-`;
-
-return;
-
-}
-
-showTargetButtons(
-
-"🤖 コピーする相手を選択",
-
-targets,
-
-"androidChoose"
-
-);
-
-}
-
-function androidChoose(id){
-
-const a=players.find(
+const androids=players.filter(
 
 p=>p.roleId==="android" && p.alive
 
 );
 
-const t=players.find(
-
-p=>p.id===Number(id)
-
-);
-
-if(a&&t){
-
-a.androidCopy=t.roleId;
-
-}
-
-$("nightAction").innerHTML=`
-
-<p>
-
-🤖 コピーしました。
-
-</p>
-
-<button onclick="nextNight()">次へ</button>
-
-`;
-
-}
-
-/* ==================================================
-
-4 罠師
-
-================================================== */
-
-function nightTrapper(){
-
-const t=players.find(
-
-p=>p.roleId==="trapper" && p.alive
-
-);
-
-if(!t){
+if(!androids.length){
 
 nextNight();
 
@@ -3554,17 +2986,99 @@ return;
 
 }
 
-gm("罠師の方、目を開けてください。");
+const android=androids[0];
+
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🤖 アンドロイドの方、目を開けてください。
+
+</div>
+
+`;
+
+$("nightAction").innerHTML=`
+
+<p>
+
+コピーした役職：
+
+<strong>${getRoleName(android.copiedRole)}</strong>
+
+</p>
+
+<p class="small">
+
+コピーした役職の能力は、以後アンドロイドが使用します。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
+
+`;
+
+speak("アンドロイドの方、目を開けてください。");
+
+}
+
+/* ==================================================
+
+   夜④ 罠師
+
+================================================== */
+
+function nightTrapper(){
+
+const trapper=players.find(
+
+p=>p.roleId==="trapper" && p.alive
+
+);
+
+if(!trapper){
+
+nextNight();
+
+return;
+
+}
+
+if(trapper.spyBlockedTonight){
+
+nextNight();
+
+return;
+
+}
+
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🪤 罠師の方、目を開けてください。<br>
+
+罠を仕掛ける相手を選んでください。
+
+</div>
+
+`;
 
 showTargetButtons(
 
 "🪤 罠を仕掛ける相手",
 
-getTargets(t.id),
+getTargets(trapper.id),
 
 "setTrap"
 
 );
+
+speak("罠師の方、目を開けてください。罠を仕掛ける相手を選んでください。");
 
 }
 
@@ -3574,9 +3088,17 @@ nightData.trap=Number(id);
 
 $("nightAction").innerHTML=`
 
-<p>🪤 罠を仕掛けました。</p>
+<p>
 
-<button onclick="nextNight()">次へ</button>
+🪤 罠を仕掛けました。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
 
@@ -3584,19 +3106,19 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-5 ボディーガード
+   夜⑤ ボディーガード
 
 ================================================== */
 
 function nightBodyguard(){
 
-const b=players.find(
+const guard=players.find(
 
 p=>p.roleId==="bodyguard" && p.alive
 
 );
 
-if(!b){
+if(!guard){
 
 nextNight();
 
@@ -3604,7 +3126,25 @@ return;
 
 }
 
-gm("ボディーガードの方、目を開けてください。");
+if(guard.spyBlockedTonight){
+
+nextNight();
+
+return;
+
+}
+
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🛡️ ボディーガードの方、目を開けてください。<br>
+
+守る相手を選んでください。
+
+</div>
+
+`;
 
 showTargetButtons(
 
@@ -3616,6 +3156,8 @@ alivePlayers(),
 
 );
 
+speak("ボディーガードの方、目を開けてください。守る相手を選んでください。");
+
 }
 
 function setBodyguard(id){
@@ -3624,9 +3166,17 @@ nightData.bodyguard=Number(id);
 
 $("nightAction").innerHTML=`
 
-<p>🛡️ 守る相手を決めました。</p>
+<p>
 
-<button onclick="nextNight()">次へ</button>
+🛡️ 守る相手を決定しました。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
 
@@ -3634,19 +3184,19 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-6 騎士団
+   夜⑥ 騎士団
 
 ================================================== */
 
 function nightKnights(){
 
-const k=players.find(
+const knights=players.find(
 
 p=>p.roleId==="knights" && p.alive
 
 );
 
-if(!k){
+if(!knights){
 
 nextNight();
 
@@ -3654,17 +3204,29 @@ return;
 
 }
 
-gm("騎士団の方、目を開けてください。");
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🛡️ 騎士団の方、目を開けてください。<br>
+
+守る相手を選んでください。
+
+</div>
+
+`;
 
 showTargetButtons(
 
-"🛡️ 守る相手",
+"🛡️ 騎士団が守る相手",
 
 alivePlayers(),
 
 "setKnights"
 
 );
+
+speak("騎士団の方、目を開けてください。守る相手を選んでください。");
 
 }
 
@@ -3674,9 +3236,17 @@ nightData.knights=Number(id);
 
 $("nightAction").innerHTML=`
 
-<p>🛡️ 騎士団の守る相手を決めました。</p>
+<p>
 
-<button onclick="nextNight()">次へ</button>
+🛡️ 守る相手を決定しました。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
 
@@ -3684,7 +3254,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-7 人狼
+   夜⑦ 人狼
 
 ================================================== */
 
@@ -3692,7 +3262,7 @@ function nightWolves(){
 
 const wolves=players.filter(
 
-p=>isWolf(p)&&p.alive
+p=>isWolf(p) && p.alive
 
 );
 
@@ -3704,57 +3274,51 @@ return;
 
 }
 
-gm(
+$("nightInfo").innerHTML=`
 
-"人狼の方、目を開けてください。"
+<div class="gm-message">
 
-);
+🐺 人狼の方、目を開けてください。<br>
 
-$("nightAction").innerHTML=`
+人狼の皆さんで襲撃先を相談してください。
 
-<p>🐺 夜の行動を行ってください。</p>
+</div>
 
 `;
+
+const targets=alivePlayers();
 
 let html=`
 
 <h3>🐺 襲撃する相手</h3>
 
+<select id="wolfTargetSelect">
+
+<option value="">
+
+襲撃先を選択
+
+</option>
+
+${targets.map(p=>`
+
+<option value="${p.id}">
+
+${escapeHtml(p.name)}
+
+</option>
+
+`).join("")}
+
+</select>
+
 `;
-
-alivePlayers().forEach(t=>{
-
-html+=`
-
-<button
-
-class="choice"
-
-onclick="setWolfAttack(${t.id})"
-
->
-
-${escapeHtml(t.name)}
-
-</button>
-
-`;
-
-});
-
-$("nightAction").innerHTML+=html;
-
-}
-
-function setWolfAttack(id){
-
-nightData.wolfAttack=[Number(id)];
-
-/* 人狼の子どもが昼に追放された場合 */
 
 const child=players.find(
 
-p=>p.roleId==="wolfChild" &&
+p=>
+
+p.roleId==="wolfChild" &&
 
 !p.alive &&
 
@@ -3764,17 +3328,119 @@ p.lastDeathReason==="vote"
 
 if(child){
 
-nightData.wolfAttack.push(Number(id));
+html+=`
 
-nightData.childBonus=true;
+<p class="warning">
+
+👶 人狼の子どもが昼に追放されたため、
+
+今夜は2回襲撃できます。
+
+</p>
+
+<select id="wolfTargetSelect2">
+
+<option value="">
+
+2人目の襲撃先を選択
+
+</option>
+
+${targets.map(p=>`
+
+<option value="${p.id}">
+
+${escapeHtml(p.name)}
+
+</option>
+
+`).join("")}
+
+</select>
+
+`;
+
+}
+
+html+=`
+
+<br>
+
+<button onclick="setWolfAttack()">
+
+襲撃先を決定
+
+</button>
+
+`;
+
+$("nightAction").innerHTML=html;
+
+speak("人狼の方、目を開けてください。人狼の皆さんで襲撃先を相談してください。");
+
+}
+
+function setWolfAttack(){
+
+const first=$("wolfTargetSelect").value;
+
+if(!first){
+
+alert("襲撃先を選択してください。");
+
+return;
+
+}
+
+nightData.wolfAttacks=[
+
+Number(first)
+
+];
+
+const secondSelect=$("wolfTargetSelect2");
+
+if(secondSelect){
+
+const second=secondSelect.value;
+
+if(!second){
+
+alert("2人目の襲撃先を選択してください。");
+
+return;
+
+}
+
+if(second===first){
+
+alert("2人の襲撃先は別々にしてください。");
+
+return;
+
+}
+
+nightData.wolfAttacks.push(
+
+Number(second)
+
+);
 
 }
 
 $("nightAction").innerHTML=`
 
-<p>🐺 襲撃先を決めました。</p>
+<p>
 
-<button onclick="nextNight()">次へ</button>
+🐺 人狼の襲撃先を決定しました。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
 
@@ -3782,19 +3448,19 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-8 裏切りの襲撃者
+   夜⑧ 裏切りの襲撃者
 
 ================================================== */
 
 function nightBetrayAttacker(){
 
-const p=players.find(
+const attacker=players.find(
 
-p=>p.roleId==="betrayAttacker"&&p.alive
+p=>p.roleId==="betrayAttacker" && p.alive
 
 );
 
-if(!p){
+if(!attacker){
 
 nextNight();
 
@@ -3802,17 +3468,29 @@ return;
 
 }
 
-gm("裏切りの襲撃者の方、目を開けてください。");
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+⚔️ 裏切りの襲撃者の方、目を開けてください。<br>
+
+襲撃先を選んでください。
+
+</div>
+
+`;
 
 showTargetButtons(
 
 "⚔️ 襲撃する相手",
 
-getTargets(p.id),
+getTargets(attacker.id),
 
 "setBetrayAttack"
 
 );
+
+speak("裏切りの襲撃者の方、目を開けてください。襲撃先を選んでください。");
 
 }
 
@@ -3822,9 +3500,17 @@ nightData.betrayAttack=Number(id);
 
 $("nightAction").innerHTML=`
 
-<p>⚔️ 襲撃先を決めました。</p>
+<p>
 
-<button onclick="nextNight()">次へ</button>
+⚔️ 襲撃先を決定しました。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
 
@@ -3832,19 +3518,19 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-9 カウンセラー
+   夜⑨ カウンセラー
 
 ================================================== */
 
 function nightCounselor(){
 
-const c=players.find(
+const counselor=players.find(
 
-p=>p.roleId==="counselor"&&p.alive
+p=>p.roleId==="counselor" && p.alive
 
 );
 
-if(!c){
+if(!counselor){
 
 nextNight();
 
@@ -3852,41 +3538,67 @@ return;
 
 }
 
-gm("カウンセラーの方、目を開けてください。");
+if(counselor.spyBlockedTonight){
+
+nextNight();
+
+return;
+
+}
+
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🩺 カウンセラーの方、目を開けてください。<br>
+
+改心させる相手を選んでください。
+
+</div>
+
+`;
 
 showTargetButtons(
 
 "🩺 改心させる相手",
 
-getTargets(c.id),
+getTargets(counselor.id),
 
 "setCounselor"
 
 );
 
+speak("カウンセラーの方、目を開けてください。改心させる相手を選んでください。");
+
 }
 
 function setCounselor(id){
 
-const t=players.find(
+const target=players.find(
 
 p=>p.id===Number(id)
 
 );
 
-if(t&&isBetrayer(t)){
+if(target && isBetrayer(target)){
 
-t.roleId="villager";
-
-t.abilitiesUsed={};
+target.roleId="villager";
 
 }
 
 $("nightAction").innerHTML=`
 
-<p>🩺 カウンセラーの処理が完了しました。</p>
+<p>
 
-<button onclick="nextNight()">次へ</button>
+🩺 カウンセラーの処理が完了しました。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
 
@@ -3894,19 +3606,19 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-10 裏切り者系
+   夜⑩ 裏切り者系
 
 ================================================== */
 
 function nightBetrayer(){
 
-const p=players.find(
+const betrayers=players.filter(
 
-p=>isBetrayer(p)&&p.alive
+p=>isBetrayer(p) && p.alive
 
 );
 
-if(!p){
+if(!betrayers.length){
 
 nextNight();
 
@@ -3914,37 +3626,53 @@ return;
 
 }
 
-gm("裏切り者系の方、目を開けてください。");
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+😈 裏切り者系の方、目を開けてください。<br>
+
+確認してください。
+
+</div>
+
+`;
 
 $("nightAction").innerHTML=`
 
-<p>😈 夜の行動を確認してください。</p>
+<p>
 
-<button onclick="nextNight()">次へ</button>
+😈 裏切り者系の確認です。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
+
+speak("裏切り者系の方、目を開けてください。確認してください。目を閉じてください。");
 
 }
 
 /* ==================================================
 
-11 奇術師
+   夜⑪ 奇術師
 
 ================================================== */
 
 function nightMagician(){
 
-const m=players.find(
+const magician=players.find(
 
-p=>p.roleId==="magician"&&
-
-p.alive &&
-
-!p.abilitiesUsed.magician
+p=>p.roleId==="magician" && p.alive
 
 );
 
-if(!m){
+if(!magician){
 
 nextNight();
 
@@ -3952,11 +3680,37 @@ return;
 
 }
 
-gm("奇術師の方、目を開けてください。");
+if(magician.spyBlockedTonight){
+
+nextNight();
+
+return;
+
+}
+
+if(day<2){
+
+nextNight();
+
+return;
+
+}
+
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🎩 奇術師の方、目を開けてください。<br>
+
+人狼側の襲撃先を変更する場合は選んでください。
+
+</div>
+
+`;
 
 showTargetButtons(
 
-"🎩 人狼の襲撃先を変更する相手",
+"🎩 変更後の人狼襲撃先",
 
 alivePlayers(),
 
@@ -3964,25 +3718,39 @@ alivePlayers(),
 
 );
 
+speak("奇術師の方、目を開けてください。人狼側の襲撃先を変更する場合は選んでください。");
+
 }
 
 function useMagician(id){
 
-const m=players.find(
+const magician=players.find(
 
-p=>p.roleId==="magician"&&p.alive
+p=>p.roleId==="magician" && p.alive
 
 );
 
-if(m)m.abilitiesUsed.magician=true;
+if(magician){
+
+magician.abilitiesUsed.magician=true;
 
 nightData.changedTarget=Number(id);
 
+}
+
 $("nightAction").innerHTML=`
 
-<p>🎩 人狼の襲撃先を変更しました。</p>
+<p>
 
-<button onclick="nextNight()">次へ</button>
+🎩 人狼側の襲撃先を変更しました。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
 
 `;
 
@@ -3990,19 +3758,19 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-12 預言者
+   夜⑫ 預言者
 
 ================================================== */
 
 function nightSeer(){
 
-const s=players.find(
+const seer=players.find(
 
-p=>p.roleId==="seer"&&p.alive
+p=>p.roleId==="seer" && p.alive
 
 );
 
-if(!s){
+if(!seer){
 
 nextNight();
 
@@ -4010,47 +3778,105 @@ return;
 
 }
 
-gm("預言者の方、目を開けてください。");
+if(seer.spyBlockedTonight){
+
+nextNight();
+
+return;
+
+}
+
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🔮 預言者の方、目を開けてください。<br>
+
+占う相手を選んでください。
+
+</div>
+
+`;
 
 showTargetButtons(
 
 "🔮 占う相手",
 
-getTargets(s.id),
+getTargets(seer.id),
 
 "seerResult"
 
 );
 
+speak("預言者の方、目を開けてください。占う相手を選んでください。");
+
 }
+
+/* ==================================================
+
+   預言結果
+
+================================================== */
 
 function seerResult(id){
 
-const t=players.find(
+const seer=players.find(
+
+p=>p.roleId==="seer" && p.alive
+
+);
+
+const target=players.find(
 
 p=>p.id===Number(id)
 
 );
 
-let result;
+if(!seer || !target)return;
 
-if(
+/*
 
-isWolf(t) ||
+   妖狐は人間と表示
 
-t.roleId==="scarecrow"
+*/
 
-){
+const result=
 
-result="人狼";
+isWolf(target)
 
-}else{
+||
 
-/* 妖狐は人間 */
+target.roleId==="scarecrow"
 
-result="人間";
+?
+
+"人狼"
+
+:
+
+"人間";
+
+/*
+
+   妖狐死亡
+
+*/
+
+if(target.roleId==="fox"){
+
+target.alive=false;
+
+target.lastDeathReason="fox";
 
 }
+
+/*
+
+   案山子は人狼判定
+
+*/
+
+$("nightInfo").innerHTML="";
 
 $("nightAction").innerHTML=`
 
@@ -4062,7 +3888,7 @@ $("nightAction").innerHTML=`
 
 <p>
 
-${escapeHtml(t.name)}さんは
+${escapeHtml(target.name)}さんは
 
 </p>
 
@@ -4072,9 +3898,39 @@ ${escapeHtml(t.name)}さんは
 
 </div>
 
+<button onclick="closeSeerResult()">
+
+確認して目を閉じる
+
+</button>
+
+`;
+
+/*
+
+   ここでは音声を絶対に出さない
+
+*/
+
+}
+
+function closeSeerResult(){
+
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🔮 預言者の方、目を閉じてください。
+
+</div>
+
+`;
+
+$("nightAction").innerHTML=`
+
 <button onclick="nextNight()">
 
-結果を確認して次へ
+次へ
 
 </button>
 
@@ -4084,19 +3940,19 @@ ${escapeHtml(t.name)}さんは
 
 /* ==================================================
 
-13 霊媒師
+   夜⑬ 霊媒師
 
 ================================================== */
 
 function nightMedium(){
 
-const m=players.find(
+const medium=players.find(
 
-p=>p.roleId==="medium"&&p.alive
+p=>p.roleId==="medium" && p.alive
 
 );
 
-if(!m){
+if(!medium){
 
 nextNight();
 
@@ -4104,73 +3960,125 @@ return;
 
 }
 
-gm("霊媒師の方、目を開けてください。");
+if(medium.spyBlockedTonight){
 
-if(!previousVoteDeath){
-
-$("nightAction").innerHTML=`
-
-<p>👻 前日の追放者はいません。</p>
-
-<button onclick="nextNight()">次へ</button>
-
-`;
+nextNight();
 
 return;
 
 }
 
-const result=
+const deadByVote=players.find(
 
-isWolf(previousVoteDeath)||
+p=>
 
-previousVoteDeath.roleId==="scarecrow"
+!p.alive &&
 
-?"人狼"
+p.lastDeathReason==="vote" &&
 
-:"人間";
+p.deathDay===day
 
-$("nightAction").innerHTML=`
+);
 
-<div class="result">
+$("nightInfo").innerHTML=`
 
-👻 霊媒結果
+<div class="gm-message">
+
+👻 霊媒師の方、目を開けてください。
 
 </div>
 
+`;
+
+let result="";
+
+if(deadByVote){
+
+result=
+
+isWolf(deadByVote) ||
+
+deadByVote.roleId==="scarecrow"
+
+?
+
+"人狼"
+
+:
+
+"人間";
+
+}
+
+$("nightAction").innerHTML=
+
+deadByVote
+
+?
+
+`
+
 <p>
 
-${escapeHtml(previousVoteDeath.name)}さんは
+追放者：${escapeHtml(deadByVote.name)}
 
 </p>
 
 <div class="result">
 
-「${result}」
+${result}
 
 </div>
 
 <button onclick="nextNight()">
 
-結果を確認して次へ
+目を閉じて次へ
+
+</button>
+
+`
+
+:
+
+`
+
+<p>
+
+確認できる追放者はいません。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
 
 </button>
 
 `;
 
+speak("霊媒師の方、目を開けてください。");
+
 }
 
 /* ==================================================
 
-対象ボタン
+   対象ボタン
 
 ================================================== */
 
-function showTargetButtons(title,targets,fn){
+function showTargetButtons(
+
+title,
+
+targets,
+
+functionName
+
+){
 
 let html=`<h3>${title}</h3>`;
 
-targets.forEach(t=>{
+targets.forEach(target=>{
 
 html+=`
 
@@ -4178,11 +4086,11 @@ html+=`
 
 class="choice"
 
-onclick="${fn}(${t.id})"
+onclick="${functionName}(${target.id})"
 
 >
 
-${escapeHtml(t.name)}
+${escapeHtml(target.name)}
 
 </button>
 
@@ -4196,79 +4104,147 @@ $("nightAction").innerHTML=html;
 
 /* ==================================================
 
-夜終了
+   夜終了
 
 ================================================== */
 
 function finishNight(){
 
-let attacks=[...nightData.wolfAttack];
+let attacks=[...nightData.wolfAttacks];
 
-if(nightData.betrayAttack!==null){
+if(
 
-attacks.push(nightData.betrayAttack);
+nightData.changedTarget!==null &&
 
-}
+nightData.changedTarget!==undefined
 
-/* 奇術師は人狼系だけ変更 */
+){
 
-if(nightData.changedTarget!==null){
+attacks=[
 
-attacks=[nightData.changedTarget];
+nightData.changedTarget
 
-}
-
-if(nightData.childBonus){
-
-attacks.push(...nightData.wolfAttack);
+];
 
 }
 
-const deadThisNight=[];
+if(
 
-attacks.forEach(id=>{
+nightData.betrayAttack!==null &&
 
-const target=players.find(
+nightData.betrayAttack!==undefined
 
-p=>p.id===id
+){
+
+attacks.push(
+
+nightData.betrayAttack
 
 );
 
-if(!target||!target.alive)return;
+}
 
-/* 妖狐 */
+/*
 
-if(target.roleId==="fox")return;
+   重複削除
 
-/* ボディーガード */
+*/
 
-if(nightData.bodyguard===target.id)return;
+attacks=[
 
-/* 騎士団 */
+...new Set(attacks)
 
-if(nightData.knights===target.id)return;
+];
 
-/* 罠 */
+/*
+
+   襲撃
+
+*/
+
+attacks.forEach(targetId=>{
+
+const target=players.find(
+
+p=>p.id===targetId
+
+);
+
+if(!target || !target.alive){
+
+return;
+
+}
+
+/*
+
+   妖狐
+
+*/
+
+if(target.roleId==="fox"){
+
+return;
+
+}
+
+/*
+
+   ボディーガード
+
+*/
+
+if(nightData.bodyguard===target.id){
+
+return;
+
+}
+
+/*
+
+   騎士団
+
+*/
+
+if(nightData.knights===target.id){
+
+return;
+
+}
+
+/*
+
+   罠
+
+*/
 
 if(nightData.trap===target.id){
 
 const wolves=players.filter(
 
-p=>isWolf(p)&&p.alive
+p=>p.alive && isWolf(p)
 
 );
 
 if(wolves.length){
 
-const w=
+const randomWolf=
 
-wolves[Math.floor(Math.random()*wolves.length)];
+wolves[
 
-w.alive=false;
+Math.floor(
 
-w.lastDeathReason="trap";
+Math.random()*wolves.length
 
-deadThisNight.push(w);
+)
+
+];
+
+randomWolf.alive=false;
+
+randomWolf.lastDeathReason="trap";
+
+randomWolf.deathDay=day;
 
 }
 
@@ -4276,7 +4252,11 @@ return;
 
 }
 
-/* 呪われた者 */
+/*
+
+   呪われた者
+
+*/
 
 if(target.roleId==="cursed"){
 
@@ -4286,7 +4266,11 @@ return;
 
 }
 
-/* タフガイ */
+/*
+
+   タフガイ
+
+*/
 
 if(
 
@@ -4302,49 +4286,85 @@ return;
 
 }
 
-/* 通常死亡 */
+/*
 
-target.alive=false;
+   通常死亡
 
-target.lastDeathReason="night";
+*/
 
-deadThisNight.push(target);
+killPlayer(
+
+target,
+
+"night"
+
+);
 
 });
 
-/* 妖狐が占われて死亡 */
+/*
+
+   恋人後追い
+
+*/
+
+resolveLovers();
+
+/*
+
+   朝
+
+*/
+
+$("night").classList.add("hidden");
+
+announceMorning();
+
+}
+
+/* ==================================================
+
+   死亡
+
+================================================== */
+
+function killPlayer(player,reason){
+
+if(!player.alive)return;
+
+player.alive=false;
+
+player.lastDeathReason=reason;
+
+player.deathDay=day;
+
+}
+
+/* ==================================================
+
+   恋人
+
+================================================== */
+
+function resolveLovers(){
 
 players.forEach(p=>{
 
 if(
 
-p.roleId==="fox" &&
-
 !p.alive &&
 
-p.lastDeathReason==="seer"
+p.lover
 
 ){
 
-if(!deadThisNight.includes(p)){
-
-deadThisNight.push(p);
-
-}
-
-}
-
-});
-
-/* 恋人後追い */
-
-players.forEach(p=>{
-
-if(!p.alive&&p.lover){
-
 const partner=players.find(
 
-x=>x.name===p.loverPartner&&x.alive
+x=>
+
+x.name===p.loverPartner &&
+
+x.alive
 
 );
 
@@ -4354,11 +4374,7 @@ partner.alive=false;
 
 partner.lastDeathReason="lover";
 
-if(!deadThisNight.includes(partner)){
-
-deadThisNight.push(partner);
-
-}
+partner.deathDay=day;
 
 }
 
@@ -4366,21 +4382,1083 @@ deadThisNight.push(partner);
 
 });
 
-$("night").classList.add("hidden");
+}
 
-if(checkWin())return;
+/* ==================================================
 
-day++;
+   朝の死亡発表
 
-previousVoteDeath=null;
+================================================== */
 
-showDay(deadThisNight);
+function announceMorning(){
+
+const dead=players.filter(
+
+p=>
+
+!p.alive &&
+
+p.deathDay===day &&
+
+p.lastDeathReason!=="vote"
+
+);
+
+if(checkWin()){
+
+return;
+
+}
+
+$("day").classList.remove("hidden");
+
+let text=
+
+`🌅 朝になりました。<br>
+
+みなさん、目を覚ましてください。<br><br>`;
+
+if(dead.length){
+
+text+=`
+
+残念ながら、
+
+${dead
+
+.map(p=>`<strong>${escapeHtml(p.name)}さん</strong>`)
+
+.join("、")}
+
+が亡くなってしまいました。
+
+`;
+
+const speechNames=dead
+
+.map(p=>p.name)
+
+.join("さん、");
+
+speak(
+
+`朝になりました。みなさん、目を覚ましてください。残念ながら、${speechNames}さんが亡くなってしまいました。`
+
+);
+
+}else{
+
+text+=`
+
+🌟 今朝は犠牲者はいませんでした。
+
+`;
+
+speak(
+
+"朝になりました。みなさん、目を覚ましてください。今朝は犠牲者はいませんでした。"
+
+);
+
+}
+
+text+=`
+
+<br><br>
+
+☀️ お昼です。議論スタート。
+
+`;
+
+$("dayInfo").innerHTML=text;
+
+setupDiscussionTimer();
 
 }
 
 /* ==================================================
 
-初期化
+   昼
+
+================================================== */
+
+function setupDiscussionTimer(){
+
+const seconds=
+
+Number($("discussionTime").value);
+
+discussionSeconds=seconds;
+
+if(seconds===0){
+
+$("timerArea").classList.add("hidden");
+
+}else{
+
+$("timerArea").classList.remove("hidden");
+
+updateTimerDisplay();
+
+}
+
+}
+
+/* ==================================================
+
+   タイマー
+
+================================================== */
+
+function updateTimerDisplay(){
+
+const min=
+
+Math.floor(discussionSeconds/60);
+
+const sec=
+
+discussionSeconds%60;
+
+$("timer").textContent=
+
+`${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+
+$("timer").classList.toggle(
+
+"warning",
+
+discussionSeconds<=10
+
+);
+
+}
+
+function startTimer(){
+
+if(timerInterval)return;
+
+speak("議論スタートです。");
+
+timerInterval=setInterval(()=>{
+
+discussionSeconds--;
+
+updateTimerDisplay();
+
+if(discussionSeconds<=0){
+
+stopTimer();
+
+speak("議論時間が終了しました。");
+
+alert("⏰ 議論時間が終了しました。投票へ進んでください。");
+
+}
+
+},1000);
+
+}
+
+function stopTimer(){
+
+if(timerInterval){
+
+clearInterval(timerInterval);
+
+timerInterval=null;
+
+}
+
+}
+
+/* ==================================================
+
+   議論→投票
+
+================================================== */
+
+function startVoting(){
+
+stopTimer();
+
+$("day").classList.add("hidden");
+
+$("vote").classList.remove("hidden");
+
+renderVote();
+
+}
+
+/* ==================================================
+
+   投票
+
+================================================== */
+
+function renderVote(){
+
+const alive=alivePlayers();
+
+$("voteInstruction").textContent=
+
+"それぞれのプレイヤーの投票先を選択してください。";
+
+$("specialVoteArea").innerHTML="";
+
+/*
+
+   独裁者
+
+*/
+
+const dictator=alive.find(
+
+p=>p.roleId==="dictator"
+
+);
+
+if(
+
+dictator &&
+
+!dictator.abilitiesUsed.dictator
+
+){
+
+$("specialVoteArea").innerHTML=`
+
+<div class="action-box">
+
+<h3>👑 独裁者</h3>
+
+<p>
+
+独裁者は1回だけ、指定した人を強制的に追放できます。
+
+</p>
+
+<select id="dictatorTarget">
+
+<option value="">
+
+指定する相手
+
+</option>
+
+${getTargets(dictator.id)
+
+.map(p=>`
+
+<option value="${p.id}">
+
+${escapeHtml(p.name)}
+
+</option>
+
+`)
+
+.join("")}
+
+</select>
+
+<br>
+
+<button onclick="useDictator()">
+
+👑 強制追放する
+
+</button>
+
+</div>
+
+`;
+
+}
+
+/*
+
+   影武者
+
+*/
+
+const shadow=alive.find(
+
+p=>p.roleId==="shadow"
+
+);
+
+if(
+
+shadow &&
+
+!shadow.abilitiesUsed.shadow
+
+){
+
+$("specialVoteArea").innerHTML+=`
+
+<div class="action-box">
+
+<h3>🪞 影武者</h3>
+
+<p>
+
+影武者は1回だけ議論を強制終了し、
+
+自分自身が追放されます。
+
+</p>
+
+<button onclick="useShadow()">
+
+🪞 議論を終了して自分を追放
+
+</button>
+
+</div>
+
+`;
+
+}
+
+$("votePlayers").innerHTML="";
+
+alive.forEach(voter=>{
+
+const targets=alive.filter(
+
+target=>target.id!==voter.id
+
+);
+
+$("votePlayers").innerHTML+=`
+
+<div class="vote-player">
+
+<strong>
+
+🗳️ ${escapeHtml(voter.name)}さん
+
+</strong>
+
+<br>
+
+<select id="vote-${voter.id}">
+
+<option value="">
+
+投票先を選択
+
+</option>
+
+${targets.map(target=>`
+
+<option value="${target.id}">
+
+${escapeHtml(target.name)}
+
+</option>
+
+`).join("")}
+
+</select>
+
+</div>
+
+`;
+
+});
+
+}
+
+/* ==================================================
+
+   独裁者
+
+================================================== */
+
+function useDictator(){
+
+const dictator=players.find(
+
+p=>p.roleId==="dictator" && p.alive
+
+);
+
+if(!dictator)return;
+
+const select=$("dictatorTarget");
+
+if(!select.value){
+
+alert("追放する人を選んでください。");
+
+return;
+
+}
+
+const target=players.find(
+
+p=>p.id===Number(select.value)
+
+);
+
+dictator.abilitiesUsed.dictator=true;
+
+killPlayer(
+
+target,
+
+"vote"
+
+);
+
+target.deathDay=day;
+
+$("vote").classList.add("hidden");
+
+$("voteResult").classList.remove("hidden");
+
+$("voteResultText").innerHTML=`
+
+<div class="result">
+
+👑 独裁者による強制追放
+
+</div>
+
+<p>
+
+${escapeHtml(target.name)}さんが追放されました。
+
+</p>
+
+`;
+
+checkHunter(target);
+
+resolveLovers();
+
+};
+
+/* ==================================================
+
+   影武者
+
+================================================== */
+
+function useShadow(){
+
+const shadow=players.find(
+
+p=>p.roleId==="shadow" && p.alive
+
+);
+
+if(!shadow)return;
+
+shadow.abilitiesUsed.shadow=true;
+
+killPlayer(
+
+shadow,
+
+"vote"
+
+);
+
+$("vote").classList.add("hidden");
+
+$("voteResult").classList.remove("hidden");
+
+$("voteResultText").innerHTML=`
+
+<div class="result">
+
+🪞 影武者の能力発動
+
+</div>
+
+<p>
+
+影武者自身が追放されました。
+
+</p>
+
+`;
+
+resolveLovers();
+
+}
+
+/* ==================================================
+
+   通常投票
+
+================================================== */
+
+function finishVoting(){
+
+const alive=alivePlayers();
+
+const counts={};
+
+alive.forEach(
+
+p=>counts[p.id]=0
+
+);
+
+for(const voter of alive){
+
+const select=$(`vote-${voter.id}`);
+
+if(!select.value){
+
+alert(
+
+`${voter.name}さんの投票先を選択してください。`
+
+);
+
+select.focus();
+
+return;
+
+}
+
+const targetId=
+
+Number(select.value);
+
+const target=players.find(
+
+p=>p.id===targetId
+
+);
+
+if(target && voter.roleId==="king"){
+
+counts[targetId]+=2;
+
+}else{
+
+counts[targetId]++;
+
+}
+
+}
+
+let max=0;
+
+Object.values(counts).forEach(c=>{
+
+if(c>max)max=c;
+
+});
+
+const top=
+
+Object.entries(counts)
+
+.filter(([id,count])=>count===max)
+
+.map(([id])=>Number(id));
+
+let result="";
+
+alive.forEach(p=>{
+
+result+=`
+
+<p>
+
+${escapeHtml(p.name)}：
+
+<strong>${counts[p.id]}票</strong>
+
+</p>
+
+`;
+
+});
+
+if(top.length>1){
+
+result+=`
+
+<hr>
+
+<div class="warning">
+
+⚠️ 同票のため追放なし
+
+</div>
+
+`;
+
+}else{
+
+const target=players.find(
+
+p=>p.id===top[0]
+
+);
+
+killPlayer(
+
+target,
+
+"vote"
+
+);
+
+target.deathDay=day;
+
+result+=`
+
+<hr>
+
+<div class="result">
+
+⚖️ ${escapeHtml(target.name)}さんが追放されました。
+
+</div>
+
+`;
+
+checkHunter(target);
+
+resolveLovers();
+
+}
+
+$("vote").classList.add("hidden");
+
+$("voteResult").classList.remove("hidden");
+
+$("voteResultText").innerHTML=result;
+
+}
+
+/* ==================================================
+
+   ハンター
+
+================================================== */
+
+function checkHunter(player){
+
+if(player.roleId!=="hunter"){
+
+return;
+
+}
+
+hunterQueue.push(player.id);
+
+showHunterAction();
+
+}
+
+function showHunterAction(){
+
+if(!hunterQueue.length){
+
+return;
+
+}
+
+const id=hunterQueue.shift();
+
+const hunter=players.find(
+
+p=>p.id===id
+
+);
+
+if(!hunter){
+
+showHunterAction();
+
+return;
+
+}
+
+const targets=alivePlayers();
+
+$("voteResultText").innerHTML+=`
+
+<div class="action-box">
+
+<h3>🔫 ハンター</h3>
+
+<p>
+
+ハンターが死亡しました。
+
+道連れにする人を選んでください。
+
+</p>
+
+${targets.map(p=>`
+
+<button
+
+class="choice"
+
+onclick="hunterShoot(${p.id})"
+
+>
+
+${escapeHtml(p.name)}
+
+</button>
+
+`).join("")}
+
+</div>
+
+`;
+
+}
+
+function hunterShoot(id){
+
+const target=players.find(
+
+p=>p.id===Number(id)
+
+);
+
+if(!target)return;
+
+killPlayer(
+
+target,
+
+"hunter"
+
+);
+
+$("voteResultText").innerHTML+=`
+
+<p>
+
+🔫 ${escapeHtml(target.name)}さんが
+
+道連れになりました。
+
+</p>
+
+`;
+
+resolveLovers();
+
+if(
+
+hunterQueue.length
+
+){
+
+showHunterAction();
+
+}
+
+}
+
+/* ==================================================
+
+   投票後
+
+================================================== */
+
+function afterVote(){
+
+$("voteResult").classList.add("hidden");
+
+if(checkWin()){
+
+return;
+
+}
+
+$("gameReady").classList.remove("hidden");
+
+}
+
+/* ==================================================
+
+   勝敗
+
+================================================== */
+
+function checkWin(){
+
+const alive=alivePlayers();
+
+const wolves=alive.filter(
+
+p=>isWolf(p)
+
+);
+
+/*
+
+   神様
+
+*/
+
+const gods=alive.filter(
+
+p=>p.roleId==="god"
+
+);
+
+if(
+
+gods.length &&
+
+gods.length===players.filter(p=>p.roleId==="god").length
+
+){
+
+showWinner(
+
+"🙏 神様の単独勝利！"
+
+);
+
+return true;
+
+}
+
+/*
+
+   恋人
+
+*/
+
+const lovers=players.filter(
+
+p=>p.lover
+
+);
+
+if(
+
+lovers.length===2 &&
+
+lovers.every(p=>p.alive)
+
+){
+
+const otherAlive=alive.filter(
+
+p=>!p.lover
+
+);
+
+if(!otherAlive.length){
+
+showWinner(
+
+"❤️ 恋人の単独勝利！"
+
+);
+
+return true;
+
+}
+
+}
+
+/*
+
+   案山子
+
+*/
+
+const scarecrows=players.filter(
+
+p=>p.roleId==="scarecrow"
+
+);
+
+if(
+
+scarecrows.length &&
+
+scarecrows.every(p=>!p.alive)
+
+){
+
+showWinner(
+
+"🌾 案山子の単独勝利！"
+
+);
+
+return true;
+
+}
+
+/*
+
+   一匹狼
+
+*/
+
+const loneWolf=alive.find(
+
+p=>p.roleId==="loneWolf"
+
+);
+
+if(loneWolf){
+
+const otherWolves=alive.filter(
+
+p=>
+
+isWolf(p) &&
+
+p.roleId!=="loneWolf"
+
+);
+
+if(
+
+otherWolves.length===0 &&
+
+wolves.length===1
+
+){
+
+showWinner(
+
+"🐺 一匹狼の単独勝利！"
+
+);
+
+return true;
+
+}
+
+}
+
+/*
+
+   妖狐
+
+*/
+
+const fox=alive.find(
+
+p=>p.roleId==="fox"
+
+);
+
+if(
+
+fox &&
+
+wolves.length===0
+
+){
+
+showWinner(
+
+"🦊 妖狐の勝利！"
+
+);
+
+return true;
+
+}
+
+/*
+
+   人狼全滅
+
+*/
+
+if(wolves.length===0){
+
+showWinner(
+
+"🎉 市民陣営の勝利！"
+
+);
+
+return true;
+
+}
+
+/*
+
+   人狼優勢
+
+*/
+
+const nonWolf=alive.filter(
+
+p=>!isWolf(p)
+
+);
+
+if(
+
+wolves.length>=nonWolf.length
+
+){
+
+showWinner(
+
+"🐺 人狼陣営の勝利！"
+
+);
+
+return true;
+
+}
+
+return false;
+
+}
+
+/* ==================================================
+
+   勝利表示
+
+================================================== */
+
+function showWinner(text){
+
+stopTimer();
+
+$("day").classList.add("hidden");
+
+$("night").classList.add("hidden");
+
+$("gameReady").classList.add("hidden");
+
+$("vote").classList.add("hidden");
+
+$("voteResult").classList.add("hidden");
+
+$("gameOver").classList.remove("hidden");
+
+$("winner").textContent=text;
+
+speak(text);
+
+}
+
+/* ==================================================
+
+   初期化
 
 ================================================== */
 
