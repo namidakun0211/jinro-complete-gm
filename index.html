@@ -444,6 +444,38 @@ hr{
 
 }
 
+.private-box{
+
+  background:#fff8e1;
+
+  border:2px solid #e0b000;
+
+  border-radius:15px;
+
+  padding:20px;
+
+  margin:20px 0;
+
+}
+
+.alarm-box{
+
+  background:#ffe8e8;
+
+  border:3px solid #d00;
+
+  border-radius:15px;
+
+  padding:20px;
+
+  margin:20px 0;
+
+  font-size:22px;
+
+  font-weight:bold;
+
+}
+
 </style>
 
 </head>
@@ -1058,12 +1090,6 @@ const ROLES=[
 
 ];
 
-/* ==================================================
-
-人狼系
-
-================================================== */
-
 const WOLF_ROLES=[
 
 "werewolf",
@@ -1073,12 +1099,6 @@ const WOLF_ROLES=[
 "loneWolf"
 
 ];
-
-/* ==================================================
-
-裏切り者系
-
-================================================== */
 
 const BETRAYER_ROLES=[
 
@@ -1136,7 +1156,17 @@ let runoffIndex=0;
 
 let runoffChoices={};
 
-let initialDeathNames=[];
+let hunterCallback=null;
+
+let timerCalls={
+
+  60:false,
+
+  30:false,
+
+  10:false
+
+};
 
 /* ==================================================
 
@@ -1227,6 +1257,96 @@ utter.rate=0.9;
 utter.pitch=1;
 
 window.speechSynthesis.speak(utter);
+
+}
+
+/* ==================================================
+
+アラーム音
+
+================================================== */
+
+function playAlarm(){
+
+try{
+
+const AudioContext=
+
+window.AudioContext ||
+
+window.webkitAudioContext;
+
+if(!AudioContext)return;
+
+const ctx=new AudioContext();
+
+const now=ctx.currentTime;
+
+for(let i=0;i<3;i++){
+
+const osc=ctx.createOscillator();
+
+const gain=ctx.createGain();
+
+osc.type="square";
+
+osc.frequency.setValueAtTime(
+
+880,
+
+now+i*0.35
+
+);
+
+osc.frequency.setValueAtTime(
+
+660,
+
+now+i*0.35+0.15
+
+);
+
+gain.gain.setValueAtTime(
+
+0.0001,
+
+now+i*0.35
+
+);
+
+gain.gain.exponentialRampToValueAtTime(
+
+0.3,
+
+now+i*0.35+0.03
+
+);
+
+gain.gain.exponentialRampToValueAtTime(
+
+0.0001,
+
+now+i*0.35+0.22
+
+);
+
+osc.connect(gain);
+
+gain.connect(ctx.destination);
+
+osc.start(now+i*0.35);
+
+osc.stop(now+i*0.35+0.25);
+
+}
+
+setTimeout(()=>{
+
+try{ctx.close();}catch(e){}
+
+},1500);
+
+}catch(e){}
 
 }
 
@@ -1470,7 +1590,15 @@ return;
 
 }
 
-for(let i=0;i<(roleCounts[id]||0);i++){
+for(
+
+let i=0;
+
+i<(roleCounts[id]||0);
+
+i++
+
+){
 
 selectedRoles.push(id);
 
@@ -1912,8 +2040,6 @@ finishRoleAssignment();
 
 function finishRoleAssignment(){
 
-/* 恋人 */
-
 if(loverMode){
 
 const shuffled=
@@ -1937,8 +2063,6 @@ a.loverPartner=b.name;
 b.loverPartner=a.name;
 
 }
-
-/* 情報設定 */
 
 setupSharedInfo();
 
@@ -1992,7 +2116,7 @@ members
 
 /* ==================================================
 
-裏切りの共有者A
+裏切り共有者
 
 ================================================== */
 
@@ -2218,8 +2342,6 @@ getRoleName(player.roleId);
 
 let extra="";
 
-/* 恋人 */
-
 if(player.lover){
 
 extra+=`
@@ -2239,8 +2361,6 @@ extra+=`
 `;
 
 }
-
-/* 人狼仲間 */
 
 if(isWolf(player)){
 
@@ -2280,8 +2400,6 @@ ${wolves
 
 }
 
-/* 内通者 */
-
 if(player.roleId==="informant"){
 
 extra+=`
@@ -2305,8 +2423,6 @@ ${player.informantWolves
 `;
 
 }
-
-/* 裏切りの共有者 */
 
 if(
 
@@ -2352,8 +2468,6 @@ player.betraySharedPartners
 
 }
 
-/* 共有者 */
-
 if(player.roleId==="shared"){
 
 extra+=`
@@ -2391,8 +2505,6 @@ player.sharedPartners
 `;
 
 }
-
-/* 騎士団 */
 
 if(player.roleId==="knights"){
 
@@ -2432,8 +2544,6 @@ player.knightPartners
 
 }
 
-/* 案山子 */
-
 if(player.roleId==="scarecrow"){
 
 extra+=`
@@ -2472,8 +2582,6 @@ player.scarecrowPartners
 
 }
 
-/* 神様 */
-
 if(player.roleId==="god"){
 
 extra+=`
@@ -2498,8 +2606,6 @@ ${player.allRoles
 
 }
 
-/* アンドロイド */
-
 if(player.roleId==="android"){
 
 extra+=`
@@ -2519,8 +2625,6 @@ ${getRoleName(player.copiedRole)}
 `;
 
 }
-
-/* 裏切り者系本人表示 */
 
 if(isBetrayer(player)){
 
@@ -2548,13 +2652,9 @@ $("info").textContent=
 
 getRoleDescription(player.roleId);
 
-$("mainButton").textContent=
+$("mainButton").textContent="次の人";
 
-"次の人";
-
-$("mainButton").onclick=
-
-nextPlayer;
+$("mainButton").onclick=nextPlayer;
 
 }
 
@@ -2572,12 +2672,6 @@ if(currentPlayer>=players.length){
 
 $("game").classList.add("hidden");
 
-/*
-
-役職確認後は夜ではなく朝
-
-*/
-
 showInitialMorning();
 
 return;
@@ -2590,7 +2684,7 @@ showPlayer();
 
 /* ==================================================
 
-初日の朝
+初日朝
 
 ================================================== */
 
@@ -2604,37 +2698,9 @@ let text=
 
 みなさん、目を覚ましてください。<br><br>`;
 
-const firstDeaths=
-
-players.filter(
-
-p=>
-
-!p.alive &&
-
-p.deathDay===1
-
-);
-
-if(firstDeaths.length){
-
-text+=
-
-`残念ながら、${firstDeaths
-
-.map(p=>`<strong>${escapeHtml(p.name)}さん</strong>`)
-
-.join("、")}
-
-が亡くなってしまいました。<br><br>`;
-
-}else{
-
 text+=
 
 `🌟 今朝は犠牲者はいませんでした。<br><br>`;
-
-}
 
 text+=
 
@@ -2642,37 +2708,17 @@ text+=
 
 $("initialMorningText").innerHTML=text;
 
-speakInitialMorning(firstDeaths);
+speakInitialMorning();
 
 }
 
-/* ==================================================
+function speakInitialMorning(){
 
-初日朝音声
+speak(
 
-================================================== */
+"朝になりました。みなさん、目を覚ましてください。今朝は犠牲者はいませんでした。お昼です。議論スタート。"
 
-function speakInitialMorning(dead){
-
-let text=
-
-"朝になりました。みなさん、目を覚ましてください。";
-
-if(dead.length){
-
-text+=
-
-"残念ながら、"+
-
-dead.map(p=>p.name+"さん").join("、")+
-
-"が亡くなってしまいました。";
-
-}
-
-text+="お昼です。議論スタート。";
-
-speak(text);
+);
 
 }
 
@@ -2874,12 +2920,6 @@ medium:null
 
 };
 
-/*
-
-毎夜リセット
-
-*/
-
 players.forEach(p=>{
 
 p.spyBlockedTonight=false;
@@ -2918,7 +2958,7 @@ const NIGHT_STEPS=[
 
 "🩺 カウンセラー",
 
-"😈 裏切り者・裏切りの共有者A・裏切りの共有者B・内通者・裏切りの襲撃者",
+"😈 裏切り者系確認",
 
 "🎩 奇術師",
 
@@ -2982,7 +3022,7 @@ handlers[nightStep]();
 
 /* ==================================================
 
-夜① 呪われた者
+呪われた者
 
 ================================================== */
 
@@ -2998,7 +3038,15 @@ p.alive
 
 );
 
-if(cursed && cursed.cursedAwakened){
+if(!cursed){
+
+nextNight();
+
+return;
+
+}
+
+if(cursed.cursedAwakened){
 
 cursed.roleId="werewolf";
 
@@ -3042,7 +3090,7 @@ speak(
 
 /* ==================================================
 
-夜② スパイ
+スパイ
 
 ================================================== */
 
@@ -3066,15 +3114,35 @@ return;
 
 }
 
+const blockedRoles=[
+
+"seer",
+
+"bodyguard",
+
+"medium",
+
+"trapper",
+
+"counselor",
+
+"magician",
+
+"dictator",
+
+"shadow"
+
+];
+
 const availableTargets=
 
-getTargets(spy.id).filter(target=>{
+getTargets(spy.id).filter(target=>
 
-const role=target.roleId;
+blockedRoles.includes(target.roleId) &&
 
-return !spy.spyUsedRoles[role];
+!spy.spyUsedRoles[target.roleId]
 
-});
+);
 
 if(!availableTargets.length){
 
@@ -3132,39 +3200,11 @@ p=>p.id===Number(id)
 
 );
 
-if(!spy || !target){
-
-return;
-
-}
-
-const blockedRoles=[
-
-"seer",
-
-"bodyguard",
-
-"medium",
-
-"trapper",
-
-"counselor",
-
-"magician",
-
-"dictator",
-
-"shadow"
-
-];
-
-if(blockedRoles.includes(target.roleId)){
-
-target.spyBlockedTonight=true;
+if(!spy || !target)return;
 
 spy.spyUsedRoles[target.roleId]=true;
 
-}
+target.spyBlockedTonight=true;
 
 $("nightAction").innerHTML=`
 
@@ -3186,7 +3226,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-夜③ アンドロイド
+アンドロイド
 
 ================================================== */
 
@@ -3248,7 +3288,7 @@ speak(
 
 /* ==================================================
 
-夜④ 罠師
+罠師
 
 ================================================== */
 
@@ -3326,7 +3366,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-夜⑤ ボディーガード
+ボディーガード
 
 ================================================== */
 
@@ -3436,7 +3476,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-夜⑥ 騎士団
+騎士団
 
 ================================================== */
 
@@ -3514,7 +3554,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-夜⑦ 人狼
+人狼
 
 ================================================== */
 
@@ -3538,6 +3578,50 @@ return;
 
 }
 
+/*
+
+人狼系は襲撃対象から除外
+
+*/
+
+const targets=alivePlayers().filter(
+
+p=>!isWolf(p)
+
+);
+
+if(!targets.length){
+
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🐺 人狼の方、目を開けてください。
+
+</div>
+
+`;
+
+$("nightAction").innerHTML=`
+
+<p>
+
+襲撃できる相手がいません。
+
+</p>
+
+<button onclick="nextNight()">
+
+目を閉じて次へ
+
+</button>
+
+`;
+
+return;
+
+}
+
 $("nightInfo").innerHTML=`
 
 <div class="gm-message">
@@ -3549,8 +3633,6 @@ $("nightInfo").innerHTML=`
 </div>
 
 `;
-
-const targets=alivePlayers();
 
 let html=`
 
@@ -3718,7 +3800,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-夜⑧ 裏切りの襲撃者
+裏切りの襲撃者
 
 ================================================== */
 
@@ -3742,16 +3824,6 @@ return;
 
 }
 
-/*
-
-カウンセリング済みで翌夜になった場合は
-
-すでに市民へ変更されているので
-
-この処理には来ない
-
-*/
-
 $("nightInfo").innerHTML=`
 
 <div class="gm-message">
@@ -3763,12 +3835,6 @@ $("nightInfo").innerHTML=`
 `;
 
 $("nightAction").innerHTML=`
-
-<p>
-
-あなたは裏切りの襲撃者です。
-
-</p>
 
 <p>
 
@@ -3826,7 +3892,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-夜⑨ カウンセラー
+カウンセラー
 
 ================================================== */
 
@@ -3876,9 +3942,7 @@ $("nightInfo").innerHTML=`
 
 <p class="small">
 
-誰が裏切り者なのかはカウンセラーには分かりません。
-
-生きている人の中から選んでください。
+※カウンセリング結果はカウンセラー本人だけが確認します。
 
 </p>
 
@@ -3920,19 +3984,9 @@ p=>p.id===Number(id)
 
 );
 
-if(!counselor || !target){
+if(!counselor || !target)return;
 
-return;
-
-}
-
-/*
-
-人狼を選んだ場合
-
-カウンセラー死亡
-
-*/
+let resultText="";
 
 if(isWolf(target)){
 
@@ -3944,59 +3998,89 @@ counselor,
 
 );
 
-$("nightAction").innerHTML=`
+resultText=`
 
 <div class="warning">
 
-🩺 カウンセリングの結果、
-
-カウンセラーは死亡しました。
+⚠️ あなたが選んだ相手は人狼でした。
 
 </div>
 
 <p>
 
-相手が人狼だったためです。
+そのため、あなたは死亡しました。
 
 </p>
-
-<button onclick="nextNight()">
-
-目を閉じて次へ
-
-</button>
 
 `;
 
-return;
-
-}
-
-/*
-
-裏切り者系なら翌夜に市民になる
-
-*/
-
-if(isBetrayer(target)){
+}else if(isBetrayer(target)){
 
 target.pendingCounsel=true;
 
-target.counseledTonight=true;
+resultText=`
 
-}
+<div class="success">
 
-$("nightAction").innerHTML=`
+🩺 あなたが選んだ相手は裏切り者系でした。
+
+</div>
 
 <p>
 
-🩺 カウンセリングを終了しました。
+翌夜、その人は市民になります。
 
 </p>
 
+`;
+
+}else{
+
+resultText=`
+
+<div>
+
+🩺 カウンセリングが完了しました。
+
+</div>
+
+<p>
+
+選んだ相手に特別な変化はありません。
+
+</p>
+
+`;
+
+}
+
+$("nightInfo").innerHTML=`
+
+<div class="private-box">
+
+<strong>🔒 カウンセラーだけ確認してください</strong>
+
+</div>
+
+`;
+
+$("nightAction").innerHTML=`
+
+<div class="private-box">
+
+${resultText}
+
+<p class="small">
+
+この画面を確認したら、他の人には見せないでください。
+
+</p>
+
+</div>
+
 <button onclick="nextNight()">
 
-目を閉じて次へ
+確認して目を閉じる
 
 </button>
 
@@ -4006,7 +4090,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-夜⑩ 裏切り者系確認
+裏切り者確認
 
 ================================================== */
 
@@ -4050,12 +4134,6 @@ runBetrayerCheckAt(0,betrayers);
 
 }
 
-/* ==================================================
-
-裏切り者系を1人ずつ呼ぶ
-
-================================================== */
-
 function runBetrayerCheckAt(index,betrayers){
 
 if(index>=betrayers.length){
@@ -4081,12 +4159,6 @@ $("nightInfo").innerHTML=`
 let message="";
 
 if(player.pendingCounsel){
-
-/*
-
-ここで初めて市民になったことを知らせる
-
-*/
 
 player.roleId="villager";
 
@@ -4118,6 +4190,8 @@ message=`
 
 $("nightAction").innerHTML=`
 
+<div class="private-box">
+
 ${message}
 
 <p class="small">
@@ -4125,6 +4199,8 @@ ${message}
 この画面は本人だけ確認してください。
 
 </p>
+
+</div>
 
 <button onclick="nextBetrayerCheck(${index})">
 
@@ -4135,12 +4211,6 @@ ${message}
 `;
 
 }
-
-/* ==================================================
-
-次の裏切り者
-
-================================================== */
 
 function nextBetrayerCheck(index){
 
@@ -4166,7 +4236,7 @@ remaining
 
 /* ==================================================
 
-夜⑪ 奇術師
+奇術師
 
 ================================================== */
 
@@ -4182,23 +4252,15 @@ p.alive
 
 );
 
-if(!magician){
+if(
 
-nextNight();
+!magician ||
 
-return;
+magician.spyBlockedTonight ||
 
-}
+day<2
 
-if(magician.spyBlockedTonight){
-
-nextNight();
-
-return;
-
-}
-
-if(day<2){
+){
 
 nextNight();
 
@@ -4218,11 +4280,25 @@ $("nightInfo").innerHTML=`
 
 `;
 
+const targets=alivePlayers().filter(
+
+p=>!isWolf(p)
+
+);
+
+if(!targets.length){
+
+nextNight();
+
+return;
+
+}
+
 showTargetButtons(
 
 "🎩 変更後の人狼襲撃先",
 
-alivePlayers(),
+targets,
 
 "useMagician"
 
@@ -4276,7 +4352,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-夜⑫ 預言者
+預言者
 
 ================================================== */
 
@@ -4330,12 +4406,6 @@ speak(
 
 }
 
-/* ==================================================
-
-預言結果
-
-================================================== */
-
 function seerResult(id){
 
 const target=players.find(
@@ -4344,11 +4414,7 @@ p=>p.id===Number(id)
 
 );
 
-if(!target){
-
-return;
-
-}
+if(!target)return;
 
 const result=
 
@@ -4363,12 +4429,6 @@ target.roleId==="scarecrow"
 :
 
 "人間";
-
-/*
-
-妖狐は占われると死亡
-
-*/
 
 if(target.roleId==="fox"){
 
@@ -4385,6 +4445,8 @@ target,
 $("nightInfo").innerHTML="";
 
 $("nightAction").innerHTML=`
+
+<div class="private-box">
 
 <div class="result">
 
@@ -4404,6 +4466,14 @@ ${escapeHtml(target.name)}さんは
 
 </div>
 
+<p class="small">
+
+※この結果は預言者本人だけ確認してください。
+
+</p>
+
+</div>
+
 <button onclick="closeSeerResult()">
 
 確認して目を閉じる
@@ -4411,12 +4481,6 @@ ${escapeHtml(target.name)}さんは
 </button>
 
 `;
-
-/*
-
-音声は絶対に出さない
-
-*/
 
 }
 
@@ -4446,7 +4510,7 @@ $("nightAction").innerHTML=`
 
 /* ==================================================
 
-夜⑬ 霊媒師
+霊媒師
 
 ================================================== */
 
@@ -4470,6 +4534,16 @@ return;
 
 }
 
+/*
+
+現在の昼に入る前の投票、
+
+つまり前日に追放された人を探す
+
+*/
+
+const previousDay=day-1;
+
 const deadByVote=players.find(
 
 p=>
@@ -4478,7 +4552,7 @@ p=>
 
 p.lastDeathReason==="vote" &&
 
-p.deathDay===day
+p.deathDay===previousDay
 
 );
 
@@ -4492,11 +4566,9 @@ $("nightInfo").innerHTML=`
 
 `;
 
-let result="";
-
 if(deadByVote){
 
-result=
+const result=
 
 isWolf(deadByVote) ||
 
@@ -4510,11 +4582,9 @@ deadByVote.roleId==="scarecrow"
 
 "人間";
 
-}
-
-if(deadByVote){
-
 $("nightAction").innerHTML=`
+
+<div class="private-box">
 
 <p>
 
@@ -4528,9 +4598,17 @@ ${result}
 
 </div>
 
+<p class="small">
+
+※この結果は霊媒師本人だけ確認してください。
+
+</p>
+
+</div>
+
 <button onclick="nextNight()">
 
-目を閉じて次へ
+確認して目を閉じる
 
 </button>
 
@@ -4540,15 +4618,19 @@ ${result}
 
 $("nightAction").innerHTML=`
 
+<div class="private-box">
+
 <p>
 
-確認できる追放者はいません。
+前日の追放者はいません。
 
 </p>
 
+</div>
+
 <button onclick="nextNight()">
 
-目を閉じて次へ
+確認して目を閉じる
 
 </button>
 
@@ -4616,12 +4698,6 @@ function finishNight(){
 
 let attacks=[...nightData.wolfAttacks];
 
-/*
-
-奇術師による変更
-
-*/
-
 if(
 
 nightData.changedTarget!==null &&
@@ -4637,12 +4713,6 @@ nightData.changedTarget
 ];
 
 }
-
-/*
-
-裏切りの襲撃者
-
-*/
 
 if(
 
@@ -4666,11 +4736,17 @@ attacks=[
 
 ];
 
-/*
+const beforeDead=new Set(
 
-襲撃処理
+players
 
-*/
+.filter(p=>!p.alive)
+
+.map(p=>p.id)
+
+);
+
+/* 襲撃処理 */
 
 attacks.forEach(targetId=>{
 
@@ -4686,11 +4762,15 @@ return;
 
 }
 
-/*
+/* 人狼は人狼を襲撃できない */
 
-妖狐
+if(isWolf(target)){
 
-*/
+return;
+
+}
+
+/* 妖狐 */
 
 if(target.roleId==="fox"){
 
@@ -4698,11 +4778,7 @@ return;
 
 }
 
-/*
-
-ボディーガード
-
-*/
+/* ボディーガード */
 
 if(
 
@@ -4714,11 +4790,7 @@ return;
 
 }
 
-/*
-
-騎士団
-
-*/
+/* 騎士団 */
 
 if(
 
@@ -4730,11 +4802,7 @@ return;
 
 }
 
-/*
-
-罠
-
-*/
+/* 罠 */
 
 if(
 
@@ -4780,11 +4848,7 @@ return;
 
 }
 
-/*
-
-呪われた者
-
-*/
+/* 呪われた者 */
 
 if(target.roleId==="cursed"){
 
@@ -4794,11 +4858,7 @@ return;
 
 }
 
-/*
-
-タフガイ
-
-*/
+/* タフガイ */
 
 if(
 
@@ -4814,12 +4874,6 @@ return;
 
 }
 
-/*
-
-通常死亡
-
-*/
-
 killPlayer(
 
 target,
@@ -4830,21 +4884,35 @@ target,
 
 });
 
-/*
-
-恋人後追い
-
-*/
+/* 恋人 */
 
 resolveLovers();
 
-/*
+/* 新たに死亡したハンター */
 
-翌朝
+hunterQueue=players
 
-*/
+.filter(p=>
 
-$("night").classList.add("hidden");
+!beforeDead.has(p.id) &&
+
+!p.alive &&
+
+p.roleId==="hunter"
+
+)
+
+.map(p=>p.id);
+
+if(hunterQueue.length){
+
+hunterCallback=announceMorning;
+
+showNightHunterAction();
+
+return;
+
+}
 
 announceMorning();
 
@@ -4922,6 +4990,182 @@ changed=true;
 
 /* ==================================================
 
+ハンター アラーム処理
+
+================================================== */
+
+function showNightHunterAction(){
+
+const id=hunterQueue.shift();
+
+const hunter=players.find(
+
+p=>p.id===id
+
+);
+
+if(!hunter){
+
+if(hunterQueue.length){
+
+showNightHunterAction();
+
+}else if(hunterCallback){
+
+const cb=hunterCallback;
+
+hunterCallback=null;
+
+cb();
+
+}
+
+return;
+
+}
+
+playAlarm();
+
+const speech=
+
+`今回死亡した${hunter.name}さんは、ハンターです。道連れにする相手を選んでください。`;
+
+speak(speech);
+
+$("nightInfo").innerHTML=`
+
+<div class="alarm-box">
+
+🚨 ハンター死亡
+
+</div>
+
+<div class="gm-message">
+
+今回死亡した
+
+<strong>${escapeHtml(hunter.name)}さん</strong>
+
+は、ハンターです。<br>
+
+道連れにする相手を選んでください。
+
+</div>
+
+`;
+
+const targets=alivePlayers();
+
+$("nightAction").innerHTML=`
+
+<div class="action-box">
+
+<h3>🔫 ハンター</h3>
+
+<p>
+
+道連れにする相手を選んでください。
+
+</p>
+
+${targets.map(p=>`
+
+<button
+
+class="choice"
+
+onclick="nightHunterShoot(${p.id})"
+
+>
+
+${escapeHtml(p.name)}
+
+</button>
+
+`).join("")}
+
+</div>
+
+`;
+
+}
+
+function nightHunterShoot(id){
+
+const target=players.find(
+
+p=>p.id===Number(id)
+
+);
+
+if(!target || !target.alive){
+
+return;
+
+}
+
+killPlayer(
+
+target,
+
+"hunter"
+
+);
+
+resolveLovers();
+
+$("nightInfo").innerHTML=`
+
+<div class="gm-message">
+
+🔫 道連れが決まりました。
+
+</div>
+
+`;
+
+$("nightAction").innerHTML=`
+
+<p>
+
+${escapeHtml(target.name)}さんが道連れになりました。
+
+</p>
+
+<button onclick="finishNightHunter()">
+
+確認して次へ
+
+</button>
+
+`;
+
+}
+
+function finishNightHunter(){
+
+if(hunterQueue.length){
+
+showNightHunterAction();
+
+return;
+
+}
+
+if(hunterCallback){
+
+const cb=hunterCallback;
+
+hunterCallback=null;
+
+cb();
+
+}
+
+}
+
+/* ==================================================
+
 朝の死亡発表
 
 ================================================== */
@@ -4942,9 +5186,15 @@ p=>
 
 p.deathDay===day &&
 
-p.lastDeathReason!=="vote"
+p.lastDeathReason!=="vote" &&
+
+p.lastDeathReason!=="hunter" &&
+
+p.lastDeathReason!=="lover"
 
 );
+
+$("night").classList.add("hidden");
 
 $("day").classList.remove("hidden");
 
@@ -5032,6 +5282,16 @@ Number($("discussionTime").value);
 
 discussionSeconds=seconds;
 
+timerCalls={
+
+60:false,
+
+30:false,
+
+10:false
+
+};
+
 if(seconds===0){
 
 $("timerArea").classList.add("hidden");
@@ -5082,11 +5342,77 @@ discussionSeconds--;
 
 updateTimerDisplay();
 
+/* 残り1分 */
+
+if(
+
+discussionSeconds===60 &&
+
+!timerCalls[60]
+
+){
+
+timerCalls[60]=true;
+
+speak(
+
+"議論終了まで残り1分です。"
+
+);
+
+}
+
+/* 残り30秒 */
+
+if(
+
+discussionSeconds===30 &&
+
+!timerCalls[30]
+
+){
+
+timerCalls[30]=true;
+
+speak(
+
+"議論終了まで残り30秒です。"
+
+);
+
+}
+
+/* 残り10秒 */
+
+if(
+
+discussionSeconds===10 &&
+
+!timerCalls[10]
+
+){
+
+timerCalls[10]=true;
+
+speak(
+
+"議論終了まで残り10秒です。"
+
+);
+
+}
+
+/* 終了 */
+
 if(discussionSeconds<=0){
 
 stopTimer();
 
-speak("議論時間が終了しました。");
+speak(
+
+"議論時間が終了しました。投票へ進んでください。"
+
+);
 
 alert(
 
@@ -5161,12 +5487,6 @@ $("voteInstruction").innerHTML=
 他の人には投票先を見せないでください。`;
 
 $("specialVoteArea").innerHTML="";
-
-/*
-
-特殊能力は投票入力画面に
-
-*/
 
 if(currentVoteIndex===0){
 
@@ -5326,11 +5646,7 @@ const alive=alivePlayers();
 
 const voter=alive[currentVoteIndex];
 
-if(!voter){
-
-return;
-
-}
+if(!voter)return;
 
 voteChoices[voter.id]=Number(targetId);
 
@@ -5480,7 +5796,7 @@ resolveLovers();
 
 /* ==================================================
 
-通常投票集計
+通常投票
 
 ================================================== */
 
@@ -5538,11 +5854,7 @@ let max=0;
 
 Object.values(counts).forEach(c=>{
 
-if(c>max){
-
-max=c;
-
-}
+if(c>max)max=c;
 
 });
 
@@ -5553,18 +5865,6 @@ Object.entries(counts)
 .filter(([id,count])=>count===max)
 
 .map(([id])=>Number(id));
-
-let result="";
-
-result+=`
-
-<p>
-
-投票が終了しました。
-
-</p>
-
-`;
 
 if(top.length===1){
 
@@ -5584,7 +5884,17 @@ target,
 
 target.deathDay=day;
 
-result+=`
+$("vote").classList.add("hidden");
+
+$("voteResult").classList.remove("hidden");
+
+$("voteResultText").innerHTML=`
+
+<p>
+
+投票が終了しました。
+
+</p>
 
 <hr>
 
@@ -5600,21 +5910,11 @@ checkHunter(target);
 
 resolveLovers();
 
-$("vote").classList.add("hidden");
-
-$("voteResult").classList.remove("hidden");
-
-$("voteResultText").innerHTML=result;
-
 return;
 
 }
 
-/*
-
-同票 → 決戦投票
-
-*/
+/* 同票 */
 
 runoffCandidates=top;
 
@@ -5709,12 +6009,6 @@ ${escapeHtml(target.name)}
 `;
 
 }
-
-/* ==================================================
-
-決戦投票入力
-
-================================================== */
 
 function castRunoff(targetId){
 
@@ -5868,7 +6162,7 @@ $("voteResultText").innerHTML=result;
 
 /* ==================================================
 
-ハンター
+昼のハンター
 
 ================================================== */
 
@@ -5916,9 +6210,21 @@ return;
 
 }
 
-const targets=alivePlayers();
+playAlarm();
+
+const speech=
+
+`今回死亡した${hunter.name}さんは、ハンターです。道連れにする相手を選んでください。`;
+
+speak(speech);
 
 $("voteResultText").innerHTML+=`
+
+<div class="alarm-box">
+
+🚨 ハンター死亡
+
+</div>
 
 <div class="action-box">
 
@@ -5926,13 +6232,21 @@ $("voteResultText").innerHTML+=`
 
 <p>
 
-ハンターが死亡しました。
+今回死亡した
 
-道連れにする人を選んでください。
+<strong>${escapeHtml(hunter.name)}さん</strong>
+
+は、ハンターです。
 
 </p>
 
-${targets.map(p=>`
+<p>
+
+道連れにする相手を選んでください。
+
+</p>
+
+${alivePlayers().map(p=>`
 
 <button
 
@@ -6036,11 +6350,7 @@ p=>isWolf(p)
 
 );
 
-/*
-
-神様
-
-*/
+/* 神様 */
 
 const gods=players.filter(
 
@@ -6066,11 +6376,7 @@ return true;
 
 }
 
-/*
-
-恋人
-
-*/
+/* 恋人 */
 
 const lovers=players.filter(
 
@@ -6106,11 +6412,7 @@ return true;
 
 }
 
-/*
-
-案山子
-
-*/
+/* 案山子 */
 
 const scarecrows=players.filter(
 
@@ -6136,11 +6438,7 @@ return true;
 
 }
 
-/*
-
-一匹狼
-
-*/
+/* 一匹狼 */
 
 const loneWolf=alive.find(
 
@@ -6180,11 +6478,7 @@ return true;
 
 }
 
-/*
-
-妖狐
-
-*/
+/* 妖狐 */
 
 const fox=alive.find(
 
@@ -6210,11 +6504,7 @@ return true;
 
 }
 
-/*
-
-人狼全滅
-
-*/
+/* 人狼全滅 */
 
 if(wolves.length===0){
 
@@ -6228,11 +6518,7 @@ return true;
 
 }
 
-/*
-
-人狼優勢
-
-*/
+/* 人狼優勢 */
 
 const nonWolf=alive.filter(
 
