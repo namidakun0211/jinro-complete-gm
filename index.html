@@ -42,11 +42,7 @@ body{
 
 }
 
-h1{
-
-  margin-top:0;
-
-}
+h1{margin-top:0;}
 
 input,button,select{
 
@@ -82,11 +78,7 @@ button:disabled{
 
 }
 
-.hidden{
-
-  display:none;
-
-}
+.hidden{display:none;}
 
 .info{
 
@@ -224,23 +216,11 @@ button:disabled{
 
 }
 
-.ok{
+.ok{color:green;}
 
-  color:green;
+.ng{color:red;}
 
-}
-
-.ng{
-
-  color:red;
-
-}
-
-.player-box{
-
-  margin:15px 0;
-
-}
+.player-box{margin:15px 0;}
 
 .role{
 
@@ -318,6 +298,20 @@ button:disabled{
 
 }
 
+.error-box{
+
+  background:#fff0f0;
+
+  border:2px solid #d33;
+
+  border-radius:15px;
+
+  padding:15px;
+
+  margin:20px 0;
+
+}
+
 hr{
 
   border:none;
@@ -366,7 +360,7 @@ hr{
 
 >
 
-<h3>🃏 ゲームモード</h3>
+<h3>🎮 ゲームモード</h3>
 
 <div class="mode-box">
 
@@ -450,7 +444,7 @@ hr{
 
 </label>
 
-<h3>🎭 役職と人数</h3>
+<h3>🎭 今回使う役職</h3>
 
 <div id="totalDisplay" class="total ng">
 
@@ -488,11 +482,7 @@ hr{
 
 <h2>👥 プレイヤー名</h2>
 
-<p>
-
-プレイヤーの名前を入力してください。
-
-</p>
+<p>プレイヤーの名前を入力してください。</p>
 
 <div id="playerInputs"></div>
 
@@ -536,19 +526,13 @@ hr{
 
 <option value="">
 
-役職を選択してください
+配られたカードを選択してください
 
 </option>
 
 </select>
 
-<div
-
- id="cardStatus"
-
- class="status"
-
-></div>
+<div id="cardStatus" class="status"></div>
 
 </div>
 
@@ -563,6 +547,54 @@ hr{
 >
 
 このカードで登録
+
+</button>
+
+</div>
+
+<!-- =========================
+
+     カード再確認
+
+========================= -->
+
+<div id="cardCheck" class="hidden">
+
+<h2>🔍 カードを確認しています</h2>
+
+<p class="info">
+
+全員が入力したカードと、最初に設定した役職枚数を確認しています。
+
+</p>
+
+<div id="cardCheckResult"></div>
+
+<button
+
+ id="retryCardButton"
+
+ onclick="retryCardInput()"
+
+ class="hidden"
+
+>
+
+最初の人からもう一度入力
+
+</button>
+
+<button
+
+ id="cardCheckNextButton"
+
+ onclick="finishCardCheck()"
+
+ class="hidden"
+
+>
+
+役職確認へ
 
 </button>
 
@@ -720,7 +752,7 @@ let gameMode = "noCard";
 
 /* ==================================================
 
-   ゲームモード変更
+   ゲームモード
 
 ================================================== */
 
@@ -762,7 +794,7 @@ function changeGameMode(){
 
 /* ==================================================
 
-   恋人モード変更
+   恋人モード
 
 ================================================== */
 
@@ -802,7 +834,7 @@ function resetRoleCounts(){
 
 /* ==================================================
 
-   役職一覧表示
+   役職一覧
 
 ================================================== */
 
@@ -819,14 +851,6 @@ function renderRoleList(){
    const id = role[0];
 
    const name = role[1];
-
-   /*
-
-      恋人兼用ありなら
-
-      恋人は人数枠に入れない
-
-   */
 
    if(id === "lover" && loverMode){
 
@@ -980,13 +1004,7 @@ function updateTotal(){
 
    .forEach(([id,count])=>{
 
-     if(
-
-       id === "lover" &&
-
-       loverMode
-
-     ){
+     if(id === "lover" && loverMode){
 
        return;
 
@@ -1038,7 +1056,7 @@ function updateTotal(){
 
 /* ==================================================
 
-   名前入力準備
+   名前入力
 
 ================================================== */
 
@@ -1074,13 +1092,7 @@ function preparePlayers(){
 
    .forEach(([id,c])=>{
 
-     if(
-
-       id === "lover" &&
-
-       loverMode
-
-     ){
+     if(id === "lover" && loverMode){
 
        return;
 
@@ -1108,13 +1120,7 @@ function preparePlayers(){
 
    const id = role[0];
 
-   if(
-
-     id === "lover" &&
-
-     loverMode
-
-   ){
+   if(id === "lover" && loverMode){
 
      return;
 
@@ -1222,7 +1228,7 @@ function preparePlayers(){
 
 function escapeHtml(text){
 
- return text
+ return String(text)
 
   .replace(/&/g,"&amp;")
 
@@ -1294,12 +1300,6 @@ function startGame(){
 
  }
 
- /*
-
-    プレイヤーデータ作成
-
- */
-
  players =
 
    names.map((name,index)=>{
@@ -1330,13 +1330,7 @@ function startGame(){
 
    });
 
- /*
-
-    カードなしなら
-
-    ここでランダム配役
-
- */
+ /* カードなし */
 
  if(gameMode === "noCard"){
 
@@ -1348,13 +1342,7 @@ function startGame(){
 
  }
 
- /*
-
-    カードありなら
-
-    カード登録画面へ
-
- */
+ /* カードあり */
 
  currentCardPlayer = 0;
 
@@ -1438,6 +1426,16 @@ function showCardPlayer(){
 
    );
 
+ /*
+
+    ★重要
+
+    毎回、全役職を表示する。
+
+    残り枚数は絶対に表示しない。
+
+ */
+
  select.innerHTML =
 
    `<option value="">
@@ -1452,29 +1450,13 @@ function showCardPlayer(){
 
    /*
 
-      恋人兼用ありの場合、
+      恋人兼用ありなら
 
-      恋人カードは通常配役に含まれない
+      恋人カードは使わない
 
    */
 
-   if(
-
-     id === "lover" &&
-
-     loverMode
-
-   ){
-
-     return;
-
-   }
-
-   const remaining =
-
-     getRemainingRoleCount(id);
-
-   if(remaining <= 0){
+   if(id === "lover" && loverMode){
 
      return;
 
@@ -1486,9 +1468,7 @@ function showCardPlayer(){
 
    option.value = id;
 
-   option.textContent =
-
-     `${role[1]}（残り${remaining}枚）`;
+   option.textContent = role[1];
 
    select.appendChild(option);
 
@@ -1496,7 +1476,11 @@ function showCardPlayer(){
 
  document
 
-   .getElementById("cardStatus")
+   .getElementById(
+
+     "cardStatus"
+
+   )
 
    .textContent =
 
@@ -1504,37 +1488,13 @@ function showCardPlayer(){
 
  document
 
-   .getElementById("cardNextButton")
+   .getElementById(
+
+     "cardNextButton"
+
+   )
 
    .disabled = true;
-
-}
-
-/* ==================================================
-
-   残りカード枚数
-
-================================================== */
-
-function getRemainingRoleCount(id){
-
- const total =
-
-   roleCounts[id] || 0;
-
- let used = 0;
-
- players.forEach(player=>{
-
-   if(player.roleId === id){
-
-     used++;
-
-   }
-
- });
-
- return total - used;
 
 }
 
@@ -1554,15 +1514,15 @@ function cardSelectionChanged(){
 
    ).value;
 
- const button =
+ document
 
-   document.getElementById(
+   .getElementById(
 
      "cardNextButton"
 
-   );
+   )
 
- button.disabled =
+   .disabled =
 
    !value;
 
@@ -1578,7 +1538,7 @@ function cardSelectionChanged(){
 
      .textContent =
 
-       `選択：${getRoleName(value)}`;
+     "カードを登録できます。";
 
  }
 
@@ -1608,29 +1568,11 @@ function confirmCard(){
 
  /*
 
-    本当に残りがあるか再確認
+    ★ここでは枚数チェックをしない！
+
+    これが今回の重要ポイント。
 
  */
-
- if(
-
-   getRemainingRoleCount(roleId)
-
-   <= 0
-
- ){
-
-   alert(
-
-     "その役職のカードは設定枚数分すべて登録されています。"
-
-   );
-
-   showCardPlayer();
-
-   return;
-
- }
 
  players[currentCardPlayer].roleId =
 
@@ -1640,29 +1582,257 @@ function confirmCard(){
 
  /*
 
-    全員登録完了
+    まだ全員終わっていない
 
  */
 
- if(
+ if(currentCardPlayer < players.length){
 
-   currentCardPlayer >=
-
-   players.length
-
- ){
-
-   document
-
-     .getElementById("cardSetup")
-
-     .classList.add("hidden");
-
-   finishRoleAssignment();
+   showCardPlayer();
 
    return;
 
  }
+
+ /*
+
+    全員終わったら初めてチェック
+
+ */
+
+ document
+
+   .getElementById("cardSetup")
+
+   .classList.add("hidden");
+
+ document
+
+   .getElementById("cardCheck")
+
+   .classList.remove("hidden");
+
+ checkCards();
+
+}
+
+/* ==================================================
+
+   全員のカードをチェック
+
+================================================== */
+
+function checkCards(){
+
+ const enteredCounts = {};
+
+ ROLES.forEach(role=>{
+
+   enteredCounts[role[0]] = 0;
+
+ });
+
+ players.forEach(player=>{
+
+   if(player.roleId){
+
+     enteredCounts[player.roleId]++;
+
+   }
+
+ });
+
+ let correct = true;
+
+ let errorMessages = [];
+
+ ROLES.forEach(role=>{
+
+   const id = role[0];
+
+   /*
+
+      恋人兼用ありなら
+
+      恋人カードは使わない
+
+   */
+
+   if(id === "lover" && loverMode){
+
+     return;
+
+   }
+
+   const expected =
+
+     roleCounts[id] || 0;
+
+   const entered =
+
+     enteredCounts[id] || 0;
+
+   if(expected !== entered){
+
+     correct = false;
+
+     errorMessages.push(
+
+       `${role[1]}：設定 ${expected}枚 / 入力 ${entered}枚`
+
+     );
+
+   }
+
+ });
+
+ const result =
+
+   document.getElementById(
+
+     "cardCheckResult"
+
+   );
+
+ if(correct){
+
+   result.innerHTML = `
+
+    <div class="success">
+
+      🎉 カード登録完了！
+
+    </div>
+
+    <p>
+
+      設定した役職と、入力したカードが一致しました。
+
+    </p>
+
+   `;
+
+   document
+
+     .getElementById(
+
+       "cardCheckNextButton"
+
+     )
+
+     .classList.remove("hidden");
+
+   document
+
+     .getElementById(
+
+       "retryCardButton"
+
+     )
+
+     .classList.add("hidden");
+
+   return;
+
+ }
+
+ /*
+
+    間違っていた場合
+
+ */
+
+ result.innerHTML = `
+
+   <div class="error-box">
+
+    <div class="warning">
+
+      ❌ カードの枚数が一致しません。
+
+    </div>
+
+    <p>
+
+      最初に設定した役職の枚数と、
+
+      実際に入力されたカードの枚数が違います。
+
+    </p>
+
+    <p>
+
+      ${errorMessages.join("<br>")}
+
+    </p>
+
+    <p>
+
+      最初のプレイヤーから、
+
+      もう一度カードを入力してください。
+
+    </p>
+
+   </div>
+
+ `;
+
+ document
+
+   .getElementById(
+
+     "retryCardButton"
+
+   )
+
+   .classList.remove("hidden");
+
+ document
+
+   .getElementById(
+
+     "cardCheckNextButton"
+
+   )
+
+   .classList.add("hidden");
+
+}
+
+/* ==================================================
+
+   カード入力やり直し
+
+================================================== */
+
+function retryCardInput(){
+
+ /*
+
+    全員のカードをリセット
+
+ */
+
+ players.forEach(player=>{
+
+   player.roleId = null;
+
+ });
+
+ currentCardPlayer = 0;
+
+ document
+
+   .getElementById("cardCheck")
+
+   .classList.add("hidden");
+
+ document
+
+   .getElementById("cardSetup")
+
+   .classList.remove("hidden");
 
  showCardPlayer();
 
@@ -1670,7 +1840,25 @@ function confirmCard(){
 
 /* ==================================================
 
-   恋人決定＋役職確認へ
+   カード確認完了
+
+================================================== */
+
+function finishCardCheck(){
+
+ document
+
+   .getElementById("cardCheck")
+
+   .classList.add("hidden");
+
+ finishRoleAssignment();
+
+}
+
+/* ==================================================
+
+   恋人決定
 
 ================================================== */
 
@@ -1678,9 +1866,9 @@ function finishRoleAssignment(){
 
  /*
 
-    ❤️ 兼用ありなら
+    恋人兼用ありの場合、
 
-    配役決定後にランダムで2人
+    配役決定後にランダムで2人を恋人にする
 
  */
 
@@ -1836,12 +2024,6 @@ function showRole(){
 
    players[currentPlayer];
 
- /*
-
-    本来の役職
-
- */
-
  document
 
    .getElementById(
@@ -1857,12 +2039,6 @@ function showRole(){
      player.roleId
 
    );
-
- /*
-
-    ❤️ 恋人なら追加表示
-
- */
 
  if(player.lover){
 
@@ -1952,13 +2128,7 @@ function nextPlayer(){
 
  currentPlayer++;
 
- if(
-
-   currentPlayer >=
-
-   players.length
-
- ){
+ if(currentPlayer >= players.length){
 
    document
 
@@ -2144,7 +2314,7 @@ function getRoleDescription(id){
 
 /* ==================================================
 
-   夜開始
+   夜
 
 ================================================== */
 
