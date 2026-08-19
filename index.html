@@ -42,7 +42,11 @@ body{
 
 }
 
-h1{margin-top:0;}
+h1{
+
+  margin-top:0;
+
+}
 
 input,button,select{
 
@@ -78,7 +82,11 @@ button:disabled{
 
 }
 
-.hidden{display:none;}
+.hidden{
+
+  display:none;
+
+}
 
 .info{
 
@@ -216,11 +224,23 @@ button:disabled{
 
 }
 
-.ok{color:green;}
+.ok{
 
-.ng{color:red;}
+  color:green;
 
-.player-box{margin:15px 0;}
+}
+
+.ng{
+
+  color:red;
+
+}
+
+.player-box{
+
+  margin:15px 0;
+
+}
 
 .role{
 
@@ -319,6 +339,96 @@ hr{
   border-top:1px solid #ddd;
 
   margin:25px 0;
+
+}
+
+/* =========================
+
+   預言者
+
+========================= */
+
+.prophet-box{
+
+  margin:20px 0;
+
+  padding:20px;
+
+  border:2px solid #777;
+
+  border-radius:15px;
+
+  background:#fafafa;
+
+}
+
+.prophet-result{
+
+  margin:20px 0;
+
+  padding:20px;
+
+  border:2px solid #ddd;
+
+  border-radius:15px;
+
+  font-size:20px;
+
+}
+
+/* =========================
+
+   昼の議論
+
+========================= */
+
+.day-box{
+
+  margin:20px 0;
+
+  padding:25px;
+
+  border:2px solid #ddd;
+
+  border-radius:15px;
+
+}
+
+.day-number{
+
+  font-size:24px;
+
+  font-weight:bold;
+
+  margin:15px;
+
+}
+
+.timer{
+
+  font-size:56px;
+
+  font-weight:bold;
+
+  margin:25px 0;
+
+}
+
+.discussion-status{
+
+  font-size:20px;
+
+  font-weight:bold;
+
+  margin:20px;
+
+}
+
+.day-button{
+
+  font-size:20px;
+
+  padding:14px 25px;
 
 }
 
@@ -624,6 +734,10 @@ hr{
 
 </p>
 
+<!-- 預言者専用 -->
+
+<div id="prophetArea" class="hidden"></div>
+
 <button
 
  id="mainButton"
@@ -640,23 +754,97 @@ hr{
 
 <!-- =========================
 
-     ゲーム開始
+     昼の議論
 
 ========================= -->
 
-<div id="gameReady" class="hidden">
+<div id="dayDiscussion" class="hidden">
 
-<h2>🎮 ゲームスタート！</h2>
+<h2>☀️ 昼の議論</h2>
+
+<div class="day-box">
+
+<div id="dayNumber" class="day-number">
+
+☀️ 1日目
+
+</div>
 
 <p class="info">
 
-全員の役職確認が完了しました。
+全員で議論をしてください。
 
 </p>
 
-<button onclick="startNight()">
+<div id="discussionTimer" class="timer">
 
-🌙 夜を開始
+05:00
+
+</div>
+
+<div id="discussionStatus" class="discussion-status">
+
+議論開始ボタンを押してください。
+
+</div>
+
+<button
+
+ id="discussionStartButton"
+
+ class="day-button"
+
+ onclick="startDiscussion()"
+
+>
+
+▶️ 議論開始
+
+</button>
+
+<button
+
+ id="discussionEndButton"
+
+ class="day-button hidden"
+
+ onclick="endDiscussion()"
+
+>
+
+⏹️ 議論を終了
+
+</button>
+
+</div>
+
+</div>
+
+<!-- =========================
+
+     投票予告
+
+========================= -->
+
+<div id="voteReady" class="hidden">
+
+<h2>🗳️ 投票</h2>
+
+<p class="info">
+
+昼の議論が終了しました。
+
+</p>
+
+<p class="info">
+
+次は投票システムです。
+
+</p>
+
+<button onclick="startVote()">
+
+🗳️ 投票へ
 
 </button>
 
@@ -749,6 +937,12 @@ let currentCardPlayer = 0;
 let loverMode = false;
 
 let gameMode = "noCard";
+
+let dayNumber = 1;
+
+let discussionSeconds = 300;
+
+let discussionTimer = null;
 
 /* ==================================================
 
@@ -1324,7 +1518,13 @@ function startGame(){
 
        copiedRole:null,
 
-       cursedAwakened:false
+       cursedAwakened:false,
+
+       prophetFirstChoice:null,
+
+       prophetFirstTarget:null,
+
+       prophetFirstResult:null
 
      };
 
@@ -1426,16 +1626,6 @@ function showCardPlayer(){
 
    );
 
- /*
-
-    ★重要
-
-    毎回、全役職を表示する。
-
-    残り枚数は絶対に表示しない。
-
- */
-
  select.innerHTML =
 
    `<option value="">
@@ -1447,14 +1637,6 @@ function showCardPlayer(){
  ROLES.forEach(role=>{
 
    const id = role[0];
-
-   /*
-
-      恋人兼用ありなら
-
-      恋人カードは使わない
-
-   */
 
    if(id === "lover" && loverMode){
 
@@ -1566,25 +1748,11 @@ function confirmCard(){
 
  }
 
- /*
-
-    ★ここでは枚数チェックをしない！
-
-    これが今回の重要ポイント。
-
- */
-
  players[currentCardPlayer].roleId =
 
    roleId;
 
  currentCardPlayer++;
-
- /*
-
-    まだ全員終わっていない
-
- */
 
  if(currentCardPlayer < players.length){
 
@@ -1593,12 +1761,6 @@ function confirmCard(){
    return;
 
  }
-
- /*
-
-    全員終わったら初めてチェック
-
- */
 
  document
 
@@ -1649,14 +1811,6 @@ function checkCards(){
  ROLES.forEach(role=>{
 
    const id = role[0];
-
-   /*
-
-      恋人兼用ありなら
-
-      恋人カードは使わない
-
-   */
 
    if(id === "lover" && loverMode){
 
@@ -1736,12 +1890,6 @@ function checkCards(){
 
  }
 
- /*
-
-    間違っていた場合
-
- */
-
  result.innerHTML = `
 
    <div class="error-box">
@@ -1808,12 +1956,6 @@ function checkCards(){
 
 function retryCardInput(){
 
- /*
-
-    全員のカードをリセット
-
- */
-
  players.forEach(player=>{
 
    player.roleId = null;
@@ -1863,14 +2005,6 @@ function finishCardCheck(){
 ================================================== */
 
 function finishRoleAssignment(){
-
- /*
-
-    恋人兼用ありの場合、
-
-    配役決定後にランダムで2人を恋人にする
-
- */
 
  if(loverMode){
 
@@ -1994,6 +2128,26 @@ function showPlayer(){
 
    "役職を見るボタンを押してください。";
 
+ document
+
+   .getElementById(
+
+     "prophetArea"
+
+   )
+
+   .classList.add("hidden");
+
+ document
+
+   .getElementById(
+
+     "prophetArea"
+
+   )
+
+   .innerHTML = "";
+
  const button =
 
    document.getElementById(
@@ -2060,11 +2214,9 @@ function showRole(){
 
       <div class="lover-partner">
 
-       恋人：${escapeHtml(
+       恋人：
 
-         player.loverPartner
-
-       )}
+       ${escapeHtml(player.loverPartner)}
 
       </div>
 
@@ -2100,6 +2252,22 @@ function showRole(){
 
    );
 
+ /*
+
+   預言者の場合
+
+   役職確認時の初回占い
+
+ */
+
+ if(player.roleId === "seer"){
+
+   showProphetFirstChoice();
+
+   return;
+
+ }
+
  const button =
 
    document.getElementById(
@@ -2107,6 +2275,370 @@ function showRole(){
      "mainButton"
 
    );
+
+ button.textContent =
+
+   "次の人";
+
+ button.onclick =
+
+   nextPlayer;
+
+}
+
+/* ==================================================
+
+   預言者・役職確認時の占い選択
+
+================================================== */
+
+function showProphetFirstChoice(){
+
+ const area =
+
+   document.getElementById(
+
+     "prophetArea"
+
+   );
+
+ area.classList.remove("hidden");
+
+ area.innerHTML = `
+
+   <div class="prophet-box">
+
+    <h3>🔮 初日の占い</h3>
+
+    <p>
+
+      初日の昼を迎える前に、
+
+      占いをすることができます。
+
+    </p>
+
+    <p>
+
+      占いますか？
+
+    </p>
+
+    <button
+
+      onclick="prophetFirstChoose(true)"
+
+    >
+
+      🔮 占う
+
+    </button>
+
+    <button
+
+      onclick="prophetFirstChoose(false)"
+
+    >
+
+      占わない
+
+    </button>
+
+   </div>
+
+ `;
+
+ document
+
+   .getElementById(
+
+     "mainButton"
+
+   )
+
+   .classList.add("hidden");
+
+}
+
+/* ==================================================
+
+   預言者・占う／占わない
+
+================================================== */
+
+function prophetFirstChoose(shouldDivine){
+
+ const player =
+
+   players[currentPlayer];
+
+ player.prophetFirstChoice =
+
+   shouldDivine;
+
+ const area =
+
+   document.getElementById(
+
+     "prophetArea"
+
+   );
+
+ if(!shouldDivine){
+
+   area.innerHTML = `
+
+    <div class="prophet-box">
+
+      <h3>🔮 初日の占い</h3>
+
+      <p>
+
+        今回は初日の役職確認時の占いを行いません。
+
+      </p>
+
+      <button
+
+        onclick="finishProphetFirstAction()"
+
+      >
+
+        次の人
+
+      </button>
+
+    </div>
+
+   `;
+
+   return;
+
+ }
+
+ showProphetFirstTarget();
+
+}
+
+/* ==================================================
+
+   預言者・対象選択
+
+================================================== */
+
+function showProphetFirstTarget(){
+
+ const area =
+
+   document.getElementById(
+
+     "prophetArea"
+
+   );
+
+ let options = "";
+
+ players.forEach(target=>{
+
+   if(!target.alive){
+
+     return;
+
+   }
+
+   if(target.id === currentPlayer){
+
+     return;
+
+   }
+
+   options += `
+
+     <option value="${target.id}">
+
+       ${escapeHtml(target.name)}
+
+     </option>
+
+   `;
+
+ });
+
+ area.innerHTML = `
+
+   <div class="prophet-box">
+
+    <h3>🔮 誰を占いますか？</h3>
+
+    <select
+
+      id="prophetFirstTarget"
+
+      class="card-select"
+
+    >
+
+      <option value="">
+
+        占う相手を選択してください
+
+      </option>
+
+      ${options}
+
+    </select>
+
+    <br>
+
+    <button
+
+      onclick="confirmProphetFirstTarget()"
+
+    >
+
+      この人を占う
+
+    </button>
+
+   </div>
+
+ `;
+
+}
+
+/* ==================================================
+
+   預言者・対象決定
+
+================================================== */
+
+function confirmProphetFirstTarget(){
+
+ const select =
+
+   document.getElementById(
+
+     "prophetFirstTarget"
+
+   );
+
+ const targetId =
+
+   Number(select.value);
+
+ if(select.value === ""){
+
+   alert("占う相手を選択してください。");
+
+   return;
+
+ }
+
+ const player =
+
+   players[currentPlayer];
+
+ const target =
+
+   players[targetId];
+
+ player.prophetFirstTarget =
+
+   targetId;
+
+ const result =
+
+   getSeerResult(target);
+
+ player.prophetFirstResult =
+
+   result;
+
+ const area =
+
+   document.getElementById(
+
+     "prophetArea"
+
+   );
+
+ area.innerHTML = `
+
+   <div class="prophet-result">
+
+    <h3>🔮 占い結果</h3>
+
+    <p>
+
+      ${escapeHtml(target.name)} さん
+
+    </p>
+
+    <hr>
+
+    <p>
+
+      <strong>
+
+        ${escapeHtml(result)}
+
+      </strong>
+
+    </p>
+
+    <button
+
+      onclick="finishProphetFirstAction()"
+
+    >
+
+      結果を確認して次へ
+
+    </button>
+
+   </div>
+
+ `;
+
+}
+
+/* ==================================================
+
+   預言者・初回行動終了
+
+================================================== */
+
+function finishProphetFirstAction(){
+
+ document
+
+   .getElementById(
+
+     "prophetArea"
+
+   )
+
+   .classList.add("hidden");
+
+ document
+
+   .getElementById(
+
+     "prophetArea"
+
+   )
+
+   .innerHTML = "";
+
+ const button =
+
+   document.getElementById(
+
+     "mainButton"
+
+   );
+
+ button.classList.remove("hidden");
 
  button.textContent =
 
@@ -2140,15 +2672,7 @@ function nextPlayer(){
 
      .classList.add("hidden");
 
-   document
-
-     .getElementById(
-
-       "gameReady"
-
-     )
-
-     .classList.remove("hidden");
+   startDay();
 
    return;
 
@@ -2314,15 +2838,287 @@ function getRoleDescription(id){
 
 /* ==================================================
 
-   夜
+   予言者の占い結果
 
 ================================================== */
 
-function startNight(){
+function getSeerResult(target){
+
+ /*
+
+   現段階では基本的な陣営判定。
+
+   妖狐などの細かい判定は
+
+   今後ルール確定後に調整する。
+
+ */
+
+ if(target.roleId === "werewolf" ||
+
+    target.roleId === "wolfChild" ||
+
+    target.roleId === "loneWolf"){
+
+   return "🐺 人狼陣営";
+
+ }
+
+ if(target.roleId === "fox"){
+
+   return "🦊 妖狐";
+
+ }
+
+ return "👤 市民陣営";
+
+}
+
+/* ==================================================
+
+   ☀️ 昼開始
+
+================================================== */
+
+function startDay(){
+
+ clearInterval(discussionTimer);
+
+ document
+
+   .getElementById(
+
+     "dayDiscussion"
+
+   )
+
+   .classList.remove("hidden");
+
+ document
+
+   .getElementById(
+
+     "dayNumber"
+
+   )
+
+   .textContent =
+
+   `☀️ ${dayNumber}日目`;
+
+ discussionSeconds = 300;
+
+ updateDiscussionTimer();
+
+ document
+
+   .getElementById(
+
+     "discussionStatus"
+
+   )
+
+   .textContent =
+
+   "議論開始ボタンを押してください。";
+
+ document
+
+   .getElementById(
+
+     "discussionStartButton"
+
+   )
+
+   .classList.remove("hidden");
+
+ document
+
+   .getElementById(
+
+     "discussionEndButton"
+
+   )
+
+   .classList.add("hidden");
+
+}
+
+/* ==================================================
+
+   🗣️ 議論開始
+
+================================================== */
+
+function startDiscussion(){
+
+ document
+
+   .getElementById(
+
+     "discussionStartButton"
+
+   )
+
+   .classList.add("hidden");
+
+ document
+
+   .getElementById(
+
+     "discussionEndButton"
+
+   )
+
+   .classList.remove("hidden");
+
+ document
+
+   .getElementById(
+
+     "discussionStatus"
+
+   )
+
+   .textContent =
+
+   "🗣️ 議論中です。";
+
+ clearInterval(discussionTimer);
+
+ discussionTimer =
+
+   setInterval(()=>{
+
+     discussionSeconds--;
+
+     updateDiscussionTimer();
+
+     if(discussionSeconds <= 0){
+
+       discussionSeconds = 0;
+
+       updateDiscussionTimer();
+
+       clearInterval(discussionTimer);
+
+       endDiscussion(true);
+
+     }
+
+   },1000);
+
+}
+
+/* ==================================================
+
+   タイマー表示
+
+================================================== */
+
+function updateDiscussionTimer(){
+
+ const minutes =
+
+   Math.floor(
+
+     discussionSeconds / 60
+
+   );
+
+ const seconds =
+
+   discussionSeconds % 60;
+
+ document
+
+   .getElementById(
+
+     "discussionTimer"
+
+   )
+
+   .textContent =
+
+   `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+
+}
+
+/* ==================================================
+
+   🗣️ 議論終了
+
+================================================== */
+
+function endDiscussion(autoEnd=false){
+
+ clearInterval(discussionTimer);
+
+ document
+
+   .getElementById(
+
+     "discussionStatus"
+
+   )
+
+   .textContent =
+
+   "🗣️ 議論終了！";
+
+ document
+
+   .getElementById(
+
+     "discussionStartButton"
+
+   )
+
+   .classList.add("hidden");
+
+ document
+
+   .getElementById(
+
+     "discussionEndButton"
+
+   )
+
+   .classList.add("hidden");
+
+ document
+
+   .getElementById(
+
+     "dayDiscussion"
+
+   )
+
+   .classList.add("hidden");
+
+ document
+
+   .getElementById(
+
+     "voteReady"
+
+   )
+
+   .classList.remove("hidden");
+
+}
+
+/* ==================================================
+
+   🗳️ 投票開始
+
+================================================== */
+
+function startVote(){
 
  alert(
 
-   "🌙 夜の行動システムは次の段階で追加します。"
+   "🗳️ 次の段階で投票システムを追加します。"
 
  );
 
@@ -2337,6 +3133,8 @@ function startNight(){
 resetRoleCounts();
 
 </script>
+
+</div>
 
 </body>
 
