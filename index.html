@@ -1,257 +1,6070 @@
 <!DOCTYPE html>
+
 <html lang="ja">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>🐺 人狼コンプリートGM</title>
+
 <style>
-body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:20px;text-align:center}
-.container{max-width:680px;margin:auto;background:white;padding:25px;border-radius:20px;box-shadow:0 4px 15px rgba(0,0,0,.15)}
-h1{margin-top:0} input,button,select{font-size:18px;padding:10px;margin:6px;border-radius:10px;border:1px solid #ccc}
-button{cursor:pointer;background:#333;color:white;border:none}button:disabled{background:#aaa;cursor:not-allowed}
-.hidden{display:none}.info{font-size:18px;line-height:1.7}.mode-box{display:flex;justify-content:center;gap:15px;margin:15px 0;flex-wrap:wrap}
-.mode-option{border:2px solid #ddd;border-radius:15px;padding:15px;min-width:130px;cursor:pointer}.mode-option.selected{border-color:#333;background:#f0f0f0}
-.role-list{text-align:left;max-height:500px;overflow-y:auto;border:1px solid #ddd;padding:10px;border-radius:10px}
-.role-item{display:flex;align-items:center;justify-content:space-between;padding:10px 5px;border-bottom:1px solid #eee;gap:5px}.role-name{flex:1;font-size:17px}
-.counter{display:flex;align-items:center;gap:3px}.counter button{width:42px;height:42px;padding:0;margin:0;font-size:24px}.count{width:35px;text-align:center;font-size:20px;font-weight:bold}
-.total{font-size:22px;font-weight:bold;margin:15px 0}.ok{color:green}.ng{color:red}.player-box{margin:15px 0}.role{font-size:30px;font-weight:bold;margin:25px 0}
-.lover{color:#d63384;font-size:23px;font-weight:bold;margin-top:15px}.wolf-info{color:#555;font-size:20px;font-weight:bold;margin-top:15px}.lover-partner{font-size:20px;margin-top:8px}
-.card-box,.action-box{margin:20px 0;padding:20px;border:2px solid #ddd;border-radius:15px}.card-select{width:90%;max-width:450px}
-.status{font-size:18px;font-weight:bold;margin:15px}.warning{color:#c00;font-weight:bold}.success{color:green;font-weight:bold}
-.error-box{background:#fff0f0;border:2px solid #d33;border-radius:15px;padding:15px;margin:20px 0}.choice{display:block;width:90%;max-width:500px;margin:10px auto}
-.result{font-size:24px;font-weight:bold;margin:20px}.vote-player{padding:15px;margin:10px 0;border:2px solid #ddd;border-radius:12px}.vote-player select{width:90%;max-width:400px}
-.small{font-size:14px;color:#666}hr{border:none;border-top:1px solid #ddd;margin:25px 0}
-.voice{background:#f0f0f0;border-radius:15px;padding:10px;margin:15px 0}.voice button{font-size:16px}
+
+*{
+
+  box-sizing:border-box;
+
+}
+
+body{
+
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+
+  background:#f5f5f5;
+
+  margin:0;
+
+  padding:16px;
+
+  text-align:center;
+
+  color:#222;
+
+}
+
+.container{
+
+  max-width:700px;
+
+  margin:auto;
+
+  background:#fff;
+
+  padding:20px;
+
+  border-radius:20px;
+
+  box-shadow:0 4px 15px rgba(0,0,0,.12);
+
+}
+
+h1{
+
+  margin:0 0 20px;
+
+}
+
+h2{
+
+  margin-top:10px;
+
+}
+
+button,
+
+input,
+
+select{
+
+  font-size:17px;
+
+  padding:11px;
+
+  border-radius:10px;
+
+}
+
+button{
+
+  border:0;
+
+  background:#333;
+
+  color:#fff;
+
+  margin:6px;
+
+  cursor:pointer;
+
+}
+
+button:disabled{
+
+  background:#aaa;
+
+}
+
+input,
+
+select{
+
+  border:1px solid #ccc;
+
+  background:#fff;
+
+}
+
+.hidden{
+
+  display:none!important;
+
+}
+
+.info{
+
+  font-size:18px;
+
+  line-height:1.7;
+
+}
+
+.small{
+
+  font-size:14px;
+
+  color:#666;
+
+}
+
+.warning{
+
+  color:#c00;
+
+  font-weight:bold;
+
+}
+
+.success{
+
+  color:green;
+
+  font-weight:bold;
+
+}
+
+.total{
+
+  font-size:21px;
+
+  font-weight:bold;
+
+  margin:15px 0;
+
+}
+
+.ok{
+
+  color:green;
+
+}
+
+.ng{
+
+  color:#c00;
+
+}
+
+.role-list{
+
+  text-align:left;
+
+  max-height:500px;
+
+  overflow-y:auto;
+
+  border:1px solid #ddd;
+
+  border-radius:12px;
+
+  padding:8px;
+
+}
+
+.role-item{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:8px;
+
+  padding:9px 4px;
+
+  border-bottom:1px solid #eee;
+
+}
+
+.role-name{
+
+  flex:1;
+
+  font-size:16px;
+
+}
+
+.counter{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:4px;
+
+}
+
+.counter button{
+
+  width:40px;
+
+  height:40px;
+
+  padding:0;
+
+  margin:0;
+
+  font-size:23px;
+
+}
+
+.count{
+
+  width:30px;
+
+  text-align:center;
+
+  font-weight:bold;
+
+  font-size:19px;
+
+}
+
+.mode-box{
+
+  display:flex;
+
+  justify-content:center;
+
+  gap:10px;
+
+  flex-wrap:wrap;
+
+}
+
+.mode-option{
+
+  display:block;
+
+  border:2px solid #ddd;
+
+  border-radius:14px;
+
+  padding:12px;
+
+}
+
+.player-input{
+
+  width:90%;
+
+  max-width:400px;
+
+  margin:6px;
+
+}
+
+.role{
+
+  font-size:30px;
+
+  font-weight:bold;
+
+  margin:25px 0;
+
+}
+
+.lover{
+
+  color:#d63384;
+
+  font-size:20px;
+
+  font-weight:bold;
+
+  margin:10px;
+
+}
+
+.wolf-info{
+
+  font-size:19px;
+
+  font-weight:bold;
+
+  margin:10px;
+
+}
+
+.action-box{
+
+  margin:18px 0;
+
+  padding:18px;
+
+  border:2px solid #ddd;
+
+  border-radius:15px;
+
+}
+
+.choice{
+
+  display:block;
+
+  padding:8px;
+
+  margin:5px auto;
+
+  max-width:400px;
+
+  border:1px solid #ddd;
+
+  border-radius:10px;
+
+}
+
+.choice input{
+
+  transform:scale(1.2);
+
+  margin-right:8px;
+
+}
+
+.vote-player{
+
+  padding:14px;
+
+  margin:10px 0;
+
+  border:2px solid #ddd;
+
+  border-radius:12px;
+
+}
+
+.vote-player select{
+
+  width:90%;
+
+  max-width:400px;
+
+}
+
+.result{
+
+  font-size:24px;
+
+  font-weight:bold;
+
+  margin:20px 0;
+
+}
+
+.voice{
+
+  margin:15px 0;
+
+  padding:10px;
+
+  background:#f2f2f2;
+
+  border-radius:12px;
+
+}
+
+hr{
+
+  border:0;
+
+  border-top:1px solid #ddd;
+
+  margin:25px 0;
+
+}
+
 </style>
+
 </head>
+
 <body>
+
 <div class="container">
+
 <h1>🐺 人狼コンプリートGM</h1>
 
-<div id="setup">
+<!-- ==========================
+
+     ゲーム設定
+
+=========================== -->
+
+<section id="setup">
+
 <h2>🎮 ゲーム設定</h2>
-<p>参加人数を入力してください</p>
-<input id="playerCount" type="number" min="4" max="20" value="6" onchange="resetRoleCounts()">
+
+<p>参加人数</p>
+
+<input
+
+  id="playerCount"
+
+  type="number"
+
+  min="4"
+
+  max="20"
+
+  value="6"
+
+>
 
 <h3>🎮 ゲームモード</h3>
+
 <div class="mode-box">
-<label class="mode-option selected" id="modeNoCard"><input type="radio" name="gameMode" value="noCard" checked onchange="changeGameMode()"> 📱 カードなし</label>
-<label class="mode-option" id="modeCard"><input type="radio" name="gameMode" value="card" onchange="changeGameMode()"> 🃏 カードあり</label>
+
+<label class="mode-option">
+
+<input
+
+  type="radio"
+
+  name="gameMode"
+
+  value="noCard"
+
+  checked
+
+>
+
+📱 カードなし
+
+</label>
+
+<label class="mode-option">
+
+<input
+
+  type="radio"
+
+  name="gameMode"
+
+  value="card"
+
+>
+
+🃏 カードあり
+
+</label>
+
 </div>
 
-<h3>❤️ 恋人の役職兼用</h3>
-<label><input type="radio" name="loverMode" value="false" checked onchange="updateLoverMode()"> なし</label>
-<label><input type="radio" name="loverMode" value="true" onchange="updateLoverMode()"> あり</label>
+<h3>❤️ 恋人</h3>
+
+<label>
+
+<input
+
+  type="checkbox"
+
+  id="loverMode"
+
+>
+
+恋人を設定する
+
+</label>
+
+<h3>⏱️ 議論時間</h3>
+
+<select id="discussionTime">
+
+  <option value="0">タイマーなし</option>
+
+  <option value="60">1分</option>
+
+  <option value="180">3分</option>
+
+  <option value="300" selected>5分</option>
+
+  <option value="600">10分</option>
+
+</select>
 
 <h3>🎭 今回使う役職</h3>
-<div id="totalDisplay" class="total ng">配役：0 / 6人</div>
-<div id="roleList" class="role-list"></div>
+
+<div
+
+  id="totalDisplay"
+
+  class="total ng"
+
+>
+
+配役：0 / 6人
+
+</div>
+
+<div
+
+  id="roleList"
+
+  class="role-list"
+
+></div>
+
 <br>
-<button id="nextButton" onclick="preparePlayers()" disabled>プレイヤー名を入力</button>
-</div>
 
-<div id="playerSetup" class="hidden">
-<h2>👥 プレイヤー名</h2><p>プレイヤーの名前を入力してください。</p>
+<button
+
+  id="prepareButton"
+
+  onclick="preparePlayers()"
+
+  disabled
+
+>
+
+プレイヤー名を入力
+
+</button>
+
+</section>
+
+<!-- ==========================
+
+     プレイヤー名
+
+=========================== -->
+
+<section
+
+  id="playerSetup"
+
+  class="hidden"
+
+>
+
+<h2>👥 プレイヤー名</h2>
+
+<p class="info">
+
+プレイヤーの名前を入力してください。
+
+</p>
+
 <div id="playerInputs"></div>
-<button onclick="startGame()">ゲーム開始</button>
+
+<button onclick="startGame()">
+
+ゲーム開始
+
+</button>
+
+</section>
+
+<!-- ==========================
+
+     カード確認
+
+=========================== -->
+
+<section
+
+  id="cardSetup"
+
+  class="hidden"
+
+>
+
+<h2>🃏 カード確認</h2>
+
+<div
+
+  id="cardPlayerTitle"
+
+  class="info"
+
+></div>
+
+<div class="action-box">
+
+<p>
+
+実際に配ったカードを選んでください。
+
+</p>
+
+<select
+
+  id="cardSelect"
+
+></select>
+
+<br>
+
+<button
+
+  id="cardConfirmButton"
+
+  onclick="confirmCard()"
+
+  disabled
+
+>
+
+このカードで登録
+
+</button>
+
 </div>
 
-<div id="cardSetup" class="hidden">
-<h2>🃏 カード登録</h2><div id="cardPlayerTitle"></div>
-<div class="card-box"><p class="info">このプレイヤーに実際に配ったカードを選んでください。</p>
-<select id="cardSelect" class="card-select" onchange="cardSelectionChanged()"></select>
-<div id="cardStatus" class="status"></div></div>
-<button id="cardNextButton" onclick="confirmCard()" disabled>このカードで登録</button>
+</section>
+
+<!-- ==========================
+
+     役職確認
+
+=========================== -->
+
+<section
+
+  id="roleCheck"
+
+  class="hidden"
+
+>
+
+<h2 id="roleCheckPlayer"></h2>
+
+<div
+
+  id="roleHidden"
+
+  class="role"
+
+>
+
+？？？
+
 </div>
 
-<div id="cardCheck" class="hidden">
-<h2>🔍 カードを確認しています</h2><div id="cardCheckResult"></div>
-<button id="retryCardButton" onclick="retryCardInput()" class="hidden">最初の人からもう一度入力</button>
-<button id="cardCheckNextButton" onclick="finishCardCheck()" class="hidden">役職確認へ</button>
-</div>
+<div id="roleDescription"></div>
 
-<div id="game" class="hidden">
-<h2 id="playerTitle"></h2><div id="roleArea" class="role">？？？</div><div id="loverArea"></div>
-<p id="info" class="info">役職を見るボタンを押してください。</p>
-<button id="mainButton" onclick="showRole()">役職を見る</button>
-</div>
+<div id="roleSpecial"></div>
 
-<div id="day" class="hidden">
-<h2>☀️ 昼の議論</h2><div id="dayInfo" class="info"></div>
-<div class="voice"><button onclick="speakDay()">🎙️ GM音声を再生</button> <button onclick="stopVoice()">🔇 停止</button></div>
-<hr><button onclick="startVoting()">🗳️ 投票へ</button>
-</div>
+<button
 
-<div id="vote" class="hidden">
-<h2>🗳️ 投票</h2><p id="voteInstruction" class="info"></p><div id="votePlayers"></div>
-<button onclick="finishVoting()">⚖️ 投票を集計する</button>
-</div>
+  id="roleCheckButton"
 
-<div id="voteResult" class="hidden"><h2>⚖️ 投票結果</h2><div id="voteResultText" class="info"></div><button onclick="afterVote()">次へ</button></div>
+  onclick="showRole()"
 
-<div id="gameReady" class="hidden"><h2>🌙 夜の時間</h2><p class="info">昼の議論と投票が終了しました。</p>
-<button onclick="startNight()">🌙 夜を開始</button></div>
+>
 
-<div id="night" class="hidden">
-<h2 id="nightTitle">🌙 夜</h2><div id="nightInfo" class="info"></div>
-<div id="nightVoice" class="voice"><button onclick="speakNight()">🎙️ GM音声</button><button onclick="stopVoice()">🔇 停止</button></div>
-<div id="nightAction" class="action-box"></div>
-</div>
+役職を見る
 
-<div id="gameOver" class="hidden"><h2>🏆 ゲーム終了</h2><div id="winner" class="result"></div></div>
+</button>
+
+</section>
+
+<!-- ==========================
+
+     ゲーム本編
+
+=========================== -->
+
+<section
+
+  id="mainGame"
+
+  class="hidden"
+
+>
+
+<div
+
+  id="phaseTitle"
+
+  class="result"
+
+></div>
+
+<div
+
+  id="phaseContent"
+
+  class="info"
+
+></div>
+
+<div id="actionArea"></div>
+
+</section>
+
+<!-- ==========================
+
+     結果
+
+=========================== -->
+
+<section
+
+  id="gameResult"
+
+  class="hidden"
+
+>
+
+<h2>🏆 ゲーム終了</h2>
+
+<div
+
+  id="gameResultText"
+
+  class="result"
+
+></div>
+
+<div id="finalRoles"></div>
+
+<button onclick="location.reload()">
+
+もう一度遊ぶ
+
+</button>
+
+</section>
+
 </div>
 
 <script>
-const ROLES=[
-["werewolf","🐺 人狼"],["wolfChild","👶 人狼の子ども"],["betrayer","😈 裏切り者"],["betrayShared","🤝 裏切りの共有者"],["informant","👁️ 内通者"],["betrayAttacker","⚔️ 裏切りの襲撃者"],["spy","🕵️ スパイ"],["villager","👤 市民"],["seer","🔮 預言者"],["bodyguard","🛡️ ボディーガード"],["medium","👻 霊媒師"],["hunter","🔫 ハンター"],["shared","🤝 共有者"],["dictator","👑 独裁者"],["tough","💪 タフガイ"],["counselor","🩺 カウンセラー"],["magician","🎩 奇術師"],["trapper","🪤 罠師"],["knights","🛡️ 騎士団"],["shadow","🪞 影武者"],["king","👑 王様"],["cursed","🧟 呪われた者"],["fox","🦊 妖狐"],["god","🙏 神様"],["lover","❤️ 恋人"],["loneWolf","🐺 一匹狼"],["android","🤖 アンドロイド"],["scarecrow","🌾 案山子"]
-];
-const WOLF_ROLES=["werewolf","wolfChild","loneWolf"];
-const BETRAYER_ROLES=["betrayer","betrayShared","informant","betrayAttacker"];
-let roleCounts={},players=[],selectedRoles=[],currentPlayer=0,currentCardPlayer=0,loverMode=false,gameMode="noCard",day=1,nightStep=0,nightData={},voteData={},voteOrder=[],voteIndex=0,voteRound=1,runoffCandidates=[],initialSeerIndex=0;
 
-function $(id){return document.getElementById(id)}
-function escapeHtml(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
-function getRoleName(id){const r=ROLES.find(x=>x[0]===id);return r?r[1]:"不明"}
-function isWolf(p){return WOLF_ROLES.includes(p.roleId)}
-function isBetrayer(p){return BETRAYER_ROLES.includes(p.roleId)}
-function alivePlayers(){return players.filter(p=>p.alive)}
-function getTargets(excludeId=null){return alivePlayers().filter(p=>p.id!==excludeId)}
-function speak(text){if(!("speechSynthesis" in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="ja-JP";u.rate=.95;u.pitch=1;window.speechSynthesis.speak(u)}
-function stopVoice(){if("speechSynthesis" in window)window.speechSynthesis.cancel()}
-function speakDay(){speak(`${day}日目の昼です。生存者は、${alivePlayers().map(p=>p.name).join("、")}さんです。みんなで議論を開始してください。`)}
-function speakNight(){speak(nightVoiceText())}
-function nightVoiceText(){const s=NIGHT_STEPS[nightStep];return `${s}の皆さん、目を開けてください。${activeNamesForStep(nightStep)}。行動が終わったら、目を閉じてください。`}
-function activeNamesForStep(step){
- const map=[
- ()=>players.filter(p=>p.roleId==="cursed"&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="spy"&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="android"&&p.alive&&!p.copiedRole).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="trapper"&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="bodyguard"&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="knights"&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>isWolf(p)&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="betrayAttacker"&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="counselor"&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>isBetrayer(p)&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="magician"&&p.alive&&!p.abilitiesUsed.magician).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="seer"&&p.alive).map(p=>p.name).join("、"),
- ()=>players.filter(p=>p.roleId==="medium"&&p.alive).map(p=>p.name).join("、")
- ]; return map[step]();
+"use strict";
+
+/* ==========================
+
+   役職データ
+
+=========================== */
+
+const ROLE_DATA = {
+
+  villager:{
+
+    name:"村人",
+
+    emoji:"👤",
+
+    team:"村人",
+
+    night:false,
+
+    desc:"特別な能力はありません。"
+
+  },
+
+  werewolf:{
+
+    name:"人狼",
+
+    emoji:"🐺",
+
+    team:"人狼",
+
+    night:true,
+
+    desc:"夜に1人を襲撃します。人狼同士は仲間を知っています。"
+
+  },
+
+  seer:{
+
+    name:"占い師",
+
+    emoji:"🔮",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"夜に1人を占います。妖狐は「人間」と表示されますが、占われた妖狐は死亡します。"
+
+  },
+
+  medium:{
+
+    name:"霊能者",
+
+    emoji:"👻",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"前日に追放された人が人狼だったか確認できます。"
+
+  },
+
+  bodyguard:{
+
+    name:"ボディガード",
+
+    emoji:"🛡️",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"夜に1人を守ります。自分自身は守れません。同じ人を2夜連続では守れません。"
+
+  },
+
+  knight:{
+
+    name:"騎士団",
+
+    emoji:"⚔️",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"騎士団同士がお互いを知っています。夜に1人を守れます。自分自身も守れます。"
+
+  },
+
+  hunter:{
+
+    name:"ハンター",
+
+    emoji:"🏹",
+
+    team:"村人",
+
+    night:false,
+
+    desc:"死亡したとき、1人を道連れにできます。"
+
+  },
+
+  prophet:{
+
+    name:"預言者",
+
+    emoji:"🔮",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"夜に1人を占います。初日の占いをするかどうかを選択できます。"
+
+  },
+
+  fox:{
+
+    name:"妖狐",
+
+    emoji:"🦊",
+
+    team:"妖狐",
+
+    night:false,
+
+    desc:"人狼に襲撃されても死亡しません。占われると死亡します。"
+
+  },
+
+  trapper:{
+
+    name:"罠師",
+
+    emoji:"🪤",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"夜に1人へ罠を仕掛けます。罠を仕掛けられた人を人狼が襲撃すると、人狼側が死亡します。"
+
+  },
+
+  dictator:{
+
+    name:"独裁者",
+
+    emoji:"👑",
+
+    team:"村人",
+
+    night:false,
+
+    desc:"ゲーム中1回、議論を強制終了できます。"
+
+  },
+
+  shadow:{
+
+    name:"影武者",
+
+    emoji:"🥷",
+
+    team:"村人",
+
+    night:false,
+
+    desc:"ゲーム中1回、議論を強制終了できます。"
+
+  },
+
+  /* 以下は役職選択画面で使用できる追加役職 */
+
+  madman:{
+
+    name:"狂人",
+
+    emoji:"🤪",
+
+    team:"人狼",
+
+    night:false,
+
+    desc:"人狼陣営ですが、人狼が誰かは分かりません。"
+
+  },
+
+  wolfSeer:{
+
+    name:"人狼占い師",
+
+    emoji:"🐺🔮",
+
+    team:"人狼",
+
+    night:true,
+
+    desc:"人狼陣営の占い役です。"
+
+  },
+
+  wolfGuard:{
+
+    name:"人狼護衛",
+
+    emoji:"🐺🛡️",
+
+    team:"人狼",
+
+    night:true,
+
+    desc:"人狼陣営の護衛役です。"
+
+  },
+
+  elder:{
+
+    name:"長老",
+
+    emoji:"👴",
+
+    team:"村人",
+
+    night:false,
+
+    desc:"村人陣営の特殊役職です。"
+
+  },
+
+  priest:{
+
+    name:"神父",
+
+    emoji:"⛪",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"夜に特殊な情報を確認します。"
+
+  },
+
+  witch:{
+
+    name:"魔女",
+
+    emoji:"🧙",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"夜に特殊な能力を使用します。"
+
+  },
+
+  detective:{
+
+    name:"探偵",
+
+    emoji:"🕵️",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"夜に特殊な情報を調べます。"
+
+  },
+
+  cursed:{
+
+    name:"呪われた者",
+
+    emoji:"💀",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"夜に最初に確認する特殊役職です。"
+
+  },
+
+  thief:{
+
+    name:"怪盗",
+
+    emoji:"🎩",
+
+    team:"村人",
+
+    night:true,
+
+    desc:"夜に特殊な能力を使用します。"
+
+  },
+
+  spy:{
+
+    name:"スパイ",
+
+    emoji:"🕵️‍♂️",
+
+    team:"人狼",
+
+    night:true,
+
+    desc:"人狼陣営の特殊役職です。"
+
+  },
+
+  traitor:{
+
+    name:"裏切り者",
+
+    emoji:"😈",
+
+    team:"人狼",
+
+    night:false,
+
+    desc:"人狼陣営の特殊役職です。"
+
+  },
+
+  wolfMinion:{
+
+    name:"裏切りの共有者",
+
+    emoji:"🐺🤝",
+
+    team:"人狼",
+
+    night:false,
+
+    desc:"人狼陣営の特殊役職です。"
+
+  },
+
+  infiltrator:{
+
+    name:"内通者",
+
+    emoji:"📨",
+
+    team:"人狼",
+
+    night:true,
+
+    desc:"人狼陣営の特殊役職です。"
+
+  },
+
+  wolfHunter:{
+
+    name:"裏切りの襲撃者",
+
+    emoji:"🐺🏹",
+
+    team:"人狼",
+
+    night:true,
+
+    desc:"人狼陣営の特殊役職です。"
+
+  },
+
+  fool:{
+
+    name:"道化師",
+
+    emoji:"🤡",
+
+    team:"村人",
+
+    night:false,
+
+    desc:"特殊な勝利条件を持つ役職です。"
+
+  },
+
+  cultist:{
+
+    name:"狂信者",
+
+    emoji:"🕯️",
+
+    team:"人狼",
+
+    night:false,
+
+    desc:"人狼陣営の特殊役職です。"
+
+  }
+
+};
+
+/* ==========================
+
+   ゲーム状態
+
+=========================== */
+
+let playerCount = 6;
+
+let players = [];
+
+let selectedRoles = {};
+
+let roleCheckIndex = 0;
+
+let cardIndex = 0;
+
+let gameMode = "noCard";
+
+let currentNight = 0;
+
+let currentDay = 0;
+
+let lastExecutedId = null;
+
+let nightActions = {};
+
+let previousGuardTargets = {};
+
+let currentGuardTarget = null;
+
+let currentTrapTarget = null;
+
+let currentWolfTarget = null;
+
+let currentHunterTarget = null;
+
+let discussionTimer = null;
+
+let discussionSeconds = 0;
+
+let gameFinished = false;
+
+/* 預言者の初日占い */
+
+let prophetFirstNightChoice = null;
+
+/* 恋人 */
+
+let loverPair = [];
+
+/* ==========================
+
+   初期化
+
+=========================== */
+
+window.addEventListener("load",()=>{
+
+  renderRoleList();
+
+  updateTotal();
+
+  document
+
+    .getElementById("playerCount")
+
+    .addEventListener(
+
+      "change",
+
+      changePlayerCount
+
+    );
+
+  document
+
+    .getElementById("cardSelect")
+
+    .addEventListener(
+
+      "change",
+
+      ()=>{
+
+        document
+
+          .getElementById("cardConfirmButton")
+
+          .disabled =
+
+            !document
+
+              .getElementById("cardSelect")
+
+              .value;
+
+      }
+
+    );
+
+});
+
+function changePlayerCount(){
+
+  playerCount =
+
+    Number(
+
+      document
+
+        .getElementById("playerCount")
+
+        .value
+
+    );
+
+  if(
+
+    playerCount < 4
+
+  ){
+
+    playerCount = 4;
+
+    document
+
+      .getElementById("playerCount")
+
+      .value = 4;
+
+  }
+
+  if(
+
+    playerCount > 20
+
+  ){
+
+    playerCount = 20;
+
+    document
+
+      .getElementById("playerCount")
+
+      .value = 20;
+
+  }
+
+  selectedRoles = {};
+
+  renderRoleList();
+
+  updateTotal();
+
 }
-function changeGameMode(){gameMode=document.querySelector('input[name="gameMode"]:checked').value;$("modeNoCard").classList.toggle("selected",gameMode==="noCard");$("modeCard").classList.toggle("selected",gameMode==="card")}
-function updateLoverMode(){loverMode=document.querySelector('input[name="loverMode"]:checked').value==="true";renderRoleList()}
-function resetRoleCounts(){roleCounts={};ROLES.forEach(r=>roleCounts[r[0]]=0);renderRoleList()}
-function renderRoleList(){const list=$("roleList");list.innerHTML="";ROLES.forEach(r=>{if(r[0]==="lover"&&loverMode)return;list.innerHTML+=`<div class="role-item"><div class="role-name">${r[1]}</div><div class="counter"><button type="button" onclick="changeRoleCount('${r[0]}',-1)">−</button><div class="count">${roleCounts[r[0]]||0}</div><button type="button" onclick="changeRoleCount('${r[0]}',1)">＋</button></div></div>`});updateTotal()}
-function changeRoleCount(id,ch){const pc=Number($("playerCount").value),n=(roleCounts[id]||0)+ch;if(n<0||n>pc)return;roleCounts[id]=n;renderRoleList()}
-function updateTotal(){const pc=Number($("playerCount").value);let t=0;Object.entries(roleCounts).forEach(([id,n])=>{if(!(id==="lover"&&loverMode))t+=n});$("totalDisplay").textContent=`配役：${t} / ${pc}人`;$("totalDisplay").className="total "+(t===pc?"ok":"ng");$("nextButton").disabled=t!==pc}
-function preparePlayers(){const n=Number($("playerCount").value);if(n<4||n>20){alert("4人〜20人で入力してください。");return}selectedRoles=[];ROLES.forEach(r=>{if(r[0]==="lover"&&loverMode)return;for(let i=0;i<(roleCounts[r[0]]||0);i++)selectedRoles.push(r[0])});$("playerInputs").innerHTML=Array.from({length:n},(_,i)=>`<div class="player-box"><label>プレイヤー${i+1}</label><br><input id="playerName${i}" type="text" maxlength="20" placeholder="名前を入力" value="${escapeHtml(localStorage.getItem("jinroPlayer"+i)||"")}"></div>`).join("");$("setup").classList.add("hidden");$("playerSetup").classList.remove("hidden")}
-function startGame(){const names=[];for(let i=0;i<selectedRoles.length;i++){const el=$("playerName"+i),name=el.value.trim();if(!name){alert(`プレイヤー${i+1}の名前を入力してください。`);el.focus();return}names.push(name);localStorage.setItem("jinroPlayer"+i,name)}
-players=names.map((name,id)=>({id,name,roleId:null,alive:true,lover:false,loverPartner:null,abilitiesUsed:{},copiedRole:null,cursedAwakened:false,toughHit:false,lastDeathReason:null,lastGuardTarget:null}));
-if(gameMode==="noCard"){assignRandomRoles();finishRoleAssignment()}else{currentCardPlayer=0;$("playerSetup").classList.add("hidden");$("cardSetup").classList.remove("hidden");showCardPlayer()}}
-function assignRandomRoles(){const a=[...selectedRoles].sort(()=>Math.random()-.5);players.forEach((p,i)=>p.roleId=a[i])}
-function showCardPlayer(){const p=players[currentCardPlayer];$("cardPlayerTitle").innerHTML=`<h3>${escapeHtml(p.name)} さん</h3>`;$("cardSelect").innerHTML=`<option value="">配られたカードを選択してください</option>`;ROLES.forEach(r=>{if(r[0]==="lover"&&loverMode)return;const o=document.createElement("option");o.value=r[0];o.textContent=r[1];$("cardSelect").appendChild(o)});$("cardStatus").textContent="配られたカードを選択してください。";$("cardNextButton").disabled=true}
-function cardSelectionChanged(){$("cardNextButton").disabled=!$("cardSelect").value}
-function confirmCard(){const role=$("cardSelect").value;if(!role)return;players[currentCardPlayer].roleId=role;currentCardPlayer++;if(currentCardPlayer<players.length){showCardPlayer();return}$("cardSetup").classList.add("hidden");$("cardCheck").classList.remove("hidden");checkCards()}
-function checkCards(){const entered={};ROLES.forEach(r=>entered[r[0]]=0);players.forEach(p=>{if(p.roleId)entered[p.roleId]++});let ok=true,msg=[];ROLES.forEach(r=>{if(r[0]==="lover"&&loverMode)return;const e=roleCounts[r[0]]||0,a=entered[r[0]]||0;if(e!==a){ok=false;msg.push(`${r[1]}：設定 ${e}枚 / 入力 ${a}枚`)}});if(ok){$("cardCheckResult").innerHTML='<div class="success">🎉 カード登録完了！</div><p>設定した役職と入力したカードが一致しました。</p>';$("cardCheckNextButton").classList.remove("hidden");$("retryCardButton").classList.add("hidden")}else{$("cardCheckResult").innerHTML=`<div class="error-box"><div class="warning">❌ カードの枚数が一致しません。</div><p>${msg.join("<br>")}</p></div>`;$("retryCardButton").classList.remove("hidden");$("cardCheckNextButton").classList.add("hidden")}}
-function retryCardInput(){players.forEach(p=>p.roleId=null);currentCardPlayer=0;$("cardCheck").classList.add("hidden");$("cardSetup").classList.remove("hidden");showCardPlayer()}
-function finishCardCheck(){$("cardCheck").classList.add("hidden");finishRoleAssignment()}
-function finishRoleAssignment(){if(loverMode){const a=[...players].sort(()=>Math.random()-.5);a[0].lover=a[1].lover=true;a[0].loverPartner=a[1].name;a[1].loverPartner=a[0].name}currentPlayer=0;$("game").classList.remove("hidden");showPlayer()}
-function showPlayer(){const p=players[currentPlayer];$("playerTitle").textContent=`${p.name} さん`;$("roleArea").textContent="？？？";$("loverArea").innerHTML="";$("info").textContent="役職を見るボタンを押してください。";$("mainButton").style.display="inline-block";$("mainButton").textContent="役職を見る";$("mainButton").onclick=showRole}
-function showRole(){const p=players[currentPlayer];$("roleArea").textContent=getRoleName(p.roleId);let extra="";if(p.lover)extra+=`<div class="lover">❤️ 恋人</div><div class="lover-partner">恋人：${escapeHtml(p.loverPartner)}</div>`;if(isWolf(p)){const ws=players.filter(x=>x.id!==p.id&&isWolf(x));if(ws.length)extra+=`<div class="wolf-info">🐺 人狼仲間</div><div class="lover-partner">${ws.map(x=>escapeHtml(x.name)).join("、")}</div>`}$("loverArea").innerHTML=extra;$("info").textContent=getRoleDescription(p.roleId);$("mainButton").textContent="次の人";$("mainButton").onclick=nextPlayer}
-function nextPlayer(){currentPlayer++;if(currentPlayer>=players.length){$("game").classList.add("hidden");initialSeerChoice();return}showPlayer()}
-function getRoleDescription(id){const d={werewolf:"🐺 毎夜1人を襲撃します。人狼同士を知っています。",wolfChild:"👶 人狼として行動します。人狼同士を知っています。",loneWolf:"🐺 人狼として行動します。",betrayer:"😈 人狼陣営です。",betrayShared:"🤝 裏切りの共有者です。",informant:"👁️ 人狼を知っています。",betrayAttacker:"⚔️ 毎夜1人を襲撃します。",spy:"🕵️ スパイです。",villager:"👤 特別な能力はありません。",seer:"🔮 毎夜1人を占います。",bodyguard:"🛡️ 毎夜1人を守ります。自分自身は守れません。同じ人を2夜連続では守れません。",medium:"👻 前日の追放者を確認できます。",hunter:"🔫 死亡時に1人を道連れにできます。",shared:"🤝 共有者同士を知っています。",dictator:"👑 1回だけ昼の議論を強制終了できます。",tough:"💪 襲撃を1回耐えます。",counselor:"🩺 裏切り者系を改心させます。",magician:"🎩 襲撃先を変更できます。",trapper:"🪤 毎晩1人に罠を仕掛けます。",knights:"🛡️ 騎士団で守ります。",shadow:"🪞 1回だけ議論を強制終了します。",king:"👑 投票を2票分として数えます。",cursed:"🧟 襲撃された夜は死亡せず、翌夜に人狼になります。",fox:"🦊 人狼の襲撃では死亡せず、占われると死亡します。",god:"🙏 全員の役職を知っています。",lover:"❤️ 恋人同士はお互いを知っています。",android:"🤖 誰か1人の役職をコピーします。",scarecrow:"🌾 案山子同士を知っています。"};return d[id]||"役職の説明はありません。"}
-function startInitialDay(){day=1;$("game").classList.add("hidden");$("day").classList.remove("hidden");$("dayInfo").innerHTML=`<h3>☀️ 1日目の昼</h3><p>役職確認が完了しました。</p><p>生存者：${alivePlayers().map(p=>escapeHtml(p.name)).join("、")}</p>`;speak("1日目の昼です。議論を開始してください。")}
-function initialSeerChoice(){const seers=players.filter(p=>p.roleId==="seer"&&p.alive);if(!seers.length){startInitialDay();return}initialSeerIndex=0;showInitialSeer()}
-function showInitialSeer(){const seers=players.filter(p=>p.roleId==="seer"&&p.alive);if(initialSeerIndex>=seers.length){startInitialDay();return}const s=seers[initialSeerIndex];$("game").classList.remove("hidden");$("playerTitle").textContent=`${s.name} さん`;$("roleArea").textContent="🔮 預言者";$("loverArea").innerHTML="";$("info").textContent="初日に占いますか？";$("mainButton").style.display="inline-block";$("mainButton").textContent="🔮 占う";$("mainButton").onclick=()=>showInitialTargets(s);$("mainButton").insertAdjacentHTML("afterend",'<button id="skipInitial" onclick="skipInitialSeer()">占わない</button>');speak(`${s.name}さん、初日の占いです。占う場合は占うボタンを押してください。占わない場合は占わないを押してください。`)}
-function cleanupInitial(){const x=$("skipInitial");if(x)x.remove();const t=$("initialSeerTargets");if(t)t.remove()}
-function skipInitialSeer(){cleanupInitial();initialSeerIndex++;showInitialSeer()}
-function showInitialTargets(s){cleanupInitial();$("info").textContent="占う相手を選んでください。";const div=document.createElement("div");div.id="initialSeerTargets";div.innerHTML=getTargets(s.id).map(t=>`<button class="choice" onclick="initialSeerResult(${t.id})">${escapeHtml(t.name)}</button>`).join("");$("info").insertAdjacentElement("afterend",div);$("mainButton").style.display="none"}
-function initialSeerResult(id){const t=players.find(p=>p.id===Number(id));const result=(isWolf(t)||t.roleId==="fox")?"人狼":"市民";$("initialSeerTargets").innerHTML=`<div class="result">🔮 占い結果</div><p>${escapeHtml(t.name)}さんは</p><div class="result">「${result}」</div><button onclick="finishInitialSeer()">結果を確認して次へ</button>`}
-function finishInitialSeer(){cleanupInitial();initialSeerIndex++;showInitialSeer()}
+
+/* ==========================
+
+   役職選択
+
+=========================== */
+
+function renderRoleList(){
+
+  const area =
+
+    document.getElementById("roleList");
+
+  area.innerHTML = "";
+
+  Object.keys(ROLE_DATA)
+
+    .forEach(key=>{
+
+      const role =
+
+        ROLE_DATA[key];
+
+      const count =
+
+        selectedRoles[key] || 0;
+
+      const row =
+
+        document.createElement("div");
+
+      row.className =
+
+        "role-item";
+
+      row.innerHTML = `
+
+        <div class="role-name">
+
+          ${role.emoji}
+
+          ${role.name}
+
+        </div>
+
+        <div class="counter">
+
+          <button
+
+            onclick="changeRoleCount('${key}',-1)"
+
+          >
+
+            −
+
+          </button>
+
+          <span
+
+            id="count-${key}"
+
+            class="count"
+
+          >
+
+            ${count}
+
+          </span>
+
+          <button
+
+            onclick="changeRoleCount('${key}',1)"
+
+          >
+
+            ＋
+
+          </button>
+
+        </div>
+
+      `;
+
+      area.appendChild(row);
+
+    });
+
+}
+
+function changeRoleCount(
+
+  key,
+
+  amount
+
+){
+
+  const current =
+
+    selectedRoles[key] || 0;
+
+  const total =
+
+    Object.values(selectedRoles)
+
+      .reduce(
+
+        (sum,n)=>sum+n,
+
+        0
+
+      );
+
+  if(
+
+    amount > 0 &&
+
+    total >= playerCount
+
+  ){
+
+    return;
+
+  }
+
+  const next =
+
+    Math.max(
+
+      0,
+
+      current + amount
+
+    );
+
+  if(next === 0){
+
+    delete selectedRoles[key];
+
+  }else{
+
+    selectedRoles[key] = next;
+
+  }
+
+  const count =
+
+    document.getElementById(
+
+      `count-${key}`
+
+    );
+
+  if(count){
+
+    count.textContent = next;
+
+  }
+
+  updateTotal();
+
+}
+
+function updateTotal(){
+
+  const total =
+
+    Object.values(selectedRoles)
+
+      .reduce(
+
+        (sum,n)=>sum+n,
+
+        0
+
+      );
+
+  const display =
+
+    document.getElementById(
+
+      "totalDisplay"
+
+    );
+
+  display.textContent =
+
+    `配役：${total} / ${playerCount}人`;
+
+  display.className =
+
+    `total ${
+
+      total === playerCount
+
+        ? "ok"
+
+        : "ng"
+
+    }`;
+
+  document
+
+    .getElementById(
+
+      "prepareButton"
+
+    )
+
+    .disabled =
+
+      total !== playerCount;
+
+}
+
+/* ==========================
+
+   プレイヤー名
+
+=========================== */
+
+function preparePlayers(){
+
+  document
+
+    .getElementById("setup")
+
+    .classList.add("hidden");
+
+  document
+
+    .getElementById("playerSetup")
+
+    .classList.remove("hidden");
+
+  const area =
+
+    document.getElementById(
+
+      "playerInputs"
+
+    );
+
+  area.innerHTML = "";
+
+  for(
+
+    let i=0;
+
+    i<playerCount;
+
+    i++
+
+  ){
+
+    const input =
+
+      document.createElement("input");
+
+    input.id =
+
+      `playerName-${i}`;
+
+    input.className =
+
+      "player-input";
+
+    input.placeholder =
+
+      `プレイヤー${i+1}`;
+
+    area.appendChild(input);
+
+    area.appendChild(
+
+      document.createElement("br")
+
+    );
+
+  }
+
+}
+
+/* ==========================
+
+   ゲーム開始
+
+=========================== */
+
+function startGame(){
+
+  players = [];
+
+  for(
+
+    let i=0;
+
+    i<playerCount;
+
+    i++
+
+  ){
+
+    const input =
+
+      document.getElementById(
+
+        `playerName-${i}`
+
+      );
+
+    const name =
+
+      input.value.trim();
+
+    if(!name){
+
+      alert(
+
+        `プレイヤー${i+1}の名前を入力してください。`
+
+      );
+
+      return;
+
+    }
+
+    players.push({
+
+      id:i,
+
+      name:name,
+
+      role:null,
+
+      alive:true,
+
+      lover:false,
+
+      loverPartner:null,
+
+      guardHistory:[],
+
+      abilityUsed:{},
+
+      cardRole:null
+
+    });
+
+  }
+
+  gameMode =
+
+    document.querySelector(
+
+      'input[name="gameMode"]:checked'
+
+    ).value;
+
+  assignRoles();
+
+  setupLovers();
+
+  document
+
+    .getElementById("playerSetup")
+
+    .classList.add("hidden");
+
+  if(gameMode === "card"){
+
+    startCardSetup();
+
+  }else{
+
+    startRoleCheck();
+
+  }
+
+}
+
+function assignRoles(){
+
+  let pool = [];
+
+  Object.keys(selectedRoles)
+
+    .forEach(key=>{
+
+      for(
+
+        let i=0;
+
+        i<selectedRoles[key];
+
+        i++
+
+      ){
+
+        pool.push(key);
+
+      }
+
+    });
+
+  pool =
+
+    shuffle(pool);
+
+  players.forEach(
+
+    (player,index)=>{
+
+      player.role =
+
+        pool[index];
+
+    }
+
+  );
+
+}
+
+/* ==========================
+
+   恋人設定
+
+=========================== */
+
+function setupLovers(){
+
+  loverPair = [];
+
+  if(
+
+    !document
+
+      .getElementById("loverMode")
+
+      .checked
+
+  ){
+
+    return;
+
+  }
+
+  if(players.length < 2){
+
+    return;
+
+  }
+
+  const shuffled =
+
+    shuffle(
+
+      players.map(
+
+        p=>p.id
+
+      )
+
+    );
+
+  loverPair = [
+
+    shuffled[0],
+
+    shuffled[1]
+
+  ];
+
+  const a =
+
+    players.find(
+
+      p=>p.id===loverPair[0]
+
+    );
+
+  const b =
+
+    players.find(
+
+      p=>p.id===loverPair[1]
+
+    );
+
+  a.lover = true;
+
+  b.lover = true;
+
+  a.loverPartner = b.id;
+
+  b.loverPartner = a.id;
+
+}
+
+/* ==========================
+
+   シャッフル
+
+=========================== */
+
+function shuffle(array){
+
+  const result =
+
+    [...array];
+
+  for(
+
+    let i=result.length-1;
+
+    i>0;
+
+    i--
+
+  ){
+
+    const j =
+
+      Math.floor(
+
+        Math.random()*(i+1)
+
+      );
+
+    [
+
+      result[i],
+
+      result[j]
+
+    ] = [
+
+      result[j],
+
+      result[i]
+
+    ];
+
+  }
+
+  return result;
+
+}
+
+/* ==========================
+
+   カードありモード
+
+=========================== */
+
+function startCardSetup(){
+
+  cardIndex = 0;
+
+  document
+
+    .getElementById("cardSetup")
+
+    .classList.remove("hidden");
+
+  showCardPlayer();
+
+}
+
+function showCardPlayer(){
+
+  const player =
+
+    players[cardIndex];
+
+  document
+
+    .getElementById(
+
+      "cardPlayerTitle"
+
+    )
+
+    .textContent =
+
+      `${cardIndex+1}人目：${player.name}`;
+
+  const select =
+
+    document.getElementById(
+
+      "cardSelect"
+
+    );
+
+  select.innerHTML =
+
+    `<option value="">
+
+      カードを選択
+
+    </option>`;
+
+  Object.keys(ROLE_DATA)
+
+    .forEach(key=>{
+
+      const option =
+
+        document.createElement(
+
+          "option"
+
+        );
+
+      option.value = key;
+
+      option.textContent =
+
+        `${ROLE_DATA[key].emoji} ${ROLE_DATA[key].name}`;
+
+      select.appendChild(option);
+
+    });
+
+  document
+
+    .getElementById(
+
+      "cardConfirmButton"
+
+    )
+
+    .disabled = true;
+
+}
+
+function confirmCard(){
+
+  const role =
+
+    document
+
+      .getElementById(
+
+        "cardSelect"
+
+      )
+
+      .value;
+
+  if(!role){
+
+    return;
+
+  }
+
+  players[cardIndex].cardRole =
+
+    role;
+
+  players[cardIndex].role =
+
+    role;
+
+  cardIndex++;
+
+  if(
+
+    cardIndex >= players.length
+
+  ){
+
+    document
+
+      .getElementById(
+
+        "cardSetup"
+
+      )
+
+      .classList.add("hidden");
+
+    startRoleCheck();
+
+    return;
+
+  }
+
+  showCardPlayer();
+
+}
+
+/* ==========================
+
+   役職確認開始
+
+=========================== */
+
+function startRoleCheck(){
+
+  roleCheckIndex = 0;
+
+  document
+
+    .getElementById("roleCheck")
+
+    .classList.remove("hidden");
+
+  showRoleCheck();
+
+}
+
+function showRoleCheck(){
+
+  const player =
+
+    players[roleCheckIndex];
+
+  document
+
+    .getElementById(
+
+      "roleCheckPlayer"
+
+    )
+
+    .textContent =
+
+      `${roleCheckIndex+1}人目：${player.name}`;
+
+  document
+
+    .getElementById(
+
+      "roleHidden"
+
+    )
+
+    .textContent =
+
+      "？？？";
+
+  document
+
+    .getElementById(
+
+      "roleDescription"
+
+    )
+
+    .innerHTML = `
+
+      <p>
+
+        「役職を見る」を押して、
+
+        本人だけ役職を確認してください。
+
+      </p>
+
+    `;
+
+  document
+
+    .getElementById(
+
+      "roleSpecial"
+
+    )
+
+    .innerHTML = "";
+
+  const button =
+
+    document.getElementById(
+
+      "roleCheckButton"
+
+    );
+
+  button.textContent =
+
+    "役職を見る";
+
+  button.onclick =
+
+    showRole;
+
+}
+
+function showRole(){
+
+  const player =
+
+    players[roleCheckIndex];
+
+  const role =
+
+    ROLE_DATA[player.role];
+
+  document
+
+    .getElementById(
+
+      "roleHidden"
+
+    )
+
+    .textContent =
+
+      `${role.emoji} ${role.name}`;
+
+  document
+
+    .getElementById(
+
+      "roleDescription"
+
+    )
+
+    .innerHTML =
+
+      `<p>${role.desc}</p>`;
+
+  showRoleSpecial(player);
+
+  const button =
+
+    document.getElementById(
+
+      "roleCheckButton"
+
+    );
+
+  button.textContent =
+
+    roleCheckIndex === players.length-1
+
+      ? "役職確認終了"
+
+      : "次の人へ";
+
+  button.onclick =
+
+    nextRoleCheck;
+
+}
+
+function showRoleSpecial(player){
+
+  const area =
+
+    document.getElementById(
+
+      "roleSpecial"
+
+    );
+
+  area.innerHTML = "";
+
+  if(
+
+    player.role === "werewolf"
+
+  ){
+
+    const teammates =
+
+      players
+
+        .filter(
+
+          p =>
+
+            p.role === "werewolf" &&
+
+            p.id !== player.id
+
+        )
+
+        .map(
+
+          p=>p.name
+
+        );
+
+    if(teammates.length){
+
+      area.innerHTML += `
+
+        <p class="wolf-info">
+
+          🐺 仲間の人狼：
+
+          ${teammates.join("、")}
+
+        </p>
+
+      `;
+
+    }
+
+  }
+
+  if(
+
+    player.role === "knight"
+
+  ){
+
+    const teammates =
+
+      players
+
+        .filter(
+
+          p =>
+
+            p.role === "knight" &&
+
+            p.id !== player.id
+
+        )
+
+        .map(
+
+          p=>p.name
+
+        );
+
+    if(teammates.length){
+
+      area.innerHTML += `
+
+        <p class="wolf-info">
+
+          ⚔️ 仲間の騎士団：
+
+          ${teammates.join("、")}
+
+        </p>
+
+      `;
+
+    }
+
+  }
+
+  if(
+
+    player.lover &&
+
+    player.loverPartner !== null
+
+  ){
+
+    const partner =
+
+      players.find(
+
+        p =>
+
+          p.id === player.loverPartner
+
+      );
+
+    if(partner){
+
+      area.innerHTML += `
+
+        <p class="lover">
+
+          ❤️ 恋人：
+
+          ${partner.name}
+
+        </p>
+
+      `;
+
+    }
+
+  }
+
+}
+
+function nextRoleCheck(){
+
+  roleCheckIndex++;
+
+  if(
+
+    roleCheckIndex >= players.length
+
+  ){
+
+    document
+
+      .getElementById(
+
+        "roleCheck"
+
+      )
+
+      .classList.add("hidden");
+
+    startGameNight();
+
+    return;
+
+  }
+
+  showRoleCheck();
+
+}
+ /* ==========================
+
+   夜開始
+
+=========================== */
+
+function startGameNight(){
+
+  currentNight = 1;
+
+  currentDay = 1;
+
+  lastExecutedId = null;
+
+  nightActions = {};
+
+  previousGuardTargets = {};
+
+  currentGuardTarget = null;
+
+  currentTrapTarget = null;
+
+  currentWolfTarget = null;
+
+  currentHunterTarget = null;
+
+  startNight();
+
+}
+
+/* ==========================
+
+   夜開始
+
+=========================== */
+
+function startNight(){
+
+  if(gameFinished){
+
+    return;
+
+  }
+
+  document
+
+    .getElementById("mainGame")
+
+    .classList.remove("hidden");
+
+  setPhaseTitle(
+
+    `🌙 ${currentNight}日目の夜`
+
+  );
+
+  nightActions = {};
+
+  currentGuardTarget = null;
+
+  currentTrapTarget = null;
+
+  currentWolfTarget = null;
+
+  showNightIntro();
+
+}
+
+/* ==========================
+
+   フェーズ表示
+
+=========================== */
+
+function setPhaseTitle(text){
+
+  document
+
+    .getElementById("phaseTitle")
+
+    .textContent = text;
+
+}
+
+function setPhaseContent(html){
+
+  document
+
+    .getElementById("phaseContent")
+
+    .innerHTML = html;
+
+}
+
+function setActionArea(html){
+
+  document
+
+    .getElementById("actionArea")
+
+    .innerHTML = html;
+
+}
+
+/* ==========================
+
+   夜の開始案内
+
+=========================== */
+
+function showNightIntro(){
+
+  setPhaseTitle(
+
+    `🌙 ${currentNight}日目の夜`
+
+  );
+
+  setPhaseContent(`
+
+    <p>
+
+      夜になりました。
+
+    </p>
+
+    <p>
+
+      これから役職ごとの夜の行動を、
+
+      順番に行います。
+
+    </p>
+
+    <p class="small">
+
+      画面を見せるのは、
+
+      行動するプレイヤーだけにしてください。
+
+    </p>
+
+  `);
+
+  setActionArea(`
+
+    <button onclick="beginNightActions()">
+
+      夜の行動を開始
+
+    </button>
+
+  `);
+
+}
+
+/* ==========================
+
+   夜の行動順
+
+=========================== */
+
+function beginNightActions(){
+
+  const order = getNightActionOrder();
+
+  processNightAction(
+
+    order,
+
+    0
+
+  );
+
+}
+
+/* ==========================
+
+   夜の行動順取得
+
+=========================== */
+
+function getNightActionOrder(){
+
+  /*
+
+   * 呪われた者を最初に確認
+
+   */
+
+  const cursed =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        p.role === "cursed"
+
+    );
+
+  const spy =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        p.role === "spy"
+
+    );
+
+  const wolves =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        p.role === "werewolf"
+
+    );
+
+  const trapper =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        p.role === "trapper"
+
+    );
+
+  const bodyguards =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        (
+
+          p.role === "bodyguard" ||
+
+          p.role === "knight"
+
+        )
+
+    );
+
+  const seers =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        (
+
+          p.role === "seer" ||
+
+          p.role === "prophet"
+
+        )
+
+    );
+
+  const mediums =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        p.role === "medium"
+
+    );
+
+  const others =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        (
+
+          p.role === "priest" ||
+
+          p.role === "witch" ||
+
+          p.role === "detective" ||
+
+          p.role === "thief" ||
+
+          p.role === "infiltrator" ||
+
+          p.role === "wolfSeer" ||
+
+          p.role === "wolfGuard" ||
+
+          p.role === "wolfHunter"
+
+        )
+
+    );
+
+  return [
+
+    ...cursed,
+
+    ...spy,
+
+    ...wolves,
+
+    ...trapper,
+
+    ...bodyguards,
+
+    ...seers,
+
+    ...mediums,
+
+    ...others
+
+  ];
+
+}
+
+/* ==========================
+
+   夜行動処理
+
+=========================== */
+
+function processNightAction(
+
+  order,
+
+  index
+
+){
+
+  if(
+
+    index >= order.length
+
+  ){
+
+    finishNight();
+
+    return;
+
+  }
+
+  const player =
+
+    order[index];
+
+  /*
+
+   * 生存していなければ次へ
+
+   */
+
+  if(!player.alive){
+
+    processNightAction(
+
+      order,
+
+      index+1
+
+    );
+
+    return;
+
+  }
+
+  /*
+
+   * 次へ進む関数を保存
+
+   */
+
+  window._nightNext =
+
+    function(){
+
+      processNightAction(
+
+        order,
+
+        index+1
+
+      );
+
+    };
+
+  showNightAction(
+
+    player
+
+  );
+
+}
+
+/* ==========================
+
+   夜の行動画面
+
+=========================== */
+
+function showNightAction(player){
+
+  setPhaseTitle(
+
+    `🌙 ${currentNight}日目の夜`
+
+  );
+
+  setPhaseContent(`
+
+    <p>
+
+      <strong>
+
+        ${player.name}さん
+
+      </strong>
+
+      の番です。
+
+    </p>
+
+    <p class="small">
+
+      他の人には画面を見せないでください。
+
+    </p>
+
+  `);
+
+  const role =
+
+    player.role;
+
+  /* ========================
+
+     呪われた者
+
+  ======================== */
+
+  if(role === "cursed"){
+
+    setActionArea(`
+
+      <div class="action-box">
+
+        <h3>💀 呪われた者</h3>
+
+        <p>
+
+          自分の役職を確認してください。
+
+        </p>
+
+        <p>
+
+          現在の状態：
+
+          <strong>呪われた者</strong>
+
+        </p>
+
+        <button onclick="_nightNext()">
+
+          確認しました
+
+        </button>
+
+      </div>
+
+    `);
+
+    return;
+
+  }
+
+  /* ========================
+
+     スパイ
+
+  ======================== */
+
+  if(role === "spy"){
+
+    const wolves =
+
+      players
+
+        .filter(
+
+          p =>
+
+            p.alive &&
+
+            p.role === "werewolf"
+
+        )
+
+        .map(
+
+          p => p.name
+
+        );
+
+    setActionArea(`
+
+      <div class="action-box">
+
+        <h3>🕵️ スパイ</h3>
+
+        <p>
+
+          人狼は
+
+          ${
+
+            wolves.length
+
+              ? wolves.join("、")
+
+              : "いません"
+
+          }
+
+          です。
+
+        </p>
+
+        <button onclick="_nightNext()">
+
+          確認しました
+
+        </button>
+
+      </div>
+
+    `);
+
+    return;
+
+  }
+
+  /* ========================
+
+     人狼
+
+  ======================== */
+
+  if(role === "werewolf"){
+
+    showWolfAction(player);
+
+    return;
+
+  }
+
+  /* ========================
+
+     罠師
+
+  ======================== */
+
+  if(role === "trapper"){
+
+    showTrapperAction(player);
+
+    return;
+
+  }
+
+  /* ========================
+
+     ボディガード
+
+  ======================== */
+
+  if(role === "bodyguard"){
+
+    showGuardAction(
+
+      player,
+
+      false
+
+    );
+
+    return;
+
+  }
+
+  /* ========================
+
+     騎士団
+
+  ======================== */
+
+  if(role === "knight"){
+
+    showGuardAction(
+
+      player,
+
+      true
+
+    );
+
+    return;
+
+  }
+
+  /* ========================
+
+     占い師
+
+  ======================== */
+
+  if(role === "seer"){
+
+    showSeerAction(
+
+      player,
+
+      false
+
+    );
+
+    return;
+
+  }
+
+  /* ========================
+
+     預言者
+
+  ======================== */
+
+  if(role === "prophet"){
+
+    showSeerAction(
+
+      player,
+
+      true
+
+    );
+
+    return;
+
+  }
+
+  /* ========================
+
+     霊能者
+
+  ======================== */
+
+  if(role === "medium"){
+
+    showMediumAction(
+
+      player
+
+    );
+
+    return;
+
+  }
+
+  /* ========================
+
+     その他の役職
+
+  ======================== */
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <h3>
+
+        ${ROLE_DATA[role].emoji}
+
+        ${ROLE_DATA[role].name}
+
+      </h3>
+
+      <p>
+
+        今夜の特殊行動はありません。
+
+      </p>
+
+      <button onclick="_nightNext()">
+
+        次へ
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+/* ==========================
+
+   人狼の襲撃
+
+=========================== */
+
+function showWolfAction(player){
+
+  const targets =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        p.id !== player.id &&
+
+        p.role !== "werewolf"
+
+    );
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <h3>🐺 人狼の襲撃</h3>
+
+      <p>
+
+        襲撃する相手を選んでください。
+
+      </p>
+
+      <div>
+
+        ${
+
+          targets.map(
+
+            target => `
+
+              <label class="choice">
+
+                <input
+
+                  type="radio"
+
+                  name="wolfTarget"
+
+                  value="${target.id}"
+
+                >
+
+                ${target.name}
+
+              </label>
+
+            `
+
+          ).join("")
+
+        }
+
+      </div>
+
+      <button
+
+        onclick="confirmWolfAction()"
+
+      >
+
+        襲撃先を決定
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+function confirmWolfAction(){
+
+  const target =
+
+    getRadio(
+
+      "wolfTarget"
+
+    );
+
+  if(target === null){
+
+    alert(
+
+      "襲撃する相手を選んでください。"
+
+    );
+
+    return;
+
+  }
+
+  currentWolfTarget =
+
+    Number(target);
+
+  nightActions.wolf =
+
+    {
+
+      type:"wolf",
+
+      target:currentWolfTarget
+
+    };
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <h3>🐺 襲撃先を決定しました</h3>
+
+      <p>
+
+        この画面を他の人に見せないでください。
+
+      </p>
+
+      <button onclick="_nightNext()">
+
+        次へ
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+/* ==========================
+
+   罠師
+
+=========================== */
+
+function showTrapperAction(player){
+
+  const targets =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        p.id !== player.id
+
+    );
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <h3>🪤 罠師</h3>
+
+      <p>
+
+        罠を仕掛ける相手を選んでください。
+
+      </p>
+
+      ${
+
+        targets.map(
+
+          target => `
+
+            <label class="choice">
+
+              <input
+
+                type="radio"
+
+                name="trapTarget"
+
+                value="${target.id}"
+
+              >
+
+              ${target.name}
+
+            </label>
+
+          `
+
+        ).join("")
+
+      }
+
+      <button
+
+        onclick="confirmTrapAction()"
+
+      >
+
+        罠を仕掛ける
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+function confirmTrapAction(){
+
+  const target =
+
+    getRadio(
+
+      "trapTarget"
+
+    );
+
+  if(target === null){
+
+    alert(
+
+      "罠を仕掛ける相手を選んでください。"
+
+    );
+
+    return;
+
+  }
+
+  currentTrapTarget =
+
+    Number(target);
+
+  nightActions.trapper =
+
+    {
+
+      type:"trapper",
+
+      target:currentTrapTarget
+
+    };
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <p>
+
+        罠を仕掛けました。
+
+      </p>
+
+      <button onclick="_nightNext()">
+
+        次へ
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+/* ==========================
+
+   護衛
+
+=========================== */
+
+function showGuardAction(
+
+  player,
+
+  canSelfGuard
+
+){
+
+  const previous =
+
+    player.guardHistory[
+
+      player.guardHistory.length-1
+
+    ];
+
+  const targets =
+
+    players.filter(
+
+      p => {
+
+        if(!p.alive){
+
+          return false;
+
+        }
+
+        if(
+
+          !canSelfGuard &&
+
+          p.id === player.id
+
+        ){
+
+          return false;
+
+        }
+
+        /*
+
+         * ボディガードは
+
+         * 2夜連続で同じ人を守れない
+
+         */
+
+        if(
+
+          !canSelfGuard &&
+
+          previous !== undefined &&
+
+          p.id === previous
+
+        ){
+
+          return false;
+
+        }
+
+        return true;
+
+      }
+
+    );
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <h3>
+
+        ${canSelfGuard ? "⚔️ 騎士団" : "🛡️ ボディガード"}
+
+      </h3>
+
+      <p>
+
+        守る相手を選んでください。
+
+      </p>
+
+      ${
+
+        targets.map(
+
+          target => `
+
+            <label class="choice">
+
+              <input
+
+                type="radio"
+
+                name="guardTarget"
+
+                value="${target.id}"
+
+              >
+
+              ${target.name}
+
+            </label>
+
+          `
+
+        ).join("")
+
+      }
+
+      <button
+
+        onclick="confirmGuardAction(${player.id},${canSelfGuard})"
+
+      >
+
+        護衛する
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+function confirmGuardAction(
+
+  playerId,
+
+  canSelfGuard
+
+){
+
+  const target =
+
+    getRadio(
+
+      "guardTarget"
+
+    );
+
+  if(target === null){
+
+    alert(
+
+      "守る相手を選んでください。"
+
+    );
+
+    return;
+
+  }
+
+  const targetId =
+
+    Number(target);
+
+  const player =
+
+    players.find(
+
+      p=>p.id===playerId
+
+    );
+
+  if(!player){
+
+    return;
+
+  }
+
+  player.guardHistory.push(
+
+    targetId
+
+  );
+
+  /*
+
+   * その夜の護衛対象
+
+   */
+
+  if(
+
+    player.role === "bodyguard"
+
+  ){
+
+    currentGuardTarget =
+
+      targetId;
+
+    nightActions.bodyguard =
+
+      {
+
+        type:"guard",
+
+        target:targetId
+
+      };
+
+  }else{
+
+    currentGuardTarget =
+
+      targetId;
+
+    nightActions.knight =
+
+      {
+
+        type:"guard",
+
+        target:targetId
+
+      };
+
+  }
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <p>
+
+        護衛先を決定しました。
+
+      </p>
+
+      <button onclick="_nightNext()">
+
+        次へ
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+/* ==========================
+
+   占い
+
+=========================== */
+
+function showSeerAction(
+
+  player,
+
+  isProphet
+
+){
+
+  /*
+
+   * 預言者は初日に
+
+   * 占いをするか選べる
+
+   */
+
+  if(
+
+    isProphet &&
+
+    currentNight === 1 &&
+
+    prophetFirstNightChoice === null
+
+  ){
+
+    setActionArea(`
+
+      <div class="action-box">
+
+        <h3>🔮 預言者</h3>
+
+        <p>
+
+          初日の占いを行いますか？
+
+        </p>
+
+        <button
+
+          onclick="chooseProphetFirstNight(true)"
+
+        >
+
+          占う
+
+        </button>
+
+        <button
+
+          onclick="chooseProphetFirstNight(false)"
+
+        >
+
+          占わない
+
+        </button>
+
+      </div>
+
+    `);
+
+    return;
+
+  }
+
+  if(
+
+    isProphet &&
+
+    currentNight === 1 &&
+
+    prophetFirstNightChoice === false
+
+  ){
+
+    setActionArea(`
+
+      <div class="action-box">
+
+        <p>
+
+          初日の占いは行いません。
+
+        </p>
+
+        <button onclick="_nightNext()">
+
+          次へ
+
+        </button>
+
+      </div>
+
+    `);
+
+    return;
+
+  }
+
+  const targets =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        p.id !== player.id
+
+    );
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <h3>
+
+        ${isProphet ? "🔮 預言者" : "🔮 占い師"}
+
+      </h3>
+
+      <p>
+
+        占う相手を選んでください。
+
+      </p>
+
+      ${
+
+        targets.map(
+
+          target => `
+
+            <label class="choice">
+
+              <input
+
+                type="radio"
+
+                name="seerTarget"
+
+                value="${target.id}"
+
+              >
+
+              ${target.name}
+
+            </label>
+
+          `
+
+        ).join("")
+
+      }
+
+      <button
+
+        onclick="confirmSeerAction(${player.id},${isProphet})"
+
+      >
+
+        占う
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+function chooseProphetFirstNight(
+
+  doSeer
+
+){
+
+  prophetFirstNightChoice =
+
+    doSeer;
+
+  if(!doSeer){
+
+    setActionArea(`
+
+      <div class="action-box">
+
+        <p>
+
+          初日の占いは行いません。
+
+        </p>
+
+        <button onclick="_nightNext()">
+
+          次へ
+
+        </button>
+
+      </div>
+
+    `);
+
+    return;
+
+  }
+
+  const prophet =
+
+    players.find(
+
+      p =>
+
+        p.alive &&
+
+        p.role === "prophet"
+
+    );
+
+  if(prophet){
+
+    showSeerAction(
+
+      prophet,
+
+      true
+
+    );
+
+  }
+
+}
+
+function confirmSeerAction(
+
+  playerId,
+
+  isProphet
+
+){
+
+  const target =
+
+    getRadio(
+
+      "seerTarget"
+
+    );
+
+  if(target === null){
+
+    alert(
+
+      "占う相手を選んでください。"
+
+    );
+
+    return;
+
+  }
+
+  const targetId =
+
+    Number(target);
+
+  const targetPlayer =
+
+    players.find(
+
+      p=>p.id===targetId
+
+    );
+
+  if(!targetPlayer){
+
+    return;
+
+  }
+
+  /*
+
+   * 占い結果は画面だけで本人に表示。
+
+   * GM音声では読み上げない。
+
+   */
+
+  const result =
+
+    targetPlayer.role === "fox"
+
+      ? "人間"
+
+      : (
+
+          ROLE_DATA[targetPlayer.role].team === "人狼"
+
+            ? "人狼"
+
+            : "人間"
+
+        );
+
+  nightActions[
+
+    isProphet
+
+      ? "prophet"
+
+      : `seer-${playerId}`
+
+  ] = {
+
+    type:
+
+      isProphet
+
+        ? "prophet"
+
+        : "seer",
+
+    target:targetId,
+
+    result:result
+
+  };
+
+  /*
+
+   * 占われた妖狐はその場で死亡
+
+   */
+
+  if(
+
+    targetPlayer.role === "fox"
+
+  ){
+
+    targetPlayer.alive = false;
+
+  }
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <h3>🔮 占い結果</h3>
+
+      <p>
+
+        「${targetPlayer.name}」さんは
+
+      </p>
+
+      <div class="result">
+
+        ${result}
+
+      </div>
+
+      <p class="small">
+
+        この結果は本人だけ確認してください。
+
+      </p>
+
+      <button onclick="_nightNext()">
+
+        確認しました
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+/* ==========================
+
+   霊能者
+
+=========================== */
+
+function showMediumAction(
+
+  player
+
+){
+
+  if(
+
+    lastExecutedId === null
+
+  ){
+
+    setActionArea(`
+
+      <div class="action-box">
+
+        <h3>👻 霊能者</h3>
+
+        <p>
+
+          まだ追放された人はいません。
+
+        </p>
+
+        <button onclick="_nightNext()">
+
+          次へ
+
+        </button>
+
+      </div>
+
+    `);
+
+    return;
+
+  }
+
+  const target =
+
+    players.find(
+
+      p=>p.id===lastExecutedId
+
+    );
+
+  const result =
+
+    target &&
+
+    target.role === "werewolf"
+
+      ? "人狼"
+
+      : "人間";
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <h3>👻 霊能結果</h3>
+
+      <p>
+
+        「${target ? target.name : ""}」さんは
+
+      </p>
+
+      <div class="result">
+
+        ${result}
+
+      </div>
+
+      <p class="small">
+
+        この結果は本人だけ確認してください。
+
+      </p>
+
+      <button onclick="_nightNext()">
+
+        確認しました
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+/* ==========================
+
+   共通ラジオ取得
+
+=========================== */
+
+function getRadio(name){
+
+  const checked =
+
+    document.querySelector(
+
+      `input[name="${name}"]:checked`
+
+    );
+
+  return checked
+
+    ? checked.value
+
+    : null;
+
+}
+ /* ==========================
+
+   夜終了処理
+
+=========================== */
+
+function finishNight(){
+
+  /*
+
+   * 人狼の襲撃先
+
+   */
+
+  const wolfTarget =
+
+    currentWolfTarget;
+
+  /*
+
+   * 罠師の罠
+
+   */
+
+  const trapTarget =
+
+    currentTrapTarget;
+
+  /*
+
+   * 護衛対象
+
+   */
+
+  const guardTarget =
+
+    currentGuardTarget;
+
+  /*
+
+   * 罠にかかった人を人狼が襲撃
+
+   *
+
+   * → 人狼側が死亡
+
+   *
+
+   * 人狼が複数いる場合は
+
+   * ランダムに1人死亡
+
+   */
+
+  if(
+
+    wolfTarget !== null &&
+
+    trapTarget !== null &&
+
+    wolfTarget === trapTarget
+
+  ){
+
+    const wolves =
+
+      players.filter(
+
+        p =>
+
+          p.alive &&
+
+          p.role === "werewolf"
+
+      );
+
+    if(wolves.length){
+
+      const deadWolf =
+
+        wolves[
+
+          Math.floor(
+
+            Math.random() *
+
+            wolves.length
+
+          )
+
+        ];
+
+      deadWolf.alive = false;
+
+    }
+
+  }
+
+  /*
+
+   * 通常の襲撃
+
+   *
+
+   * 妖狐は人狼の襲撃では死亡しない
+
+   */
+
+  else if(
+
+    wolfTarget !== null
+
+  ){
+
+    const target =
+
+      players.find(
+
+        p=>p.id===wolfTarget
+
+      );
+
+    if(
+
+      target &&
+
+      target.alive &&
+
+      target.role !== "fox"
+
+    ){
+
+      /*
+
+       * 護衛されていれば死亡しない
+
+       */
+
+      if(
+
+        guardTarget !== target.id
+
+      ){
+
+        target.alive = false;
+
+      }
+
+    }
+
+  }
+
+  /*
+
+   * 夜明け
+
+   */
+
+  showMorning();
+
+}
+
+/* ==========================
+
+   朝
+
+=========================== */
+
+function showMorning(){
+
+  setPhaseTitle(
+
+    "🌅 朝になりました"
+
+  );
+
+  const deadPlayers =
+
+    players.filter(
+
+      p =>
+
+        !p.alive &&
+
+        p.id !== lastExecutedId
+
+    );
+
+  /*
+
+   * 前回までに死亡していた人を除き、
+
+   * 今夜新たに死亡した人だけを取得する
+
+   */
+
+  const newDeaths =
+
+    deadPlayers.filter(
+
+      p =>
+
+        !p._announced
+
+    );
+
+  newDeaths.forEach(
+
+    p=>{
+
+      p._announced = true;
+
+    }
+
+  );
+
+  let text =
+
+    "朝になりました。みなさん目を覚ましてください。";
+
+  if(newDeaths.length){
+
+    const names =
+
+      newDeaths
+
+        .map(
+
+          p=>p.name
+
+        )
+
+        .join("、");
+
+    text +=
+
+      ` 残念ながら${names}さんが亡くなってしまいました。`;
+
+  }
+
+  text +=
+
+    " お昼です。議論スタート。";
+
+  /*
+
+   * 死亡理由は公開しない
+
+   */
+
+  setPhaseContent(`
+
+    <div class="action-box">
+
+      <p>
+
+        ${text}
+
+      </p>
+
+      <p class="small">
+
+        ※死亡理由は公開されません。
+
+      </p>
+
+    </div>
+
+  `);
+
+  setActionArea(`
+
+    <div class="voice">
+
+      <button onclick="speakMorning()">
+
+        🔊 GM音声で読み上げ
+
+      </button>
+
+      <button onclick="startDiscussion()">
+
+        議論を開始
+
+      </button>
+
+    </div>
+
+  `);
+
+  if(
+
+    checkWinCondition()
+
+  ){
+
+    return;
+
+  }
+
+}
+
+/* ==========================
+
+   GM朝音声
+
+=========================== */
+
+function speakMorning(){
+
+  const area =
+
+    document.getElementById(
+
+      "phaseContent"
+
+    );
+
+  const text =
+
+    area.innerText
+
+      .replace(
+
+        "※死亡理由は公開されません。",
+
+        ""
+
+      );
+
+  speak(
+
+    text
+
+  );
+
+}
+
+/* ==========================
+
+   音声
+
+=========================== */
+
+function speak(text){
+
+  if(
+
+    !("speechSynthesis" in window)
+
+  ){
+
+    alert(
+
+      "この端末では音声読み上げを利用できません。"
+
+    );
+
+    return;
+
+  }
+
+  speechSynthesis.cancel();
+
+  const utterance =
+
+    new SpeechSynthesisUtterance(
+
+      text
+
+    );
+
+  utterance.lang =
+
+    "ja-JP";
+
+  utterance.rate =
+
+    0.95;
+
+  utterance.pitch =
+
+    1;
+
+  speechSynthesis.speak(
+
+    utterance
+
+  );
+
+}
+
+/* ==========================
+
+   議論
+
+=========================== */
+
+function startDiscussion(){
+
+  setPhaseTitle(
+
+    "☀️ 昼・議論"
+
+  );
+
+  setPhaseContent(`
+
+    <p>
+
+      議論スタート！
+
+    </p>
+
+    <p>
+
+      生存者で話し合ってください。
+
+    </p>
+
+  `);
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <div id="timerDisplay">
+
+        タイマーなし
+
+      </div>
+
+      <button
+
+        onclick="startDiscussionTimer()"
+
+      >
+
+        ⏱️ タイマー開始
+
+      </button>
+
+      <button
+
+        onclick="startVoting()"
+
+      >
+
+        🗳️ 投票へ
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+/* ==========================
+
+   議論タイマー
+
+=========================== */
+
+function startDiscussionTimer(){
+
+  const seconds =
+
+    Number(
+
+      document.getElementById(
+
+        "discussionTime"
+
+      ).value
+
+    );
+
+  if(
+
+    seconds <= 0
+
+  ){
+
+    document
+
+      .getElementById(
+
+        "timerDisplay"
+
+      )
+
+      .textContent =
+
+        "タイマーなし";
+
+    return;
+
+  }
+
+  if(
+
+    discussionTimer
+
+  ){
+
+    clearInterval(
+
+      discussionTimer
+
+    );
+
+  }
+
+  discussionSeconds =
+
+    seconds;
+
+  updateTimerDisplay();
+
+  discussionTimer =
+
+    setInterval(
+
+      ()=>{
+
+        discussionSeconds--;
+
+        updateTimerDisplay();
+
+        if(
+
+          discussionSeconds <= 0
+
+        ){
+
+          clearInterval(
+
+            discussionTimer
+
+          );
+
+          discussionTimer =
+
+            null;
+
+          speak(
+
+            "議論時間終了です。投票を開始してください。"
+
+          );
+
+        }
+
+      },
+
+      1000
+
+    );
+
+}
+
+function updateTimerDisplay(){
+
+  const min =
+
+    Math.floor(
+
+      discussionSeconds / 60
+
+    );
+
+  const sec =
+
+    discussionSeconds % 60;
+
+  const display =
+
+    document.getElementById(
+
+      "timerDisplay"
+
+    );
+
+  if(!display){
+
+    return;
+
+  }
+
+  display.textContent =
+
+    `${min}:${String(sec).padStart(2,"0")}`;
+
+}
+
+/* ==========================
+
+   投票開始
+
+=========================== */
 
 function startVoting(){
- $("day").classList.add("hidden");$("vote").classList.remove("hidden");
- voteRound=1;voteData={};voteOrder=alivePlayers();voteIndex=0;runoffCandidates=[];renderCurrentVote();
-}
-function renderCurrentVote(){
- const voter=voteOrder[voteIndex];
- if(!voter){return}
- const candidates=voteRound===2?runoffCandidates.map(id=>players.find(p=>p.id===id)).filter(Boolean):alivePlayers();
- $("voteInstruction").innerHTML=`<strong>${voteRound===2?"⚖️ 決選投票":"🗳️ 投票"}</strong><br>${escapeHtml(voter.name)}さんの投票です。<br><span class="small">他の人にはこの投票先を表示しません。</span>`;
- $("votePlayers").innerHTML=`<div class="vote-player"><strong>🗳️ ${escapeHtml(voter.name)}さん</strong><br><select id="currentVote"><option value="">投票先を選択</option>${candidates.filter(t=>t.id!==voter.id).map(t=>`<option value="${t.id}">${escapeHtml(t.name)}</option>`).join("")}</select></div>`;
-}
-function finishVoting(){
- const voter=voteOrder[voteIndex],s=$("currentVote");
- if(!voter||!s||!s.value){alert(`${voter?voter.name:"このプレイヤー"}さんの投票先を選択してください。`);if(s)s.focus();return}
- voteData[voter.id]=Number(s.value);voteIndex++;
- if(voteIndex<voteOrder.length){renderCurrentVote();return}
- const c={};alivePlayers().forEach(p=>c[p.id]=0);
- Object.entries(voteData).forEach(([voterId,targetId])=>{const voter=players.find(p=>p.id===Number(voterId));if(voter)c[targetId]=(c[targetId]||0)+pVoteWeight(voter)});
- const max=Math.max(...Object.values(c)),top=Object.entries(c).filter(([id,n])=>n===max).map(([id])=>Number(id));
- if(voteRound===1&&top.length>1){startRunoff(top);return}
- showVotingResult(c,top,voteRound===2);
-}
-function startRunoff(candidates){
- voteRound=2;runoffCandidates=candidates;voteData={};voteOrder=alivePlayers();voteIndex=0;
- $("voteInstruction").innerHTML='<strong>⚖️ 決選投票</strong><br>最も票が多かった候補者への決選投票です。<br><span class="small">今回も1人ずつ投票します。</span>';
- renderCurrentVote();
-}
-function showVotingResult(c,top,runoff){
- let text=`<h3>🗳️ ${runoff?"決選投票":"投票"}結果</h3>`;
- alivePlayers().forEach(p=>text+=`<p>${escapeHtml(p.name)}：<strong>${c[p.id]||0}票</strong></p>`);
- if(top.length>1){text+="<hr><div class='warning'>⚠️ 決選投票も同票のため、追放者はありません。</div>";speak("決選投票も同数でした。追放者はいません。");}
- else{const t=players.find(p=>p.id===top[0]);eliminatePlayer(t,"vote");text+=`<hr><div class='result'>⚖️ ${escapeHtml(t.name)}さんが追放されました。</div><p>役職：${getRoleName(t.roleId)}</p>`;speak(`${t.name}さんが追放されました。`)}
- $("vote").classList.add("hidden");$("voteResult").classList.remove("hidden");$("voteResultText").innerHTML=text;
-}
-function pVoteWeight(p){return p.roleId==="king"?2:1}
-function eliminatePlayer(p,reason){if(!p||!p.alive)return;p.alive=false;p.lastDeathReason=reason;if(p.lover){const q=players.find(x=>x.name===p.loverPartner&&x.alive);if(q){q.alive=false;q.lastDeathReason="lover"}}}
-function afterVote(){$("voteResult").classList.add("hidden");if(checkWin())return;$("gameReady").classList.remove("hidden")}
-function checkWin(){const a=alivePlayers(),wolves=a.filter(isWolf);if(!a.length){showWinner("⚖️ 生存者なし");return true}if(wolves.length===0){showWinner("🎉 市民陣営の勝利！");return true}if(wolves.length>=a.filter(p=>!isWolf(p)).length){showWinner("🐺 人狼陣営の勝利！");return true}return false}
-function showWinner(t){stopVoice();["day","gameReady","night","vote","voteResult","game"].forEach(id=>$(id).classList.add("hidden"));$("gameOver").classList.remove("hidden");$("winner").textContent=t;speak(t)}
 
-const NIGHT_STEPS=["🧟 呪われた者","🕵️ スパイ","🤖 アンドロイド","🪤 罠師","🛡️ ボディーガード","🛡️ 騎士団","🐺 人狼／人狼の子ども／一匹狼","⚔️ 裏切りの襲撃者","🩺 カウンセラー","😈 裏切り者系","🎩 奇術師","🔮 預言者","👻 霊媒師"];
-function startNight(){$("gameReady").classList.add("hidden");$("night").classList.remove("hidden");nightStep=0;nightData={cursed:null,trap:null,bodyguard:null,knights:null,wolfAttack:null,betrayAttack:null,changedTarget:null,android:null};runNightStep()}
-function runNightStep(){if(nightStep>=NIGHT_STEPS.length){finishNight();return}$("nightTitle").textContent=NIGHT_STEPS[nightStep];$("nightInfo").textContent="";speakNight();[nightCursed,nightSpy,nightAndroid,nightTrapper,nightBodyguard,nightKnights,nightWolves,nightBetrayAttacker,nightCounselor,nightBetrayer,nightMagician,nightSeer,nightMedium][nightStep]()}
-function nextNight(){nightStep++;runNightStep()}
-function finishStep(text){$("nightInfo").textContent=text;$("nightAction").innerHTML='<button onclick="nextNight()">目を閉じて次へ</button>'}
-function nightCursed(){const p=players.find(p=>p.roleId==="cursed"&&p.alive);if(p&&p.cursedAwakened){p.roleId="werewolf";p.cursedAwakened=false;finishStep("🧟 呪われた者は人狼になりました。")}else finishStep("🧟 呪われた者の確認が終わりました。")}
-function nightSpy(){finishStep(players.some(p=>p.roleId==="spy"&&p.alive)?"🕵️ スパイの行動を確認しました。":"🕵️ スパイはいません。")}
-function nightAndroid(){const p=players.find(p=>p.roleId==="android"&&p.alive&&!p.copiedRole);if(!p){nextNight();return}showTargetButtons("🤖 コピーする相手",getTargets(p.id),"androidCopy")}
-function androidCopy(id){const p=players.find(p=>p.roleId==="android"&&p.alive&&!p.copiedRole),t=players.find(x=>x.id===Number(id));if(p&&t)p.copiedRole=t.roleId;$("nightAction").innerHTML=`<p>🤖 ${escapeHtml(p.name)}さんは${getRoleName(t.roleId)}をコピーしました。</p><button onclick="nextNight()">目を閉じて次へ</button>`}
-function nightTrapper(){const p=players.find(p=>p.roleId==="trapper"&&p.alive);if(!p){nextNight();return}showTargetButtons("🪤 罠を仕掛ける相手",getTargets(p.id),"setTrap")}
-function setTrap(id){nightData.trap=Number(id);finishStep("🪤 罠を仕掛けました。")}
-function nightBodyguard(){const p=players.find(p=>p.roleId==="bodyguard"&&p.alive);if(!p){nextNight();return}const targets=alivePlayers().filter(t=>t.id!==p.id&&t.id!==p.lastGuardTarget);if(!targets.length){finishStep("🛡️ 守れる相手がいません。");return}showTargetButtons("🛡️ 守る相手",targets,"setBodyguard")}
-function setBodyguard(id){const p=players.find(p=>p.roleId==="bodyguard"&&p.alive);const target=Number(id);if(p){p.lastGuardTarget=target;nightData.bodyguard=target}finishStep("🛡️ 守る相手を決定しました。") }
-function nightKnights(){const p=players.find(p=>p.roleId==="knights"&&p.alive);if(!p){nextNight();return}showTargetButtons("🛡️ 騎士団が守る相手",alivePlayers(),"setKnights")}
-function setKnights(id){nightData.knights=Number(id);finishStep("🛡️ 騎士団の守る相手を決定しました。")}
-function nightWolves(){const w=players.filter(p=>isWolf(p)&&p.alive);if(!w.length){nextNight();return}showTargetButtons("🐺 襲撃する相手",alivePlayers(),"setWolfAttack")}
-function setWolfAttack(id){nightData.wolfAttack=Number(id);finishStep("🐺 襲撃先を決定しました。")}
-function nightBetrayAttacker(){const p=players.find(p=>p.roleId==="betrayAttacker"&&p.alive);if(!p){nextNight();return}showTargetButtons("⚔️ 襲撃する相手",getTargets(p.id),"setBetrayAttack")}
-function setBetrayAttack(id){nightData.betrayAttack=Number(id);finishStep("⚔️ 襲撃先を決定しました。")}
-function nightCounselor(){const p=players.find(p=>p.roleId==="counselor"&&p.alive);if(!p){nextNight();return}showTargetButtons("🩺 改心させる相手",getTargets(p.id),"setCounselor")}
-function setCounselor(id){const t=players.find(p=>p.id===Number(id));if(t&&isBetrayer(t))t.roleId="villager";finishStep("🩺 カウンセラーの処理が完了しました。")}
-function nightBetrayer(){finishStep(players.some(p=>isBetrayer(p)&&p.alive)?"😈 裏切り者系の確認が終わりました。":"😈 裏切り者系はいません。")}
-function nightMagician(){const p=players.find(p=>p.roleId==="magician"&&p.alive&&!p.abilitiesUsed.magician);if(!p){nextNight();return}if(day<2){finishStep("🎩 奇術師は2日目以降に使用できます。");return}showTargetButtons("🎩 襲撃先を変更する相手",alivePlayers(),"useMagician")}
-function useMagician(id){const p=players.find(p=>p.roleId==="magician"&&p.alive);p.abilitiesUsed.magician=true;nightData.changedTarget=Number(id);finishStep("🎩 襲撃先を変更しました。")}
-function nightSeer(){const p=players.find(p=>p.roleId==="seer"&&p.alive);if(!p){nextNight();return}showTargetButtons("🔮 占う相手",getTargets(p.id),"seerResult")}
-function seerResult(id){const t=players.find(p=>p.id===Number(id)),r=(isWolf(t)||t.roleId==="fox")?"人狼":"市民";$("nightAction").innerHTML=`<div class="result">🔮 占い結果</div><p>${escapeHtml(t.name)}さんは</p><div class="result">「${r}」</div><button onclick="nextNight()">目を閉じて次へ</button>`}
-function nightMedium(){const p=players.find(p=>p.roleId==="medium"&&p.alive);if(!p){nextNight();return}const d=players.find(x=>x.lastDeathReason==="vote"&&!x.mediumSeen);if(!d){finishStep("👻 今回確認できる追放者はいません。");return}d.mediumSeen=true;finishStep(`👻 ${d.name}さんは「${isWolf(d)?"人狼":"市民"}」でした。`)}
-function showTargetButtons(title,targets,fn){$("nightAction").innerHTML=`<h3>${title}</h3>${targets.map(t=>`<button class="choice" onclick="${fn}(${t.id})">${escapeHtml(t.name)}</button>`).join("")}`}
-function finishNight(){
- let attacks=[];if(nightData.wolfAttack!=null)attacks.push(nightData.wolfAttack);if(nightData.betrayAttack!=null)attacks.push(nightData.betrayAttack);if(nightData.changedTarget!=null)attacks=[nightData.changedTarget];attacks=[...new Set(attacks)];
- attacks.forEach(id=>{const t=players.find(p=>p.id===id);if(!t||!t.alive)return;
- if(t.roleId==="fox"){eliminatePlayer(t,"night");t.lastDeathReason="night";return}
- if(nightData.bodyguard===t.id||nightData.knights===t.id)return;
- if(nightData.trap===t.id){const wolves=players.filter(p=>p.alive&&isWolf(p));if(wolves.length){const w=wolves[Math.floor(Math.random()*wolves.length)];w.alive=false;w.lastDeathReason="trap"}return}
- if(t.roleId==="cursed"){t.cursedAwakened=true;return}
- if(t.roleId==="tough"&&!t.toughHit){t.toughHit=true;return}
- eliminatePlayer(t,"night")
- });
- $("night").classList.add("hidden");if(checkWin())return;day++;startDayAfterNight()
-}
-function startDayAfterNight(){const dead=players.filter(p=>!p.alive);$("day").classList.remove("hidden");$("dayInfo").innerHTML=`<h3>☀️ ${day}日目の昼</h3>${dead.length?`<p>💀 死亡者：${dead.map(p=>escapeHtml(p.name)).join("、")}</p>`:"<p>🌟 今夜は死亡者はいません。</p>"}<p>生存者：${alivePlayers().map(p=>escapeHtml(p.name)).join("、")}</p><hr><p>議論をしてください。</p>`;speakDay()}
+  if(
 
-resetRoleCounts();
+    discussionTimer
+
+  ){
+
+    clearInterval(
+
+      discussionTimer
+
+    );
+
+    discussionTimer =
+
+      null;
+
+  }
+
+  setPhaseTitle(
+
+    "🗳️ 投票"
+
+  );
+
+  setPhaseContent(`
+
+    <p>
+
+      生存者は1人ずつ、
+
+      自分の投票先を選んでください。
+
+    </p>
+
+    <p class="small">
+
+      投票内容は他のプレイヤーには
+
+      表示されません。
+
+    </p>
+
+  `);
+
+  renderVoting();
+
+}
+
+/* ==========================
+
+   投票画面
+
+=========================== */
+
+function renderVoting(){
+
+  const alive =
+
+    players.filter(
+
+      p=>p.alive
+
+    );
+
+  const area =
+
+    document.getElementById(
+
+      "actionArea"
+
+    );
+
+  area.innerHTML = `
+
+    <div class="action-box">
+
+      <div id="voteArea"></div>
+
+      <button
+
+        onclick="confirmVoting()"
+
+      >
+
+        投票を確定
+
+      </button>
+
+    </div>
+
+  `;
+
+  const voteArea =
+
+    document.getElementById(
+
+      "voteArea"
+
+    );
+
+  alive.forEach(
+
+    player=>{
+
+      const targets =
+
+        alive.filter(
+
+          p =>
+
+            p.id !== player.id
+
+        );
+
+      const options =
+
+        targets
+
+          .map(
+
+            target =>
+
+              `
+
+                <option value="${target.id}">
+
+                  ${target.name}
+
+                </option>
+
+              `
+
+          )
+
+          .join("");
+
+      voteArea.innerHTML += `
+
+        <div class="vote-player">
+
+          <strong>
+
+            ${player.name}さん
+
+          </strong>
+
+          <br>
+
+          <select
+
+            id="vote-${player.id}"
+
+          >
+
+            <option value="">
+
+              投票先を選択
+
+            </option>
+
+            ${options}
+
+          </select>
+
+        </div>
+
+      `;
+
+    }
+
+  );
+
+}
+
+/* ==========================
+
+   投票確定
+
+=========================== */
+
+function confirmVoting(){
+
+  const alive =
+
+    players.filter(
+
+      p=>p.alive
+
+    );
+
+  const votes = {};
+
+  for(
+
+    const player of alive
+
+  ){
+
+    const select =
+
+      document.getElementById(
+
+        `vote-${player.id}`
+
+      );
+
+    if(
+
+      !select ||
+
+      !select.value
+
+    ){
+
+      alert(
+
+        `${player.name}さんの投票先を選んでください。`
+
+      );
+
+      return;
+
+    }
+
+    votes[player.id] =
+
+      Number(
+
+        select.value
+
+      );
+
+  }
+
+  showVoteResult(
+
+    votes
+
+  );
+
+}
+
+/* ==========================
+
+   投票結果
+
+=========================== */
+
+function showVoteResult(
+
+  votes
+
+){
+
+  const counts = {};
+
+  Object.values(votes)
+
+    .forEach(
+
+      id=>{
+
+        counts[id] =
+
+          (
+
+            counts[id] || 0
+
+          ) + 1;
+
+      }
+
+    );
+
+  const maxVotes =
+
+    Math.max(
+
+      ...Object.values(counts)
+
+        .map(Number)
+
+    );
+
+  const candidates =
+
+    Object.keys(counts)
+
+      .filter(
+
+        id =>
+
+          Number(counts[id]) === maxVotes
+
+      )
+
+      .map(Number);
+
+  setPhaseTitle(
+
+    "📊 投票結果"
+
+  );
+
+  let html = `
+
+    <p>
+
+      投票が終了しました。
+
+    </p>
+
+  `;
+
+  /*
+
+   * 個人個人の投票先は公開しない
+
+   */
+
+  if(
+
+    candidates.length === 1
+
+  ){
+
+    const target =
+
+      players.find(
+
+        p =>
+
+          p.id === candidates[0]
+
+      );
+
+    html += `
+
+      <p>
+
+        最多得票：
+
+        <strong>
+
+          ${target.name}
+
+        </strong>
+
+      </p>
+
+      <p>
+
+        ${maxVotes}票
+
+      </p>
+
+    `;
+
+    setPhaseContent(
+
+      html
+
+    );
+
+    setActionArea(`
+
+      <button
+
+        onclick="executePlayer(${target.id})"
+
+      >
+
+        ⚖️ ${target.name}さんを追放
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  /*
+
+   * 同票
+
+   */
+
+  html += `
+
+    <p>
+
+      同票になりました。
+
+    </p>
+
+    <p>
+
+      決選投票を行います。
+
+    </p>
+
+  `;
+
+  setPhaseContent(
+
+    html
+
+  );
+
+  startRunoff(
+
+    candidates
+
+  );
+
+}
+
+/* ==========================
+
+   決選投票
+
+=========================== */
+
+function startRunoff(
+
+  candidates
+
+){
+
+  const alive =
+
+    players.filter(
+
+      p=>p.alive
+
+    );
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      <h3>⚖️ 決選投票</h3>
+
+      <p>
+
+        以下の候補者から1人を選んでください。
+
+      </p>
+
+      <div id="runoffArea"></div>
+
+      <button
+
+        onclick="confirmRunoff()"
+
+      >
+
+        決選投票を確定
+
+      </button>
+
+    </div>
+
+  `);
+
+  const area =
+
+    document.getElementById(
+
+      "runoffArea"
+
+    );
+
+  alive.forEach(
+
+    player=>{
+
+      const options =
+
+        candidates
+
+          .filter(
+
+            id =>
+
+              id !== player.id
+
+          )
+
+          .map(
+
+            id=>{
+
+              const target =
+
+                players.find(
+
+                  p=>p.id===id
+
+                );
+
+              return `
+
+                <option value="${id}">
+
+                  ${target.name}
+
+                </option>
+
+              `;
+
+            }
+
+          )
+
+          .join("");
+
+      area.innerHTML += `
+
+        <div class="vote-player">
+
+          <strong>
+
+            ${player.name}さん
+
+          </strong>
+
+          <br>
+
+          <select
+
+            id="runoff-${player.id}"
+
+          >
+
+            <option value="">
+
+              投票先を選択
+
+            </option>
+
+            ${options}
+
+          </select>
+
+        </div>
+
+      `;
+
+    }
+
+  );
+
+  window.currentRunoffCandidates =
+
+    candidates;
+
+}
+
+/* ==========================
+
+   決選投票確定
+
+=========================== */
+
+function confirmRunoff(){
+
+  const candidates =
+
+    window.currentRunoffCandidates || [];
+
+  const alive =
+
+    players.filter(
+
+      p=>p.alive
+
+    );
+
+  const counts = {};
+
+  for(
+
+    const player of alive
+
+  ){
+
+    const select =
+
+      document.getElementById(
+
+        `runoff-${player.id}`
+
+      );
+
+    if(
+
+      !select ||
+
+      !select.value
+
+    ){
+
+      alert(
+
+        `${player.name}さんの投票先を選んでください。`
+
+      );
+
+      return;
+
+    }
+
+    const id =
+
+      Number(
+
+        select.value
+
+      );
+
+    counts[id] =
+
+      (
+
+        counts[id] || 0
+
+      ) + 1;
+
+  }
+
+  const maxVotes =
+
+    Math.max(
+
+      ...Object.values(counts)
+
+        .map(Number)
+
+    );
+
+  const winners =
+
+    Object.keys(counts)
+
+      .filter(
+
+        id =>
+
+          Number(counts[id]) === maxVotes
+
+      )
+
+      .map(Number);
+
+  if(
+
+    winners.length === 1
+
+  ){
+
+    const target =
+
+      players.find(
+
+        p =>
+
+          p.id === winners[0]
+
+      );
+
+    setPhaseTitle(
+
+      "⚖️ 決選投票結果"
+
+    );
+
+    setPhaseContent(`
+
+      <p>
+
+        決選投票の結果、
+
+        <strong>
+
+          ${target.name}
+
+        </strong>
+
+        さんが最多得票でした。
+
+      </p>
+
+    `);
+
+    setActionArea(`
+
+      <button
+
+        onclick="executePlayer(${target.id})"
+
+      >
+
+        ⚖️ ${target.name}さんを追放
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  /*
+
+   * 決選投票でも同票
+
+   * → 追放なし
+
+   */
+
+  setPhaseTitle(
+
+    "⚖️ 決選投票結果"
+
+  );
+
+  setPhaseContent(`
+
+    <p>
+
+      決選投票も同票でした。
+
+    </p>
+
+    <p>
+
+      今回は追放なしです。
+
+    </p>
+
+  `);
+
+  setActionArea(`
+
+    <button
+
+      onclick="afterDayVote()"
+
+    >
+
+      次へ
+
+    </button>
+
+  `);
+
+}
+
+/* ==========================
+
+   追放処理
+
+=========================== */
+
+function executePlayer(
+
+  playerId
+
+){
+
+  const player =
+
+    players.find(
+
+      p=>p.id===playerId
+
+    );
+
+  if(
+
+    !player ||
+
+    !player.alive
+
+  ){
+
+    return;
+
+  }
+
+  player.alive =
+
+    false;
+
+  lastExecutedId =
+
+    player.id;
+
+  /*
+
+   * ハンターなら道連れ
+
+   */
+
+  if(
+
+    player.role === "hunter"
+
+  ){
+
+    showHunterAction(
+
+      player
+
+    );
+
+    return;
+
+  }
+
+  if(
+
+    checkWinCondition()
+
+  ){
+
+    return;
+
+  }
+
+  afterDayVote();
+
+}
+
+/* ==========================
+
+   ハンター
+
+=========================== */
+
+function showHunterAction(
+
+  hunter
+
+){
+
+  const targets =
+
+    players.filter(
+
+      p =>
+
+        p.alive &&
+
+        p.id !== hunter.id
+
+    );
+
+  setPhaseTitle(
+
+    "🏹 ハンター"
+
+  );
+
+  setPhaseContent(`
+
+    <p>
+
+      ハンターの
+
+      <strong>
+
+        ${hunter.name}
+
+      </strong>
+
+      さんが死亡しました。
+
+    </p>
+
+    <p>
+
+      道連れにする相手を選んでください。
+
+    </p>
+
+  `);
+
+  setActionArea(`
+
+    <div class="action-box">
+
+      ${
+
+        targets.map(
+
+          target => `
+
+            <label class="choice">
+
+              <input
+
+                type="radio"
+
+                name="hunterTarget"
+
+                value="${target.id}"
+
+              >
+
+              ${target.name}
+
+            </label>
+
+          `
+
+        ).join("")
+
+      }
+
+      <button
+
+        onclick="confirmHunter()"
+
+      >
+
+        道連れにする
+
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+/* ==========================
+
+   ハンター確定
+
+=========================== */
+
+function confirmHunter(){
+
+  const target =
+
+    getRadio(
+
+      "hunterTarget"
+
+    );
+
+  if(target === null){
+
+    alert(
+
+      "道連れにする相手を選んでください。"
+
+    );
+
+    return;
+
+  }
+
+  const player =
+
+    players.find(
+
+      p =>
+
+        p.id === Number(target)
+
+    );
+
+  if(player){
+
+    player.alive =
+
+      false;
+
+  }
+
+  if(
+
+    checkWinCondition()
+
+  ){
+
+    return;
+
+  }
+
+  setPhaseContent(`
+
+    <p>
+
+      🏹 ハンターは
+
+      <strong>
+
+        ${player ? player.name : ""}
+
+      </strong>
+
+      さんを道連れにしました。
+
+    </p>
+
+  `);
+
+  setActionArea(`
+
+    <button onclick="afterDayVote()">
+
+      次へ
+
+    </button>
+
+  `);
+
+}
+
+/* ==========================
+
+   昼終了 → 夜へ
+
+=========================== */
+
+function afterDayVote(){
+
+  currentNight++;
+
+  startNight();
+
+}
+
+/* ==========================
+
+   勝敗判定
+
+=========================== */
+
+function checkWinCondition(){
+
+  const alive =
+
+    players.filter(
+
+      p=>p.alive
+
+    );
+
+  const wolves =
+
+    alive.filter(
+
+      p =>
+
+        p.role === "werewolf"
+
+    );
+
+  const foxes =
+
+    alive.filter(
+
+      p =>
+
+        p.role === "fox"
+
+    );
+
+  const nonWolves =
+
+    alive.filter(
+
+      p =>
+
+        p.role !== "werewolf" &&
+
+        p.role !== "fox"
+
+    );
+
+  /*
+
+   * 妖狐勝利
+
+   *
+
+   * 人狼と村人の決着条件になったとき、
+
+   * 妖狐が生きていれば妖狐勝利
+
+   */
+
+  if(
+
+    foxes.length > 0 &&
+
+    (
+
+      wolves.length === 0 ||
+
+      wolves.length >= nonWolves.length
+
+    )
+
+  ){
+
+    finishGame(
+
+      "🦊 妖狐陣営の勝利！"
+
+    );
+
+    return true;
+
+  }
+
+  /*
+
+   * 人狼全滅
+
+   */
+
+  if(
+
+    wolves.length === 0
+
+  ){
+
+    finishGame(
+
+      "🏘️ 村人陣営の勝利！"
+
+    );
+
+    return true;
+
+  }
+
+  /*
+
+   * 人狼が村人以上
+
+   */
+
+  if(
+
+    wolves.length >= nonWolves.length &&
+
+    foxes.length === 0
+
+  ){
+
+    finishGame(
+
+      "🐺 人狼陣営の勝利！"
+
+    );
+
+    return true;
+
+  }
+
+  return false;
+
+}
+
+/* ==========================
+
+   ゲーム終了
+
+=========================== */
+
+function finishGame(
+
+  message
+
+){
+
+  gameFinished =
+
+    true;
+
+  if(
+
+    discussionTimer
+
+  ){
+
+    clearInterval(
+
+      discussionTimer
+
+    );
+
+    discussionTimer =
+
+      null;
+
+  }
+
+  setPhaseTitle(
+
+    "🏆 ゲーム終了"
+
+  );
+
+  setPhaseContent(`
+
+    <div class="result">
+
+      ${message}
+
+    </div>
+
+  `);
+
+  setActionArea("");
+
+  document
+
+    .getElementById(
+
+      "gameResult"
+
+    )
+
+    .classList.remove("hidden");
+
+  const result =
+
+    document.getElementById(
+
+      "gameResultText"
+
+    );
+
+  result.textContent =
+
+    message;
+
+  const final =
+
+    document.getElementById(
+
+      "finalRoles"
+
+    );
+
+  final.innerHTML = `
+
+    <h3>最終役職</h3>
+
+    ${
+
+      players.map(
+
+        p=>`
+
+          <div class="vote-player">
+
+            ${p.alive ? "🟢" : "⚫"}
+
+            <strong>
+
+              ${p.name}
+
+            </strong>
+
+            ：
+
+            ${
+
+              ROLE_DATA[p.role]
+
+                ? ROLE_DATA[p.role].emoji
+
+                : ""
+
+            }
+
+            ${
+
+              ROLE_DATA[p.role]
+
+                ? ROLE_DATA[p.role].name
+
+                : ""
+
+            }
+
+          </div>
+
+        `
+
+      ).join("")
+
+    }
+
+  `;
+
+}
+
+/* ==========================
+
+   ここから共通処理
+
+=========================== */
+
+function escapeHtml(
+
+  text
+
+){
+
+  return String(text)
+
+    .replace(
+
+      /&/g,
+
+      "&amp;"
+
+    )
+
+    .replace(
+
+      /</g,
+
+      "&lt;"
+
+    )
+
+    .replace(
+
+      />/g,
+
+      "&gt;"
+
+    )
+
+    .replace(
+
+      /"/g,
+
+      "&quot;"
+
+    )
+
+    .replace(
+
+      /'/g,
+
+      "&#039;"
+
+    );
+
+}
+ /* ==========================
+
+   ページ終了
+
+=========================== */
+
 </script>
+
 </body>
+
 </html>
