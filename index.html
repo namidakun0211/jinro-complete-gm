@@ -6,9 +6,7 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-
-content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>🐺 人狼コンプリートGM</title>
 
@@ -42,6 +40,12 @@ body{
 
 }
 
+h1,h2,h3{
+
+  text-align:center;
+
+}
+
 .card{
 
   background:#fff;
@@ -53,12 +57,6 @@ body{
   margin:15px 0;
 
   box-shadow:0 3px 12px #0002;
-
-}
-
-h1,h2{
-
-  text-align:center;
 
 }
 
@@ -86,7 +84,9 @@ button:disabled{
 
 }
 
-input,select{
+input,
+
+select{
 
   font-size:17px;
 
@@ -98,6 +98,30 @@ input,select{
 
 }
 
+button.green{
+
+  background:#39734a;
+
+}
+
+button.blue{
+
+  background:#365f91;
+
+}
+
+button.orange{
+
+  background:#a66a00;
+
+}
+
+button.red{
+
+  background:#a33;
+
+}
+
 .role-row{
 
   display:flex;
@@ -106,59 +130,65 @@ input,select{
 
   align-items:center;
 
-  padding:7px 0;
+  padding:8px 0;
 
   border-bottom:1px solid #eee;
+
+  gap:10px;
+
+}
+
+.role-row > span:first-child{
+
+  flex:1;
+
+  text-align:left;
 
 }
 
 .count{
 
-  min-width:25px;
+  min-width:28px;
 
   display:inline-block;
 
-  font-weight:bold;
-
   text-align:center;
-
-}
-
-.big{
-
-  font-size:25px;
 
   font-weight:bold;
 
-  text-align:center;
-
 }
 
-.result{
+.total-count{
+
+  text-align:center;
 
   font-size:22px;
 
   font-weight:bold;
 
-  padding:20px;
+  margin:12px 0;
 
 }
 
-.timer{
+.progress{
 
-  font-size:42px;
+  text-align:center;
+
+  font-size:18px;
+
+  font-weight:bold;
+
+  margin:10px;
+
+}
+
+.big{
+
+  font-size:26px;
 
   font-weight:bold;
 
   text-align:center;
-
-  margin:15px;
-
-}
-
-.private{
-
-  background:#fff7d6;
 
 }
 
@@ -170,81 +200,9 @@ input,select{
 
 }
 
-.progress{
+.private{
 
-  font-size:18px;
-
-  font-weight:bold;
-
-  text-align:center;
-
-  margin:10px;
-
-}
-
-.hidden{
-
-  display:none;
-
-}
-
-.danger{
-
-  background:#a33;
-
-}
-
-.blue{
-
-  background:#365f91;
-
-}
-
-.green{
-
-  background:#39734a;
-
-}
-
-.orange{
-
-  background:#a66a00;
-
-}
-
-.vote-result{
-
-  font-size:24px;
-
-  font-weight:bold;
-
-  text-align:center;
-
-  padding:20px;
-
-}
-
-.wake{
-
-  font-size:25px;
-
-  font-weight:bold;
-
-  text-align:center;
-
-  padding:25px 10px;
-
-}
-
-.name-button{
-
-  display:block;
-
-  width:90%;
-
-  margin:9px auto;
-
-  font-size:18px;
+  background:#fff7d6;
 
 }
 
@@ -284,6 +242,54 @@ input,select{
 
 }
 
+.wake{
+
+  font-size:25px;
+
+  font-weight:bold;
+
+  text-align:center;
+
+  padding:25px 10px;
+
+}
+
+.timer{
+
+  font-size:42px;
+
+  font-weight:bold;
+
+  text-align:center;
+
+  margin:15px;
+
+}
+
+.vote-result{
+
+  font-size:24px;
+
+  font-weight:bold;
+
+  text-align:center;
+
+  padding:20px;
+
+}
+
+.name-button{
+
+  display:block;
+
+  width:90%;
+
+  margin:9px auto;
+
+  font-size:18px;
+
+}
+
 hr{
 
   border:0;
@@ -294,15 +300,9 @@ hr{
 
 }
 
-.total-count{
+.center{
 
   text-align:center;
-
-  font-size:20px;
-
-  font-weight:bold;
-
-  margin:12px 0;
 
 }
 
@@ -426,37 +426,37 @@ const BETRAYER_ROLES=[
 
 /* =====================================================
 
-   夜の13段階
+   8/20確定版・夜の13段階
 
 ===================================================== */
 
 const NIGHT_ORDER=[
 
-  "呪われた者",
+  "裏切り者確認",
 
   "スパイ",
 
-  "アンドロイド",
-
-  "罠師",
-
-  "ボディーガード",
-
-  "騎士団",
+  "人狼の子ども",
 
   "人狼",
 
   "裏切りの襲撃者",
 
+  "ボディーガード",
+
+  "騎士団",
+
+  "罠師",
+
   "カウンセラー",
-
-  "裏切り者確認",
-
-  "奇術師",
 
   "予言者",
 
-  "霊媒師"
+  "霊媒師",
+
+  "奇術師",
+
+  "アンドロイド"
 
 ];
 
@@ -472,41 +472,13 @@ let game={
 
   roleCount:{},
 
-  night:0,
-
   day:0,
+
+  night:0,
 
   confirmIndex:0,
 
   confirmRevealed:false,
-
-  nightIndex:0,
-
-  wolfTarget:null,
-
-  wolfTargets:[],
-
-  raiderTarget:null,
-
-  guardTarget:null,
-
-  knightTarget:null,
-
-  trapTarget:null,
-
-  magicTarget:null,
-
-  counselTarget:null,
-
-  lastGuard:null,
-
-  lastTrap:null,
-
-  magicUsed:false,
-
-  dictatorUsed:false,
-
-  shadowUsed:false,
 
   firstSeer:true,
 
@@ -518,6 +490,34 @@ let game={
 
   discussionEnded:false,
 
+  nightIndex:0,
+
+  wolfTarget:null,
+
+  wolfTargets:[],
+
+  raiderTarget:null,
+
+  guardTarget:null,
+
+  lastGuard:null,
+
+  knightTarget:null,
+
+  trapTarget:null,
+
+  lastTrap:null,
+
+  trapActive:false,
+
+  trapOwner:null,
+
+  counselTarget:null,
+
+  magicTarget:null,
+
+  magicUsed:false,
+
   lastExiled:null,
 
   toughPending:[],
@@ -528,19 +528,17 @@ let game={
 
   android:{},
 
-  voteRound:0,
-
-  currentVotes:{},
-
   blockedRoles:{},
 
   convertedThisNight:[],
 
   childRage:false,
 
-  trapActive:false,
+  voteRound:0,
 
-  trapOwner:null,
+  dictatorUsed:false,
+
+  shadowUsed:false,
 
   nightDeaths:[],
 
@@ -712,17 +710,35 @@ function wolfDisplayName(player){
 
 function seerResult(player){
 
+  /*
+
+    妖狐は人間と出る。
+
+  */
+
   if(player.role==="妖狐"){
 
     return "人間";
 
   }
 
+  /*
+
+    人狼・人狼の子ども・一匹狼
+
+  */
+
   if(isWolfRole(player.role)){
 
     return "人狼";
 
   }
+
+  /*
+
+    呪われた者が人狼化している場合
+
+  */
 
   if(
 
@@ -735,6 +751,12 @@ function seerResult(player){
     return "人狼";
 
   }
+
+  /*
+
+    アンドロイド
+
+  */
 
   if(player.role==="アンドロイド"){
 
@@ -904,22 +926,6 @@ function androidRoleText(android){
 
 /* =====================================================
 
-   生存役職
-
-===================================================== */
-
-function hasLivingRole(role){
-
-  return living().some(
-
-    p=>p.role===role
-
-  );
-
-}
-
-/* =====================================================
-
    ゲーム開始画面
 
 ===================================================== */
@@ -934,7 +940,7 @@ function startScreen(){
 
     <p>
 
-      👥 人数
+      👥 プレイヤー人数
 
       <select id="playerCount">
 
@@ -951,6 +957,28 @@ function startScreen(){
             </option>`
 
         ).join("")}
+
+      </select>
+
+    </p>
+
+    <p>
+
+      🔮 初日の予言
+
+      <select id="firstSeer">
+
+        <option value="yes">
+
+          する
+
+        </option>
+
+        <option value="no">
+
+          しない
+
+        </option>
 
       </select>
 
@@ -1002,11 +1030,11 @@ function startScreen(){
 
     </div>
 
-    <p class="small">
+    <p class="small center">
 
-      プレイヤー人数と役職カード枚数を
+      役職カードの合計枚数を
 
-      合わせてください。
+      プレイヤー人数に合わせてください。
 
     </p>
 
@@ -1090,13 +1118,13 @@ function startScreen(){
 
 /* =====================================================
 
-   役職合計表示
+   役職合計
 
 ===================================================== */
 
 function updateRoleTotal(){
 
-  const playerCountElement=
+  const countElement=
 
     document.getElementById(
 
@@ -1114,7 +1142,7 @@ function updateRoleTotal(){
 
   if(
 
-    !playerCountElement ||
+    !countElement ||
 
     !totalElement
 
@@ -1126,11 +1154,7 @@ function updateRoleTotal(){
 
   const playerCount=
 
-    Number(
-
-      playerCountElement.value
-
-    );
+    Number(countElement.value);
 
   const total=
 
@@ -1140,7 +1164,9 @@ function updateRoleTotal(){
 
     ).reduce(
 
-      (sum,value)=>sum+Number(value||0),
+      (sum,value)=>
+
+        sum+Number(value||0),
 
       0
 
@@ -1151,6 +1177,34 @@ function updateRoleTotal(){
     `${total} / ${playerCount}`;
 
 }
+
+/* =====================================================
+
+   人数変更時
+
+===================================================== */
+
+document.addEventListener(
+
+  "change",
+
+  function(e){
+
+    if(
+
+      e.target &&
+
+      e.target.id==="playerCount"
+
+    ){
+
+      updateRoleTotal();
+
+    }
+
+  }
+
+);
 
 /* =====================================================
 
@@ -1172,6 +1226,12 @@ function changeRole(role,diff){
 
   }
 
+  /*
+
+    騎士団 0～3
+
+  */
+
   if(
 
     role==="騎士団" &&
@@ -1183,6 +1243,12 @@ function changeRole(role,diff){
     value=3;
 
   }
+
+  /*
+
+    案山子 最大3
+
+  */
 
   if(
 
@@ -1196,6 +1262,12 @@ function changeRole(role,diff){
 
   }
 
+  /*
+
+    恋人は2枚セット
+
+  */
+
   if(
 
     role==="恋人" &&
@@ -1208,6 +1280,12 @@ function changeRole(role,diff){
 
   }
 
+  /*
+
+    共有者は2枚セット
+
+  */
+
   if(
 
     role==="共有者" &&
@@ -1219,6 +1297,12 @@ function changeRole(role,diff){
     value=2;
 
   }
+
+  /*
+
+    裏切りの共有者は2枚セット
+
+  */
 
   if(
 
@@ -1258,41 +1342,13 @@ function changeRole(role,diff){
 
 /* =====================================================
 
-   人数変更時にも合計表示を更新
-
-===================================================== */
-
-document.addEventListener(
-
-  "change",
-
-  function(e){
-
-    if(
-
-      e.target &&
-
-      e.target.id==="playerCount"
-
-    ){
-
-      updateRoleTotal();
-
-    }
-
-  }
-
-);
-
-/* =====================================================
-
    名前入力
 
 ===================================================== */
 
 function nameScreen(){
 
-  const playerCountElement=
+  const countElement=
 
     document.getElementById(
 
@@ -1300,49 +1356,9 @@ function nameScreen(){
 
     );
 
-  if(!playerCountElement){
-
-    return;
-
-  }
-
   const n=
 
-    Number(
-
-      playerCountElement.value
-
-    );
-
-  const total=
-
-    Object.values(
-
-      game.roleCount
-
-    ).reduce(
-
-      (sum,value)=>sum+Number(value||0),
-
-      0
-
-    );
-
-  if(total!==n){
-
-    alert(
-
-      `役職カードが${total}枚です。\n\n`+
-
-      `プレイヤーは${n}人です。\n\n`+
-
-      `役職カードの合計を${n}枚にしてください。`
-
-    );
-
-    return;
-
-  }
+    Number(countElement.value);
 
   const saved=
 
@@ -1352,7 +1368,7 @@ function nameScreen(){
 
         "jinroNames"
 
-      )||"[]"
+      ) || "[]"
 
     );
 
@@ -1374,7 +1390,7 @@ function nameScreen(){
 
       name:
 
-        saved[i]||
+        saved[i] ||
 
         `プレイヤー${i+1}`,
 
@@ -1388,17 +1404,19 @@ function nameScreen(){
 
       blocked:false,
 
-      androidCopied:false,
-
-      androidSource:null,
-
-      converted:false,
-
-      lover:false
+      androidCopied:false
 
     });
 
   }
+
+  game.firstSeer=
+
+    document.getElementById(
+
+      "firstSeer"
+
+    ).value==="yes";
 
   game.discussionTime=
 
@@ -1418,9 +1436,9 @@ function nameScreen(){
 
     <h2>👤 プレイヤー名</h2>
 
-    <p class="small">
+    <p class="small center">
 
-      前回の名前がある場合は
+      前回の名前があれば
 
       自動で表示されます。
 
@@ -1438,13 +1456,7 @@ function nameScreen(){
 
         placeholder="プレイヤー${i+1}"
 
-        style="
-
-          width:90%;
-
-          margin:6px;
-
-        "
+        style="width:90%;margin:6px"
 
       >
 
@@ -1500,7 +1512,7 @@ function dealRoles(){
 
       p.name=
 
-        name||
+        name ||
 
         `プレイヤー${i+1}`;
 
@@ -1552,11 +1564,15 @@ function dealRoles(){
 
   );
 
+  /*
+
+    人数と役職枚数
+
+  */
+
   if(
 
-    deck.length!==
-
-    game.players.length
+    deck.length!==game.players.length
 
   ){
 
@@ -1564,13 +1580,21 @@ function dealRoles(){
 
       `役職カードが${deck.length}枚です。\n\n`+
 
-      `プレイヤーは${game.players.length}人です。`
+      `プレイヤーは${game.players.length}人です。\n\n`+
+
+      `人数と役職枚数を合わせてください。`
 
     );
 
     return;
 
   }
+
+  /*
+
+    恋人
+
+  */
 
   if(
 
@@ -1587,6 +1611,12 @@ function dealRoles(){
     return;
 
   }
+
+  /*
+
+    共有者
+
+  */
 
   if(
 
@@ -1606,6 +1636,12 @@ function dealRoles(){
 
   }
 
+  /*
+
+    裏切りの共有者
+
+  */
+
   if(
 
     (game.roleCount["裏切りの共有者"]||0)!==0 &&
@@ -1623,6 +1659,12 @@ function dealRoles(){
     return;
 
   }
+
+  /*
+
+    シャッフル
+
+  */
 
   deck.sort(
 
@@ -1646,37 +1688,45 @@ function dealRoles(){
 
       p.androidCopied=false;
 
-      p.androidSource=null;
-
-      p.converted=false;
-
-      p.lover=false;
-
     }
 
   );
+
+  preparePairs();
+
+  /*
+
+    ゲーム状態を初期化
+
+  */
+
+  game.day=0;
+
+  game.night=0;
 
   game.confirmIndex=0;
 
   game.confirmRevealed=false;
 
-  game.night=0;
-
-  game.day=0;
-
-  game.firstDay=true;
-
   game.lastExiled=null;
+
+  game.toughPending=[];
+
+  game.android={};
 
   game.childRage=false;
 
   game.magicUsed=false;
 
-  game.lastGuard=null;
+  game.dictatorUsed=false;
 
-  game.lastTrap=null;
+  game.shadowUsed=false;
 
-  preparePairs();
+  /*
+
+    役職確認へ
+
+  */
 
   roleConfirmation();
 
@@ -1684,7 +1734,7 @@ function dealRoles(){
 
 /* =====================================================
 
-   ペア設定
+   恋人ペア
 
 ===================================================== */
 
@@ -1722,11 +1772,7 @@ function preparePairs(){
 
       ];
 
-      game.loverPairs.push(
-
-        pair
-
-      );
+      game.loverPairs.push(pair);
 
       game.lovers.push(
 
@@ -1734,10 +1780,6 @@ function preparePairs(){
 
       );
 
-      lovers[i].lover=true;
-
-      lovers[i+1].lover=true;
-
     }
 
   }
@@ -1746,729 +1788,381 @@ function preparePairs(){
 
 /* =====================================================
 
-   起動
+   役職確認情報
 
 ===================================================== */
 
-startScreen();
+function roleInfoFor(player){
 
-/* =====================================================
+  let info="";
 
-   役職選択
+  /*
 
-===================================================== */
+    人狼確認
 
-function roleSelectScreen(){
+  */
 
-  const total=
+  if(
 
-    Object.values(game.roleCount)
+    isWolfRole(player.role)
 
-      .reduce((a,b)=>a+b,0);
+  ){
 
-  const playerCount=
+    const wolves=
 
-    Number(
+      game.players.filter(
 
-      document.getElementById("playerCount")?.value ||
+        x=>
 
-      game.players.length ||
+          isWolfRole(x.role) &&
 
-      0
+          x.id!==player.id
 
-    );
+      );
 
-  render(`
+    if(wolves.length){
 
-  <div class="card">
+      info+=`
 
-    <h2>🃏 役職選択</h2>
+      <div class="success">
 
-    <div class="progress">
+        <strong>
 
-      ${total} / ${playerCount}
+          🐺 あなたが知っている人狼
 
-    </div>
+        </strong>
 
-    <p class="small">
+        <p>
 
-      役職カードの合計枚数を
+          ${wolves
 
-      プレイヤー人数と合わせてください。
+            .map(wolfDisplayName)
 
-    </p>
+            .join("・")}
 
-  </div>
-
-  <div class="card">
-
-    ${ROLES.map((role,index)=>`
-
-      <div class="role-row">
-
-        <span>
-
-          ${escapeHTML(role)}
-
-        </span>
-
-        <span>
-
-          <button
-
-            onclick="changeRole('${role}',-1)"
-
-          >
-
-            −
-
-          </button>
-
-          <span
-
-            class="count"
-
-            id="count${index}"
-
-          >
-
-            ${game.roleCount[role]||0}
-
-          </span>
-
-          <button
-
-            onclick="changeRole('${role}',1)"
-
-          >
-
-            ＋
-
-          </button>
-
-        </span>
+        </p>
 
       </div>
 
-    `).join("")}
-
-  </div>
-
-  <button
-
-    class="blue"
-
-    onclick="nameScreen()"
-
-    ${total!==playerCount ? "disabled" : ""}
-
-  >
-
-    👤 プレイヤー名を入力
-
-  </button>
-
-  `);
-
-}
-
-/* =====================================================
-
-   役職枚数変更
-
-===================================================== */
-
-function changeRole(role,diff){
-
-  let value=
-
-    game.roleCount[role]||0;
-
-  value+=diff;
-
-  if(value<0){
-
-    value=0;
-
-  }
-
-  /* 騎士団 */
-
-  if(
-
-    role==="騎士団" &&
-
-    value>3
-
-  ){
-
-    value=3;
-
-  }
-
-  /* 案山子 */
-
-  if(
-
-    role==="案山子" &&
-
-    value>3
-
-  ){
-
-    value=3;
-
-  }
-
-  /* 恋人 */
-
-  if(
-
-    role==="恋人" &&
-
-    value>2
-
-  ){
-
-    value=2;
-
-  }
-
-  /* 共有者 */
-
-  if(
-
-    role==="共有者" &&
-
-    value>2
-
-  ){
-
-    value=2;
-
-  }
-
-  /* 裏切りの共有者 */
-
-  if(
-
-    role==="裏切りの共有者" &&
-
-    value>2
-
-  ){
-
-    value=2;
-
-  }
-
-  game.roleCount[role]=value;
-
-  updateRoleCountDisplay();
-
-}
-
-/* =====================================================
-
-   役職枚数表示更新
-
-===================================================== */
-
-function updateRoleCountDisplay(){
-
-  const total=
-
-    Object.values(game.roleCount)
-
-      .reduce((a,b)=>a+b,0);
-
-  const playerCount=
-
-    Number(
-
-      document.getElementById("playerCount")?.value ||
-
-      game.players.length ||
-
-      0
-
-    );
-
-  const progress=
-
-    document.querySelector(".progress");
-
-  if(progress){
-
-    progress.textContent=
-
-      `${total} / ${playerCount}`;
-
-  }
-
-  ROLES.forEach((role,index)=>{
-
-    const el=
-
-      document.getElementById(
-
-        "count"+index
-
-      );
-
-    if(el){
-
-      el.textContent=
-
-        game.roleCount[role]||0;
+      `;
 
     }
 
-  });
-
-  const button=
-
-    document.querySelector(
-
-      "button[onclick=\"nameScreen()\"]"
-
-    );
-
-  if(button){
-
-    button.disabled=
-
-      total!==playerCount;
-
   }
 
-}
+  /*
 
-/* =====================================================
+    内通者
 
-   プレイヤー名入力
+  */
 
-===================================================== */
+  if(
 
-function nameScreen(){
+    player.role==="内通者"
 
-  const select=
+  ){
 
-    document.getElementById("playerCount");
+    const wolves=
 
-  const n=
+      game.players.filter(
 
-    Number(
-
-      select?.value ||
-
-      game.players.length ||
-
-      0
-
-    );
-
-  if(!n){
-
-    alert(
-
-      "プレイヤー人数を選択してください。"
-
-    );
-
-    return;
-
-  }
-
-  const saved=
-
-    JSON.parse(
-
-      localStorage.getItem(
-
-        "jinroNames"
-
-      )||"[]"
-
-    );
-
-  game.players=[];
-
-  for(let i=0;i<n;i++){
-
-    game.players.push({
-
-      id:i,
-
-      name:
-
-        saved[i] ||
-
-        `プレイヤー${i+1}`,
-
-      role:"",
-
-      alive:true,
-
-      cursedWolf:false,
-
-      toughHit:false,
-
-      blocked:false,
-
-      androidCopied:false
-
-    });
-
-  }
-
-  const firstSeer=
-
-    document.getElementById(
-
-      "firstSeer"
-
-    );
-
-  const discussion=
-
-    document.getElementById(
-
-      "discussion"
-
-    );
-
-  game.firstSeer=
-
-    firstSeer
-
-      ? firstSeer.value==="yes"
-
-      : true;
-
-  game.discussionTime=
-
-    discussion
-
-      ? Number(discussion.value)
-
-      : 300;
-
-  render(`
-
-  <div class="card">
-
-    <h2>👤 プレイヤー名</h2>
-
-    <p class="small">
-
-      前回の名前があれば
-
-      自動で表示されます。
-
-    </p>
-
-    ${game.players.map((p,i)=>`
-
-      <input
-
-        id="playerName${i}"
-
-        value="${escapeHTML(p.name)}"
-
-        placeholder="プレイヤー${i+1}"
-
-        style="width:90%;margin:6px"
-
-      >
-
-    `).join("")}
-
-  </div>
-
-  <button
-
-    class="green"
-
-    onclick="dealRoles()"
-
-  >
-
-    🃏 役職を配布
-
-  </button>
-
-  `);
-
-}
-
-/* =====================================================
-
-   役職配布
-
-===================================================== */
-
-function dealRoles(){
-
-  game.players.forEach((p,i)=>{
-
-    const input=
-
-      document.getElementById(
-
-        "playerName"+i
+        x=>isWolfRole(x.role)
 
       );
 
-    const name=
+    info+=`
 
-      input
+    <div class="success">
 
-        ? input.value.trim()
+      <strong>
 
-        : "";
+        📨 人狼
 
-    p.name=
+      </strong>
 
-      name ||
+      <p>
 
-      `プレイヤー${i+1}`;
+        ${
 
-  });
+          wolves.length
 
-  localStorage.setItem(
+            ? wolves
 
-    "jinroNames",
+                .map(wolfDisplayName)
 
-    JSON.stringify(
+                .join("・")
 
-      game.players.map(
+            : "なし"
 
-        p=>p.name
+        }
 
-      )
+      </p>
 
-    )
+    </div>
 
-  );
+    `;
 
-  let deck=[];
+  }
 
-  Object.entries(
+  /*
 
-    game.roleCount
+    裏切りの共有者
 
-  ).forEach(
+  */
 
-    ([role,count])=>{
+  if(
 
-      for(
+    player.role==="裏切りの共有者"
 
-        let i=0;
+  ){
 
-        i<count;
+    const mates=
 
-        i++
+      game.players.filter(
 
-      ){
+        x=>
 
-        deck.push(role);
+          x.role==="裏切りの共有者" &&
+
+          x.id!==player.id
+
+      );
+
+    if(mates.length){
+
+      info+=`
+
+      <div class="success">
+
+        <strong>
+
+          🤝 裏切りの共有者
+
+        </strong>
+
+        <p>
+
+          ${mates
+
+            .map(
+
+              x=>escapeHTML(x.name)
+
+            )
+
+            .join("・")}
+
+        </p>
+
+      </div>
+
+      `;
+
+    }
+
+  }
+
+  /*
+
+    共有者
+
+  */
+
+  if(
+
+    player.role==="共有者"
+
+  ){
+
+    const mates=
+
+      game.players.filter(
+
+        x=>
+
+          x.role==="共有者" &&
+
+          x.id!==player.id
+
+      );
+
+    if(mates.length){
+
+      info+=`
+
+      <div class="success">
+
+        <strong>
+
+          🤝 共有者
+
+        </strong>
+
+        <p>
+
+          ${mates
+
+            .map(
+
+              x=>escapeHTML(x.name)
+
+            )
+
+            .join("・")}
+
+        </p>
+
+      </div>
+
+      `;
+
+    }
+
+  }
+
+  /*
+
+    恋人
+
+  */
+
+  if(
+
+    player.role==="恋人"
+
+  ){
+
+    const pair=
+
+      game.loverPairs.find(
+
+        pair=>
+
+          pair.includes(
+
+            player.id
+
+          )
+
+      );
+
+    if(pair){
+
+      const mate=
+
+        game.players.find(
+
+          x=>
+
+            x.id===
+
+            pair.find(
+
+              id=>id!==player.id
+
+            )
+
+        );
+
+      if(mate){
+
+        info+=`
+
+        <div class="success">
+
+          <strong>
+
+            ❤️ 恋人
+
+          </strong>
+
+          <p>
+
+            ${escapeHTML(mate.name)}
+
+          </p>
+
+        </div>
+
+        `;
 
       }
 
     }
 
-  );
+  }
+
+  /*
+
+    神様
+
+  */
 
   if(
 
-    deck.length!==game.players.length
+    player.role==="神様"
 
   ){
 
-    alert(
+    info+=`
 
-      `役職カードが${deck.length}枚です。\n`+
+    <div class="success">
 
-      `プレイヤーは${game.players.length}人です。\n\n`+
+      <strong>
 
-      `人数と役職枚数を合わせてください。`
+        ✨ 全員の役職
 
-    );
+      </strong>
 
-    return;
+      <p>
+
+        ${game.players.map(
+
+          x=>
+
+            `${escapeHTML(x.name)}：
+
+             ${escapeHTML(x.role)}`
+
+        ).join("<br>")}
+
+      </p>
+
+    </div>
+
+    `;
 
   }
+
+  /*
+
+    予言者
+
+  */
 
   if(
 
-    (game.roleCount["恋人"]||0)%2!==0
+    player.role==="予言者"
 
   ){
 
-    alert(
+    info+=`
 
-      "恋人は2枚ワンセットです。"
+    <div class="warning">
 
-    );
+      🔮
 
-    return;
+      初日の予言を
 
-  }
+      ${game.firstSeer ? "します" : "しません"}。
 
-  if(
+    </div>
 
-    (game.roleCount["共有者"]||0)!==0 &&
-
-    (game.roleCount["共有者"]||0)!==2
-
-  ){
-
-    alert(
-
-      "共有者は2枚ワンセットです。"
-
-    );
-
-    return;
+    `;
 
   }
 
-  if(
-
-    (game.roleCount["裏切りの共有者"]||0)!==0 &&
-
-    (game.roleCount["裏切りの共有者"]||0)!==2
-
-  ){
-
-    alert(
-
-      "裏切りの共有者は2枚ワンセットです。"
-
-    );
-
-    return;
-
-  }
-
-  deck.sort(
-
-    ()=>Math.random()-0.5
-
-  );
-
-  game.players.forEach((p,i)=>{
-
-    p.role=deck[i];
-
-    p.alive=true;
-
-    p.cursedWolf=false;
-
-    p.toughHit=false;
-
-    p.blocked=false;
-
-    p.androidCopied=false;
-
-  });
-
-  game.confirmIndex=0;
-
-  game.confirmRevealed=false;
-
-  game.lastExiled=null;
-
-  game.night=0;
-
-  game.day=0;
-
-  game.firstDay=true;
-
-  game.nightIndex=0;
-
-  game.voteRound=0;
-
-  game.gameOver=false;
-
-  game.toughPending=[];
-
-  game.nightDeaths=[];
-
-  game.morningDeaths=[];
-
-  game.android={};
-
-  game.loverPairs=[];
-
-  game.lovers=[];
-
-  game.magicUsed=false;
-
-  game.lastGuard=null;
-
-  game.lastTrap=null;
-
-  preparePairs();
-
-  roleConfirmation();
-
-}
-
-/* =====================================================
-
-   ペア設定
-
-===================================================== */
-
-function preparePairs(){
-
-  game.lovers=[];
-
-  game.loverPairs=[];
-
-  const lovers=
-
-    game.players.filter(
-
-      p=>p.role==="恋人"
-
-    );
-
-  for(
-
-    let i=0;
-
-    i<lovers.length;
-
-    i+=2
-
-  ){
-
-    if(!lovers[i+1]){
-
-      continue;
-
-    }
-
-    const pair=[
-
-      lovers[i].id,
-
-      lovers[i+1].id
-
-    ];
-
-    game.loverPairs.push(pair);
-
-    game.lovers.push(
-
-      ...pair
-
-    );
-
-  }
+  return info;
 
 }
 
@@ -2480,6 +2174,12 @@ function preparePairs(){
 
 function roleConfirmation(){
 
+  /*
+
+    全員終了
+
+  */
+
   if(
 
     game.confirmIndex>=
@@ -2490,13 +2190,21 @@ function roleConfirmation(){
 
     game.confirmRevealed=false;
 
+    /*
+
+      夜には行かない。
+
+      最初の昼へ。
+
+    */
+
     startFirstDay();
 
     return;
 
   }
 
-  const p=
+  const player=
 
     game.players[
 
@@ -2512,7 +2220,17 @@ function roleConfirmation(){
 
     game.players.length;
 
-  if(!game.confirmRevealed){
+  /*
+
+    まだ役職を見ていない
+
+  */
+
+  if(
+
+    !game.confirmRevealed
+
+  ){
 
     render(`
 
@@ -2526,11 +2244,11 @@ function roleConfirmation(){
 
       <h2>
 
-        ${escapeHTML(p.name)}さん
+        ${escapeHTML(player.name)}さん
 
       </h2>
 
-      <p style="text-align:center">
+      <p class="center">
 
         あなたの役職を確認してください。
 
@@ -2552,9 +2270,21 @@ function roleConfirmation(){
 
     `);
 
+    speak(
+
+      `${player.name}さん、役職を確認してください。`
+
+    );
+
     return;
 
   }
+
+  /*
+
+    役職表示
+
+  */
 
   render(`
 
@@ -2568,21 +2298,259 @@ function roleConfirmation(){
 
     <h2>
 
-      ${escapeHTML(p.name)}さん
+      ${escapeHTML(player.name)}さん
 
     </h2>
 
     <div class="big">
 
-      ${escapeHTML(p.role)}
+      ${escapeHTML(player.role)}
 
     </div>
 
-    ${roleInfoFor(p)}
+    ${roleInfoFor(player)}
 
-    <p class="small">
+    <p class="small center">
 
       この画面は本人だけが確認してください。
+
+    </p>
+
+  </div>
+
+  ${
+
+    player.role==="予言者" &&
+
+    game.firstSeer
+
+      ? `
+
+        <button
+
+          class="green"
+
+          onclick="firstSeerAction()"
+
+        >
+
+          🔮 初日の予言をする
+
+        </button>
+
+      `
+
+      : `
+
+        <button
+
+          class="green"
+
+          onclick="finishRoleConfirmation()"
+
+        >
+
+          ✅ 確認しました
+
+        </button>
+
+      `
+
+  }
+
+  `);
+
+}
+
+/* =====================================================
+
+   役職を見る
+
+===================================================== */
+
+function revealRole(){
+
+  game.confirmRevealed=true;
+
+  roleConfirmation();
+
+}
+
+/* =====================================================
+
+   初日の予言
+
+   ※役職確認中に行う
+
+===================================================== */
+
+function firstSeerAction(){
+
+  const seer=
+
+    game.players[
+
+      game.confirmIndex
+
+    ];
+
+  if(
+
+    !seer ||
+
+    seer.role!=="予言者"
+
+  ){
+
+    finishRoleConfirmation();
+
+    return;
+
+  }
+
+  const targets=
+
+    living().filter(
+
+      p=>p.id!==seer.id
+
+    );
+
+  if(!targets.length){
+
+    finishRoleConfirmation();
+
+    return;
+
+  }
+
+  speak(
+
+    "予言者の方、初日の予言を行ってください。"
+
+  );
+
+  render(`
+
+  <div class="card private">
+
+    <div class="progress">
+
+      ${game.confirmIndex+1}
+
+      /
+
+      ${game.players.length}
+
+    </div>
+
+    <h2>
+
+      🔮 初日の予言
+
+    </h2>
+
+    <p class="center">
+
+      占う人を1人選んでください。
+
+    </p>
+
+    ${targets.map(
+
+      p=>`
+
+      <button
+
+        class="name-button"
+
+        onclick="firstSeerPick(${p.id})"
+
+      >
+
+        ${escapeHTML(p.name)}
+
+      </button>
+
+      `
+
+    ).join("")}
+
+  </div>
+
+  `);
+
+}
+
+/* =====================================================
+
+   初日の予言結果
+
+===================================================== */
+
+function firstSeerPick(id){
+
+  const target=
+
+    getPlayer(id);
+
+  if(!target){
+
+    return;
+
+  }
+
+  const result=
+
+    seerResult(target);
+
+  /*
+
+    妖狐は占われた瞬間に死亡。
+
+  */
+
+  if(
+
+    target.role==="妖狐"
+
+  ){
+
+    target.alive=false;
+
+  }
+
+  /*
+
+    結果は音声で読まない。
+
+    画面だけで確認。
+
+  */
+
+  render(`
+
+  <div class="card private">
+
+    <h2>
+
+      🔮 初日の占い結果
+
+    </h2>
+
+    <div class="big">
+
+      ${escapeHTML(target.name)}さんは<br>
+
+      「${result}」です。
+
+    </div>
+
+    <p class="small center">
+
+      この結果は予言者本人だけが
+
+      確認してください。
 
     </p>
 
@@ -2606,20 +2574,6 @@ function roleConfirmation(){
 
 /* =====================================================
 
-   役職を表示
-
-===================================================== */
-
-function revealRole(){
-
-  game.confirmRevealed=true;
-
-  roleConfirmation();
-
-}
-
-/* =====================================================
-
    役職確認終了
 
 ===================================================== */
@@ -2633,308 +2587,14 @@ function finishRoleConfirmation(){
   roleConfirmation();
 
 }
-  /* =====================================================
-   役職確認用情報
-===================================================== */
-
-function roleInfoFor(player){
-
-  let info="";
-
-  /* ===================================================
-     人狼系の仲間確認
-  =================================================== */
-
-  if(isWolfRole(player.role)){
-
-    const wolves=
-      game.players.filter(
-        x=>
-          isWolfRole(x.role) &&
-          x.id!==player.id
-      );
-
-    if(wolves.length){
-
-      info+=`
-
-      <div class="success">
-
-        <strong>
-          🐺 あなたが知っている人狼
-        </strong>
-
-        <p>
-
-          ${wolves
-            .map(wolfDisplayName)
-            .join("・")}
-
-        </p>
-
-      </div>
-
-      `;
-
-    }
-
-  }
-
-
-  /* ===================================================
-     内通者
-  =================================================== */
-
-  if(player.role==="内通者"){
-
-    const wolves=
-      game.players.filter(
-        x=>isWolfRole(x.role)
-      );
-
-    info+=`
-
-    <div class="success">
-
-      <strong>📨 人狼</strong>
-
-      <p>
-
-        ${
-          wolves.length
-          ? wolves.map(wolfDisplayName).join("・")
-          : "なし"
-        }
-
-      </p>
-
-      <p class="small">
-
-        人狼の子ども・一匹狼も
-
-        「人狼」として表示されます。
-
-      </p>
-
-    </div>
-
-    `;
-
-  }
-
-
-  /* ===================================================
-     裏切りの共有者
-  =================================================== */
-
-  if(
-    player.role==="裏切りの共有者"
-  ){
-
-    const mates=
-      game.players.filter(
-        x=>
-          x.role==="裏切りの共有者" &&
-          x.id!==player.id
-      );
-
-    if(mates.length){
-
-      info+=`
-
-      <div class="success">
-
-        <strong>
-          🤝 裏切りの共有者
-        </strong>
-
-        <p>
-
-          ${mates
-            .map(
-              x=>escapeHTML(x.name)
-            )
-            .join("・")}
-
-        </p>
-
-      </div>
-
-      `;
-
-    }
-
-  }
-
-
-  /* ===================================================
-     共有者
-  =================================================== */
-
-  if(player.role==="共有者"){
-
-    const mates=
-      game.players.filter(
-        x=>
-          x.role==="共有者" &&
-          x.id!==player.id
-      );
-
-    if(mates.length){
-
-      info+=`
-
-      <div class="success">
-
-        <strong>
-          🤝 共有者
-        </strong>
-
-        <p>
-
-          ${mates
-            .map(
-              x=>escapeHTML(x.name)
-            )
-            .join("・")}
-
-        </p>
-
-      </div>
-
-      `;
-
-    }
-
-  }
-
-
-  /* ===================================================
-     恋人
-  =================================================== */
-
-  if(player.role==="恋人"){
-
-    const pair=
-      game.loverPairs.find(
-        pair=>pair.includes(player.id)
-      );
-
-    if(pair){
-
-      const mate=
-        game.players.find(
-          x=>
-            x.id===
-            pair.find(
-              id=>id!==player.id
-            )
-        );
-
-      if(mate){
-
-        info+=`
-
-        <div class="success">
-
-          <strong>
-            ❤️ 恋人
-          </strong>
-
-          <p>
-
-            ${escapeHTML(mate.name)}
-
-          </p>
-
-        </div>
-
-        `;
-
-      }
-
-    }
-
-  }
-
-
-  /* ===================================================
-     神様
-  =================================================== */
-
-  if(player.role==="神様"){
-
-    info+=`
-
-    <div class="success">
-
-      <strong>
-        ✨ 全員の役職
-      </strong>
-
-      <p>
-
-        ${game.players.map(
-          x=>
-            `${escapeHTML(x.name)}：
-             ${escapeHTML(x.role)}`
-        ).join("<br>")}
-
-      </p>
-
-    </div>
-
-    `;
-
-  }
-
-
-  /* ===================================================
-     予言者
-     初日の占いは「ここ」で確認する
-  =================================================== */
-
-  if(player.role==="予言者"){
-
-    info+=`
-
-    <div class="warning">
-
-      🔮 初日の予言
-
-      <br>
-
-      <strong>
-
-        ${
-          game.firstSeer
-          ? "このゲームでは初日の占いをします。"
-          : "このゲームでは初日の占いをしません。"
-        }
-
-      </strong>
-
-    </div>
-
-    `;
-
-  }
-
-
-  return info;
-
-}
-
 
 /* =====================================================
+
    最初の昼
+
 ===================================================== */
 
 function startFirstDay(){
-
-  clearInterval(game.discussionTimer);
-
-  clearInterval(game.timer);
 
   game.day=1;
 
@@ -2942,122 +2602,1361 @@ function startFirstDay(){
 
   game.firstDay=true;
 
-  game.discussionEnded=false;
-
   speak(
+
     "役職の確認が終わりました。みなさん目を覚ましてください。お昼です。議論スタート。"
+
   );
 
   setTimeout(
+
     ()=>{
+
       startDiscussion(true);
+
     },
+
     700
+
+  );
+
+}
+  /* =========================================================
+
+   夜の呼び出し
+
+========================================================= */
+
+function nightStep(){
+
+  if(game.nightIndex >= NIGHT_ORDER.length){
+
+    resolveNight();
+
+    return;
+
+  }
+
+  const role = NIGHT_ORDER[game.nightIndex++];
+
+  /*
+
+    「裏切り者確認」は特殊な確認段階
+
+  */
+
+  if(role === "裏切り者確認"){
+
+    betrayerCheckStep();
+
+    return;
+
+  }
+
+  /*
+
+    ゲームに採用されていない役職は呼ばない
+
+  */
+
+  if(!hasRole(role)){
+
+    nightStep();
+
+    return;
+
+  }
+
+  /*
+
+    役職が採用されていれば、
+
+    生存者がいなくても必ず確認画面を出す。
+
+  */
+
+  wakeRole(role);
+
+}
+
+/* =========================================================
+
+   夜の役職呼び出し
+
+========================================================= */
+
+function wakeRole(role){
+
+  const actors =
+
+    rolePlayers(role).filter(p => p.alive);
+
+  const roleNames = {
+
+    "呪われた者":
+
+      "呪われた者の方",
+
+    "スパイ":
+
+      "スパイの方",
+
+    "アンドロイド":
+
+      "アンドロイドの方",
+
+    "罠師":
+
+      "罠師の方",
+
+    "ボディーガード":
+
+      "ボディーガードの方",
+
+    "騎士団":
+
+      "騎士団の方",
+
+    "人狼":
+
+      "人狼の方",
+
+    "裏切りの襲撃者":
+
+      "裏切りの襲撃者の方",
+
+    "カウンセラー":
+
+      "カウンセラーの方",
+
+    "奇術師":
+
+      "奇術師の方",
+
+    "予言者":
+
+      "予言者の方",
+
+    "霊媒師":
+
+      "霊媒師の方"
+
+  };
+
+  const caller =
+
+    roleNames[role] || `${role}の方`;
+
+  speak(
+
+    `${caller}、目を覚ましてください。`
+
+  );
+
+  render(`
+
+    <div class="card">
+
+      <div class="wake">
+
+        ${escapeHTML(caller)}<br>
+
+        目を覚ましてください。
+
+      </div>
+
+      ${
+
+        actors.length
+
+        ? `
+
+          <p style="text-align:center">
+
+            行動する方は準備してください。
+
+          </p>
+
+        `
+
+        : `
+
+          <p class="small" style="text-align:center">
+
+            生存している${escapeHTML(role)}はいません。
+
+          </p>
+
+        `
+
+      }
+
+    </div>
+
+    <button
+
+      class="blue"
+
+      onclick="performNightRole('${role}')"
+
+    >
+
+      目を覚ましました
+
+    </button>
+
+  `);
+
+}
+
+/* =========================================================
+
+   夜の行動
+
+========================================================= */
+
+function performNightRole(role){
+
+  const actors =
+
+    rolePlayers(role).filter(p => p.alive);
+
+  /*
+
+    採用されているが生存者がいない場合は
+
+    そのまま次の段階へ。
+
+  */
+
+  if(!actors.length){
+
+    nightStep();
+
+    return;
+
+  }
+
+  /*
+
+    呪われた者は夜に選択行動をしない。
+
+  */
+
+  if(role === "呪われた者"){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const actor = actors[0];
+
+  if(role === "スパイ"){
+
+    spyAction(actor);
+
+    return;
+
+  }
+
+  if(role === "アンドロイド"){
+
+    androidAction(actor);
+
+    return;
+
+  }
+
+  if(role === "罠師"){
+
+    trapAction(actor);
+
+    return;
+
+  }
+
+  if(role === "ボディーガード"){
+
+    bodyguardAction(actor);
+
+    return;
+
+  }
+
+  if(role === "騎士団"){
+
+    knightAction(actor);
+
+    return;
+
+  }
+
+  if(role === "人狼"){
+
+    wolfAction();
+
+    return;
+
+  }
+
+  if(role === "裏切りの襲撃者"){
+
+    raiderAction(actor);
+
+    return;
+
+  }
+
+  if(role === "カウンセラー"){
+
+    counselorAction(actor);
+
+    return;
+
+  }
+
+  if(role === "奇術師"){
+
+    magicAction(actor);
+
+    return;
+
+  }
+
+  if(role === "予言者"){
+
+    seerAction(actor);
+
+    return;
+
+  }
+
+  if(role === "霊媒師"){
+
+    mediumAction(actor);
+
+    return;
+
+  }
+
+  nightStep();
+
+}
+
+/* =========================================================
+
+   選択画面共通
+
+========================================================= */
+
+function choose(
+
+  title,
+
+  players,
+
+  callback,
+
+  skip = true
+
+){
+
+  let html = `
+
+    <div class="card">
+
+      <h2>
+
+        ${title}
+
+      </h2>
+
+  `;
+
+  if(players.length === 0){
+
+    html += `
+
+      <p class="small">
+
+        選択できる人はいません。
+
+      </p>
+
+    `;
+
+  }
+
+  players.forEach(p => {
+
+    html += `
+
+      <button
+
+        class="name-button"
+
+        onclick="${callback}(${p.id})"
+
+      >
+
+        ${escapeHTML(p.name)}
+
+      </button>
+
+    `;
+
+  });
+
+  if(skip){
+
+    html += `
+
+      <br>
+
+      <button
+
+        class="gray"
+
+        onclick="nightStep()"
+
+      >
+
+        行動しない
+
+      </button>
+
+    `;
+
+  }
+
+  html += `</div>`;
+
+  render(html);
+
+}
+
+/* =========================================================
+
+   スパイ
+
+========================================================= */
+
+function spyAction(actor){
+
+  if(actor.blocked){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const targets =
+
+    living().filter(
+
+      p => p.id !== actor.id
+
+    );
+
+  /*
+
+    スパイは市民陣営の役職を妨害する。
+
+    人狼陣営・妖狐・恋人などを
+
+    「役職そのもの」として妨害対象にはしない。
+
+  */
+
+  const citizenRoles = [
+
+    "市民",
+
+    "予言者",
+
+    "ボディーガード",
+
+    "霊媒師",
+
+    "ハンター",
+
+    "共有者",
+
+    "独裁者",
+
+    "タフガイ",
+
+    "カウンセラー",
+
+    "奇術師",
+
+    "罠師",
+
+    "騎士団",
+
+    "影武者",
+
+    "王様",
+
+    "神様",
+
+    "アンドロイド",
+
+    "呪われた者"
+
+  ];
+
+  const available =
+
+    targets.filter(
+
+      p => citizenRoles.includes(p.role)
+
+    );
+
+  choose(
+
+    "🕵️ スパイの方、妨害する人を選んでください",
+
+    available,
+
+    "spyPick"
+
   );
 
 }
 
+function spyPick(id){
+
+  const target = getPlayer(id);
+
+  if(!target){
+
+    nightStep();
+
+    return;
+
+  }
+
+  /*
+
+    その役職への妨害は1回だけ。
+
+    同じ役職を持つ人が複数いても、
+
+    その役職全体を妨害する。
+
+  */
+
+  if(!game.blockedRoles[target.role]){
+
+    game.blockedRoles[target.role] = true;
+
+    game.players.forEach(p => {
+
+      if(p.role === target.role){
+
+        p.blocked = true;
+
+      }
+
+    });
+
+  }
+
+  nightStep();
+
+}
+
+/* =========================================================
+
+   アンドロイド
+
+========================================================= */
+
+function androidAction(actor){
+
+  /*
+
+    一度コピーしたら、
+
+    その後はコピーし直さない。
+
+  */
+
+  if(game.android[actor.id] !== undefined){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const targets =
+
+    living().filter(
+
+      p => p.id !== actor.id
+
+    );
+
+  choose(
+
+    "🤖 アンドロイドの方、コピーする人を選んでください",
+
+    targets,
+
+    "androidPick",
+
+    false
+
+  );
+
+}
+
+function androidPick(id){
+
+  const actor =
+
+    rolePlayers("アンドロイド")
+
+      .find(p => p.alive);
+
+  if(!actor){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const target = getPlayer(id);
+
+  if(!target){
+
+    nightStep();
+
+    return;
+
+  }
+
+  game.android[actor.id] = target.id;
+
+  actor.androidCopied = true;
+
+  nightStep();
+
+}
+
+/* =========================================================
+
+   罠師
+
+========================================================= */
+
+function trapAction(actor){
+
+  /*
+
+    前夜と同じ人には連続して罠を仕掛けられない。
+
+  */
+
+  const targets =
+
+    living().filter(
+
+      p => p.id !== game.lastTrap
+
+    );
+
+  choose(
+
+    "🪤 罠師の方、罠を仕掛ける人を選んでください",
+
+    targets,
+
+    "trapPick"
+
+  );
+
+}
+
+function trapPick(id){
+
+  const target = getPlayer(id);
+
+  if(!target){
+
+    nightStep();
+
+    return;
+
+  }
+
+  game.trapTarget = target.id;
+
+  game.lastTrap = target.id;
+
+ /* =====================================================
+
+   役職確認 → 初日昼
+
+   ===================================================== */
+
+function roleConfirmation(){
+
+  if(game.confirmIndex >= game.players.length){
+
+    game.confirmRevealed = false;
+
+    /*
+
+      全員の役職確認が終わったら、
+
+      初日の昼へ進む。
+
+      初日の予言を「する」にした場合は、
+
+      ここで予言者本人だけが占う。
+
+    */
+
+    startFirstDay();
+
+    return;
+
+  }
+
+  const player =
+
+    game.players[game.confirmIndex];
+
+  const number =
+
+    game.confirmIndex + 1;
+
+  const total =
+
+    game.players.length;
+
+  /* ---------------------------------------------
+
+     まだ役職を見ていない
+
+     --------------------------------------------- */
+
+  if(!game.confirmRevealed){
+
+    render(`
+
+      <div class="card">
+
+        <div class="progress">
+
+          ${number} / ${total}
+
+        </div>
+
+        <h2>
+
+          ${escapeHTML(player.name)}さん
+
+        </h2>
+
+        <p>
+
+          あなたの役職を確認してください。
+
+        </p>
+
+        <button
+
+          class="blue"
+
+          onclick="revealRole()"
+
+        >
+
+          👀 役職を見る
+
+        </button>
+
+      </div>
+
+    `);
+
+    return;
+
+  }
+
+  /* ---------------------------------------------
+
+     役職を表示
+
+     --------------------------------------------- */
+
+  render(`
+
+    <div class="card private">
+
+      <div class="progress">
+
+        ${number} / ${total}
+
+      </div>
+
+      <h2>
+
+        ${escapeHTML(player.name)}さん
+
+      </h2>
+
+      <div class="big">
+
+        ${escapeHTML(player.role)}
+
+      </div>
+
+      ${roleInfoFor(player)}
+
+      <p class="small">
+
+        この画面は本人だけが確認してください。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="green"
+
+      onclick="finishRoleConfirmation()"
+
+    >
+
+      ✅ 確認しました
+
+    </button>
+
+  `);
+
+}
 
 /* =====================================================
+
+   役職を表示
+
+   ===================================================== */
+
+function revealRole(){
+
+  game.confirmRevealed = true;
+
+  roleConfirmation();
+
+}
+
+/* =====================================================
+
+   役職確認終了
+
+   ===================================================== */
+
+function finishRoleConfirmation(){
+
+  game.confirmRevealed = false;
+
+  game.confirmIndex++;
+
+  roleConfirmation();
+
+}
+
+/* =====================================================
+
+   初日
+
+   ===================================================== */
+
+function startFirstDay(){
+
+  game.day = 1;
+
+  game.night = 0;
+
+  game.firstDay = true;
+
+  game.discussionEnded = false;
+
+  /*
+
+    初日の予言を「する」に設定している場合、
+
+    役職確認が終わった直後に
+
+    予言者だけが占う。
+
+    ここが通常の「夜1」ではない。
+
+  */
+
+  if(
+
+    game.firstSeer &&
+
+    hasRole("予言者")
+
+  ){
+
+    startFirstSeer();
+
+    return;
+
+  }
+
+  speak(
+
+    "役職の確認が終わりました。みなさん目を覚ましてください。お昼です。議論スタート。"
+
+  );
+
+  setTimeout(
+
+    ()=>{
+
+      startDiscussion(true);
+
+    },
+
+    700
+
+  );
+
+}
+
+/* =====================================================
+
+   初日の予言
+
+   ※役職確認直後に実行
+
+   ===================================================== */
+
+function startFirstSeer(){
+
+  const seers =
+
+    rolePlayers("予言者")
+
+      .filter(p => p.alive);
+
+  /*
+
+    予言者が採用されていても、
+
+    生存している予言者がいなければ
+
+    そのまま初日の昼へ。
+
+  */
+
+  if(!seers.length){
+
+    startFirstDayDiscussion();
+
+    return;
+
+  }
+
+  const seer = seers[0];
+
+  /*
+
+    スパイによる妨害は、
+
+    初日の予言にも適用する。
+
+  */
+
+  if(seer.blocked){
+
+    render(`
+
+      <div class="card private">
+
+        <h2>🔮 初日の予言</h2>
+
+        <div class="wake">
+
+          予言者の能力は妨害されています。
+
+        </div>
+
+        <p>
+
+          今回は占うことができません。
+
+        </p>
+
+      </div>
+
+      <button
+
+        class="blue"
+
+        onclick="finishFirstSeer()"
+
+      >
+
+        確認しました
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  const targets =
+
+    living().filter(
+
+      p => p.id !== seer.id
+
+    );
+
+  /*
+
+    占える相手がいない場合。
+
+  */
+
+  if(!targets.length){
+
+    finishFirstSeer();
+
+    return;
+
+  }
+
+  speak(
+
+    "予言者の方、目を覚ましてください。初日の予言を行います。"
+
+  );
+
+  render(`
+
+    <div class="card private">
+
+      <h2>🔮 初日の予言</h2>
+
+      <p>
+
+        占う人を1人選んでください。
+
+      </p>
+
+      <p class="small">
+
+        この画面は予言者本人だけが確認してください。
+
+      </p>
+
+      ${targets.map(
+
+        target => `
+
+          <button
+
+            class="name-button"
+
+            onclick="firstSeerPick(${target.id})"
+
+          >
+
+            ${escapeHTML(target.name)}
+
+          </button>
+
+        `
+
+      ).join("")}
+
+    </div>
+
+  `);
+
+}
+
+/* =====================================================
+
+   初日の予言・対象選択
+
+   ===================================================== */
+
+function firstSeerPick(id){
+
+  const target =
+
+    getPlayer(id);
+
+  if(!target){
+
+    return;
+
+  }
+
+  const result =
+
+    seerResult(target);
+
+  /*
+
+    妖狐は占われた瞬間に死亡。
+
+  */
+
+  if(target.role === "妖狐"){
+
+    target.alive = false;
+
+  }
+
+  /*
+
+    結果は絶対にGM音声では読み上げない。
+
+    画面だけで予言者本人が確認する。
+
+  */
+
+  render(`
+
+    <div class="card private">
+
+      <h2>🔮 初日の占い結果</h2>
+
+      <div class="big">
+
+        ${escapeHTML(target.name)}さんは<br>
+
+        「${escapeHTML(result)}」です。
+
+      </div>
+
+      <p class="small">
+
+        この結果は予言者本人だけが確認してください。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="green"
+
+      onclick="finishFirstSeer()"
+
+    >
+
+      ✅ 確認しました
+
+    </button>
+
+  `);
+
+}
+
+/* =====================================================
+
+   初日の予言終了
+
+   ===================================================== */
+
+function finishFirstSeer(){
+
+  /*
+
+    初日の予言が終わったら
+
+    初日の昼へ。
+
+  */
+
+  startFirstDayDiscussion();
+
+}
+
+/* =====================================================
+
+   初日昼開始
+
+   ===================================================== */
+
+function startFirstDayDiscussion(){
+
+  speak(
+
+    "みなさん目を覚ましてください。お昼です。議論スタート。"
+
+  );
+
+  setTimeout(
+
+    ()=>{
+
+      startDiscussion(true);
+
+    },
+
+    700
+
+  );
+
+}
+
+/* =====================================================
+
    議論開始
-===================================================== */
+
+   ===================================================== */
 
 function startDiscussion(firstDay=false){
 
   clearInterval(
+
     game.discussionTimer
+
   );
 
-  game.discussionEnded=false;
+  game.discussionEnded = false;
 
-  let remain=
+  let remain =
+
     game.discussionTime;
 
   render(`
 
-  <div class="card">
+    <div class="card">
 
-    <h2>
+      <h2>
 
-      ☀️ ${game.day}日目・昼
+        ☀️ ${game.day}日目・昼
 
-    </h2>
+      </h2>
 
-    <div
-      class="timer"
-      id="discussionTimer"
-    >
+      <div
 
-      ${formatTime(remain)}
+        class="timer"
+
+        id="discussionTimer"
+
+      >
+
+        ${formatTime(remain)}
+
+      </div>
+
+      <div class="big">
+
+        💬 議論スタート
+
+      </div>
+
+      <p>
+
+        生存者で話し合ってください。
+
+      </p>
+
+      <hr>
+
+      <p class="small">
+
+        議論を早く終わらせたい場合は、
+
+        下のボタンを押してください。
+
+      </p>
+
+      <button
+
+        class="orange"
+
+        onclick="endDiscussion()"
+
+      >
+
+        🛑 議論を終了する
+
+      </button>
 
     </div>
-
-    <div class="big">
-
-      💬 議論スタート
-
-    </div>
-
-    <p style="text-align:center">
-
-      生存者で話し合ってください。
-
-    </p>
-
-    <hr>
-
-    <p class="small">
-
-      議論を途中で終了する場合は
-
-      下のボタンを押してください。
-
-    </p>
-
-    <button
-      class="orange"
-      onclick="endDiscussion()"
-    >
-
-      🛑 議論を終了する
-
-    </button>
-
-  </div>
 
   `);
 
+  /*
 
-  game.discussionTimer=
+    タイマーなし設定にも対応。
+
+  */
+
+  if(game.discussionTime <= 0){
+
+    return;
+
+  }
+
+  game.discussionTimer =
+
     setInterval(
+
       ()=>{
 
         remain--;
 
-        const el=
+        const el =
+
           document.getElementById(
+
             "discussionTimer"
+
           );
 
         if(el){
 
-          el.textContent=
+          el.textContent =
+
             formatTime(
+
               Math.max(0,remain)
+
             );
 
         }
 
-        if(remain<=0){
+        if(remain <= 0){
 
           clearInterval(
+
             game.discussionTimer
+
           );
 
-          game.discussionEnded=true;
+          game.discussionEnded = true;
 
           speak(
+
             "議論時間が終了しました。投票を開始します。"
+
           );
 
           startVote();
@@ -3065,15 +3964,18 @@ function startDiscussion(firstDay=false){
         }
 
       },
+
       1000
+
     );
 
 }
 
-
 /* =====================================================
+
    議論途中終了
-===================================================== */
+
+   ===================================================== */
 
 function endDiscussion(){
 
@@ -3083,40 +3985,49 @@ function endDiscussion(){
 
   }
 
-  game.discussionEnded=true;
+  game.discussionEnded = true;
 
   clearInterval(
+
     game.discussionTimer
+
   );
 
   speak(
+
     "議論を終了します。投票を開始します。"
+
   );
 
   startVote();
 
 }
 
-
 /* =====================================================
+
    投票開始
-===================================================== */
+
+   ===================================================== */
 
 function startVote(){
 
   clearInterval(
+
     game.discussionTimer
+
   );
 
-  game.voteRound=
-    game.voteRound||0;
+  game.voteRound =
 
-  const voters=
+    game.voteRound || 0;
+
+  const voters =
+
     living();
 
-  if(voters.length<=1){
+  if(voters.length <= 1){
 
-    game.voteRound=0;
+    game.voteRound = 0;
 
     checkVictory();
 
@@ -3124,14 +4035,23 @@ function startVote(){
 
   }
 
-  let index=0;
+  let index = 0;
 
-  const votes={};
+  const votes = {};
 
+  /*
+
+    投票は必ず1人ずつ。
+
+    他のプレイヤーには
+
+    誰に投票したか表示しない。
+
+  */
 
   function nextVoter(){
 
-    if(index>=voters.length){
+    if(index >= voters.length){
 
       finishVote(votes);
 
@@ -3139,84 +4059,109 @@ function startVote(){
 
     }
 
-    const voter=
+    const voter =
+
       voters[index++];
 
-    const targets=
-      voters.filter(
-        p=>p.id!==voter.id
-      );
+    const targets =
 
+      voters.filter(
+
+        p => p.id !== voter.id
+
+      );
 
     render(`
 
-    <div class="card">
+      <div class="card">
 
-      <div class="progress">
+        <div class="progress">
 
-        投票 ${index} / ${voters.length}
+          投票 ${index} / ${voters.length}
+
+        </div>
+
+        <h2>
+
+          🗳️ ${escapeHTML(voter.name)}さん
+
+        </h2>
+
+        <p>
+
+          投票する人を1人選んでください。
+
+        </p>
+
+        <p class="small">
+
+          投票先は他の人には見えません。
+
+        </p>
+
+        ${targets.map(
+
+          target => `
+
+            <button
+
+              class="name-button"
+
+              onclick="castCurrentVote(${target.id})"
+
+            >
+
+              ${escapeHTML(target.name)}
+
+            </button>
+
+          `
+
+        ).join("")}
 
       </div>
 
-      <h2>
-
-        🗳️
-
-        ${escapeHTML(voter.name)}さん
-
-      </h2>
-
-      <p>
-
-        投票する人を1人選んでください。
-
-      </p>
-
-      <p class="small">
-
-        投票先は他の人には表示されません。
-
-      </p>
-
-      ${targets.map(
-        target=>`
-
-        <button
-          class="name-button"
-          onclick="castCurrentVote(${target.id})"
-        >
-
-          ${escapeHTML(target.name)}
-
-        </button>
-
-      `
-      ).join("")}
-
-    </div>
-
     `);
 
+    window.castCurrentVote =
 
-    window.castCurrentVote=
       function(id){
 
-        const target=
+        const target =
+
           getPlayer(id);
 
-        if(!target){
+        if(
+
+          !target ||
+
+          !target.alive ||
+
+          target.id === voter.id
+
+        ){
 
           return;
 
         }
 
-        const value=
-          voter.role==="王様"
-          ? 2
-          : 1;
+        /*
 
-        votes[id]=
-          (votes[id]||0)+value;
+          王様は2票。
+
+        */
+
+        const value =
+
+          voter.role === "王様"
+
+            ? 2
+
+            : 1;
+
+        votes[id] =
+
+          (votes[id] || 0) + value;
 
         nextVoter();
 
@@ -3228,19 +4173,21 @@ function startVote(){
 
 }
 
-
 /* =====================================================
+
    投票結果
-===================================================== */
+
+   ===================================================== */
 
 function finishVote(votes){
 
-  const ids=
+  const ids =
+
     Object.keys(votes);
 
   if(!ids.length){
 
-    game.voteRound=0;
+    game.voteRound = 0;
 
     afterNoVote();
 
@@ -3248,69 +4195,87 @@ function finishVote(votes){
 
   }
 
-  const max=
+  const max =
+
     Math.max(
+
       ...Object.values(votes)
+
     );
 
-  const winners=
+  const winners =
+
     ids.filter(
-      id=>votes[id]===max
+
+      id => votes[id] === max
+
     );
 
+  /*
 
-  /* ===================================================
-     同票 → 決選投票
-  =================================================== */
+    通常投票で同票
 
-  if(winners.length>1){
+    → 決選投票
 
-    if(game.voteRound===0){
+  */
 
-      game.voteRound=1;
+  if(winners.length > 1){
 
-      const names=
+    if(game.voteRound === 0){
+
+      game.voteRound = 1;
+
+      const names =
+
         winners.map(
-          id=>
+
+          id =>
+
             escapeHTML(
+
               getPlayer(id).name
+
             )
+
         );
 
-
       speak(
-        `同票です。${names.join("、")}さんで決選投票を行います。`
-      );
 
+        `同票です。${names.join("、")}さんで決選投票を行います。`
+
+      );
 
       render(`
 
-      <div class="card">
+        <div class="card">
 
-        <div class="vote-result">
+          <div class="vote-result">
 
-          ⚖️ 同票です
+            ⚖️ 同票です
+
+          </div>
+
+          <p>
+
+            ${names.join("、")}さんで
+
+            決選投票を行います。
+
+          </p>
 
         </div>
 
-        <p style="text-align:center">
+        <button
 
-          ${names.join("、")}さんで
+          class="orange"
 
-          決選投票を行います。
+          onclick='startDecisionVote(${JSON.stringify(winners)})'
 
-        </p>
+        >
 
-      </div>
+          ⚖️ 決選投票へ
 
-      <button
-        class="orange"
-        onclick='startDecisionVote(${JSON.stringify(winners)})'
-      >
-
-        ⚖️ 決選投票へ
-
-      </button>
+        </button>
 
       `);
 
@@ -3318,43 +4283,51 @@ function finishVote(votes){
 
     }
 
+    /*
 
-    /* =================================================
-       決選投票も同票
-    ================================================= */
+      決選投票でも同票
 
-    game.voteRound=0;
+      → 追放なし
+
+    */
+
+    game.voteRound = 0;
 
     speak(
+
       "決選投票も同票でした。今回は追放なしです。"
+
     );
 
     render(`
 
-    <div class="card">
+      <div class="card">
 
-      <div class="vote-result">
+        <div class="vote-result">
 
-        ⚖️ 決選投票も同票
+          ⚖️ 決選投票も同票
+
+        </div>
+
+        <p>
+
+          今回は追放なしです。
+
+        </p>
 
       </div>
 
-      <p style="text-align:center">
+      <button
 
-        今回は追放なしです。
+        class="blue"
 
-      </p>
+        onclick="afterNoVote()"
 
-    </div>
+      >
 
-    <button
-      class="blue"
-      onclick="afterNoVote()"
-    >
+        次へ
 
-      次へ
-
-    </button>
+      </button>
 
     `);
 
@@ -3362,10 +4335,10 @@ function finishVote(votes){
 
   }
 
+  game.voteRound = 0;
 
-  game.voteRound=0;
+  const target =
 
-  const target=
     getPlayer(winners[0]);
 
   if(!target){
@@ -3376,159 +4349,215 @@ function finishVote(votes){
 
   }
 
-  target.alive=false;
+  target.alive = false;
 
-  game.lastExiled=
+  game.lastExiled =
+
     target.id;
+
+  /*
+
+    人狼の子どもが昼に追放された場合、
+
+    今夜の人狼側の襲撃回数を2回にする。
+
+  */
+
+  if(target.role === "人狼の子ども"){
+
+    game.childRage = true;
+
+  }
 
   showExileResult(target);
 
 }
 
-
 /* =====================================================
+
    投票なし
-===================================================== */
+
+   ===================================================== */
 
 function afterNoVote(){
 
   speak(
+
     "今回は追放者はいません。"
+
   );
 
   render(`
 
-  <div class="card">
+    <div class="card">
 
-    <div class="vote-result">
+      <div class="vote-result">
 
-      ⚖️ 投票結果
+        ⚖️ 投票結果
+
+      </div>
+
+      <div class="big">
+
+        今回は追放なし
+
+      </div>
+
+      <p>
+
+        追放者はいません。
+
+      </p>
 
     </div>
 
-    <div class="big">
+    <button
 
-      今回は追放なし
+      class="blue"
 
-    </div>
+      onclick="goToNightAfterVote()"
 
-    <p style="text-align:center">
+    >
 
-      追放者はいません。
+      🌙 夜へ
 
-    </p>
-
-  </div>
-
-  <button
-    class="blue"
-    onclick="goToNightAfterVote()"
-  >
-
-    🌙 夜へ
-
-  </button>
+    </button>
 
   `);
 
 }
 
-
 /* =====================================================
+
    決選投票
-===================================================== */
+
+   ===================================================== */
 
 function startDecisionVote(candidateIds){
 
-  const candidates=
-    candidateIds
-      .map(id=>getPlayer(id))
-      .filter(Boolean);
+  const candidates =
 
-  const voters=
+    candidateIds
+
+      .map(id => getPlayer(id))
+
+      .filter(
+
+        p => p && p.alive
+
+      );
+
+  const voters =
+
     living();
 
-  let index=0;
+  let index = 0;
 
-  const votes={};
-
+  const votes = {};
 
   function nextVoter(){
 
-    if(index>=voters.length){
+    if(index >= voters.length){
 
       finishDecisionVote(
+
         votes,
+
         candidates
+
       );
 
       return;
 
     }
 
-    const voter=
+    const voter =
+
       voters[index++];
 
     render(`
 
-    <div class="card">
+      <div class="card">
 
-      <div class="progress">
+        <div class="progress">
 
-        ⚖️ 決選投票
+          決選投票 ${index} / ${voters.length}
 
-        ${index} / ${voters.length}
+        </div>
+
+        <h2>
+
+          ⚖️ ${escapeHTML(voter.name)}さん
+
+        </h2>
+
+        <p>
+
+          この中から1人を選んでください。
+
+        </p>
+
+        <p class="small">
+
+          投票先は他の人には見せないでください。
+
+        </p>
+
+        ${candidates.map(
+
+          p => `
+
+            <button
+
+              class="name-button"
+
+              onclick="castDecisionVote(${p.id})"
+
+            >
+
+              ${escapeHTML(p.name)}
+
+            </button>
+
+          `
+
+        ).join("")}
 
       </div>
 
-      <h2>
-
-        ${escapeHTML(voter.name)}さん
-
-      </h2>
-
-      <p>
-
-        この中から1人を選んでください。
-
-      </p>
-
-      <p class="small">
-
-        投票先は他の人には見せないでください。
-
-      </p>
-
-      ${candidates.map(
-        p=>`
-
-        <button
-          class="name-button"
-          onclick="castDecisionVote(${p.id})"
-        >
-
-          ${escapeHTML(p.name)}
-
-        </button>
-
-      `
-      ).join("")}
-
-    </div>
-
     `);
 
+    window.castDecisionVote =
 
-    window.castDecisionVote=
       function(id){
 
-        const value=
-          voter.role==="王様"
-          ? 2
-          : 1;
+        const target =
 
-        votes[id]=
-          (votes[id]||0)+value;
+          getPlayer(id);
+
+        if(
+
+          !target ||
+
+          !target.alive
+
+        ){
+
+          return;
+
+        }
+
+        const value =
+
+          voter.role === "王様"
+
+            ? 2
+
+            : 1;
+
+        votes[id] =
+
+          (votes[id] || 0) + value;
 
         nextVoter();
 
@@ -3540,22 +4569,27 @@ function startDecisionVote(candidateIds){
 
 }
 
-
 /* =====================================================
+
    決選投票結果
-===================================================== */
+
+   ===================================================== */
 
 function finishDecisionVote(
+
   votes,
+
   candidates
+
 ){
 
-  const values=
+  const values =
+
     Object.values(votes);
 
   if(!values.length){
 
-    game.voteRound=0;
+    game.voteRound = 0;
 
     afterNoVote();
 
@@ -3563,49 +4597,57 @@ function finishDecisionVote(
 
   }
 
-  const max=
+  const max =
+
     Math.max(...values);
 
-  const winners=
+  const winners =
+
     candidates.filter(
-      p=>votes[p.id]===max
+
+      p => votes[p.id] === max
+
     );
 
+  if(winners.length > 1){
 
-  if(winners.length>1){
-
-    game.voteRound=0;
+    game.voteRound = 0;
 
     speak(
+
       "決選投票も同票でした。今回は追放なしです。"
+
     );
 
     render(`
 
-    <div class="card">
+      <div class="card">
 
-      <div class="vote-result">
+        <div class="vote-result">
 
-        ⚖️ 決選投票も同票
+          ⚖️ 決選投票も同票
+
+        </div>
+
+        <p>
+
+          今回は追放なしです。
+
+        </p>
 
       </div>
 
-      <p style="text-align:center">
+      <button
 
-        今回は追放なしです。
+        class="blue"
 
-      </p>
+        onclick="afterNoVote()"
 
-    </div>
+      >
 
-    <button
-      class="blue"
-      onclick="afterNoVote()"
-    >
+        次へ
 
-      次へ
-
-    </button>
+      </button>
 
     `);
 
@@ -3613,10 +4655,10 @@ function finishDecisionVote(
 
   }
 
+  game.voteRound = 0;
 
-  game.voteRound=0;
+  const target =
 
-  const target=
     winners[0];
 
   if(!target){
@@ -3627,74 +4669,95 @@ function finishDecisionVote(
 
   }
 
-  target.alive=false;
+  target.alive = false;
 
-  game.lastExiled=
+  game.lastExiled =
+
     target.id;
+
+  /*
+
+    決選投票で人狼の子どもが
+
+    追放された場合も2回襲撃。
+
+  */
+
+  if(target.role === "人狼の子ども"){
+
+    game.childRage = true;
+
+  }
 
   showExileResult(target);
 
 }
 
-
 /* =====================================================
+
    追放結果
-===================================================== */
+
+   ===================================================== */
 
 function showExileResult(target){
 
-  const text=
-    `投票の結果、${target.name}さんが追放されました。`;
+  speak(
 
-  speak(text);
+    `投票の結果、${target.name}さんが追放されました。`
+
+  );
 
   render(`
 
-  <div class="card">
+    <div class="card">
 
-    <div class="vote-result">
+      <div class="vote-result">
 
-      ⚖️ 投票結果
+        ⚖️ 投票結果
+
+      </div>
+
+      <div class="big">
+
+        ${escapeHTML(target.name)}さん
+
+      </div>
+
+      <p>
+
+        が追放されました。
+
+      </p>
 
     </div>
-
-    <div class="big">
-
-      ${escapeHTML(target.name)}さん
-
-    </div>
-
-    <p style="text-align:center">
-
-      が追放されました。
-
-    </p>
-
-  </div>
 
   `);
 
+  /*
 
-  /* ===================================================
-     ハンター
-  =================================================== */
+    ハンターなら、
 
-  if(
-    target.role==="ハンター"
-  ){
+    追放直後に能力を発動。
+
+  */
+
+  if(target.role === "ハンター"){
 
     setTimeout(
-      ()=>hunterAction(target),
+
+      () => hunterAction(target),
+
       700
+
     );
 
     return;
 
   }
 
-
   setTimeout(
-    ()=>{
+
+    () => {
 
       if(checkVictory()){
 
@@ -3705,15 +4768,18 @@ function showExileResult(target){
       goToNightAfterVote();
 
     },
+
     1000
+
   );
 
 }
 
-
 /* =====================================================
+
    追放後 → 夜
-===================================================== */
+
+   ===================================================== */
 
 function goToNightAfterVote(){
 
@@ -3725,168 +4791,195 @@ function goToNightAfterVote(){
 
   render(`
 
-  <div class="card">
+    <div class="card">
 
-    <div class="big">
+      <div class="big">
 
-      🌙 夜になります
+        🌙 夜になります
+
+      </div>
+
+      <p>
+
+        追放者の確認が終わりました。
+
+      </p>
 
     </div>
 
-    <p style="text-align:center">
+    <button
 
-      追放者の確認が終わりました。
+      class="blue"
 
-    </p>
+      onclick="nextNight()"
 
-  </div>
+    >
 
-  <button
-    class="blue"
-    onclick="nextNight()"
-  >
+      🌙 夜を開始
 
-    🌙 夜を開始
-
-  </button>
+    </button>
 
   `);
 
 }
 
-
 /* =====================================================
+
    ハンター
-===================================================== */
+
+   ===================================================== */
 
 function hunterAction(hunter){
 
   speak(
+
     "ハンターの方、道連れにする人を選んでください。"
+
   );
 
-  const targets=
+  const targets =
+
     living();
 
   render(`
 
-  <div class="card">
+    <div class="card">
 
-    <h2>🏹 ハンター</h2>
+      <h2>🏹 ハンター</h2>
 
-    <div class="wake">
+      <div class="wake">
 
-      🚨 能力発動
+        🚨 能力発動
+
+      </div>
+
+      <p>
+
+        道連れにする人を1人選んでください。
+
+      </p>
+
+      ${targets.map(
+
+        p => `
+
+          <button
+
+            class="name-button"
+
+            onclick="hunterPick(${p.id})"
+
+          >
+
+            ${escapeHTML(p.name)}
+
+          </button>
+
+        `
+
+      ).join("")}
 
     </div>
 
-    <p style="text-align:center">
-
-      道連れにする人を1人選んでください。
-
-    </p>
-
-    ${targets.map(
-      p=>`
-
-      <button
-        class="name-button"
-        onclick="hunterPick(${p.id})"
-      >
-
-        ${escapeHTML(p.name)}
-
-      </button>
-
-    `
-    ).join("")}
-
-  </div>
-
   `);
 
+  window.hunterPick =
 
-  window.hunterPick=
     function(id){
 
-      const target=
+      const target =
+
         getPlayer(id);
 
       if(
+
         !target ||
+
         !target.alive
+
       ){
 
         return;
 
       }
 
-      target.alive=false;
+      target.alive = false;
 
+      /*
 
-      /* =================================================
-         恋人の道連れ
-      ================================================= */
+        恋人なら相方も死亡。
 
-      const pairs=
+        恋人であることは公開しない。
+
+      */
+
+      const pairs =
+
         game.loverPairs.filter(
-          pair=>
+
+          pair =>
+
             pair.includes(target.id)
+
         );
 
-
       pairs.forEach(
-        pair=>{
+
+        pair => {
 
           pair.forEach(
-            pid=>{
 
-              if(
-                pid!==target.id
-              ){
+            pid => {
 
-                const p=
+              if(pid !== target.id){
+
+                const lover =
+
                   getPlayer(pid);
 
                 if(
-                  p &&
-                  p.alive
+
+                  lover &&
+
+                  lover.alive
+
                 ){
 
-                  p.alive=false;
+                  lover.alive = false;
 
                 }
 
               }
 
             }
+
           );
 
         }
-      );
 
+      );
 
       render(`
 
-      <div class="card">
+        <div class="card">
 
-        <div class="vote-result">
+          <div class="vote-result">
 
-          🏹
+            🏹
 
-          ${escapeHTML(target.name)}さんが
+            ${escapeHTML(target.name)}さんが
 
-          道連れになりました。
+            道連れになりました。
+
+          </div>
 
         </div>
 
-      </div>
-
       `);
 
-
       setTimeout(
-        ()=>{
+
+        () => {
 
           if(checkVictory()){
 
@@ -3897,17 +4990,20 @@ function hunterAction(hunter){
           goToNightAfterVote();
 
         },
+
         1000
+
       );
 
     };
 
 }
 
-
 /* =====================================================
+
    夜開始
-===================================================== */
+
+   ===================================================== */
 
 function nextNight(){
 
@@ -3919,84 +5015,1704 @@ function nextNight(){
 
   game.night++;
 
-  game.firstDay=false;
+  /*
+
+    初日昼の後に初めて夜1になる。
+
+  */
+
+  game.firstDay = false;
 
   startNight();
 
 }
 
-
 /* =====================================================
+
    夜初期化
-===================================================== */
+
+   ===================================================== */
 
 function startNight(){
 
-  game.nightIndex=0;
+  game.nightIndex = 0;
 
   resetNightActions();
 
+  /*
+
+    夜ごとの妨害状態をリセット。
+
+  */
 
   game.players.forEach(
-    p=>{
-      p.blocked=false;
+
+    p => {
+
+      p.blocked = false;
+
     }
+
   );
 
+  game.blockedRoles = {};
 
-  game.blockedRoles={};
+  game.convertedThisNight = [];
 
-  game.convertedThisNight=[];
+  game.nightDeaths = [];
 
-  game.nightDeaths=[];
+  /*
 
-  game.trapActive=false;
+    罠はその夜に設定し直す。
 
-  game.trapOwner=null;
+  */
 
-  game.trapTarget=null;
+  game.trapActive = false;
+
+  game.trapOwner = null;
+
+  game.trapTarget = null;
 
   nightStep();
 
 }
 
-
 /* =====================================================
-   夜の行動リセット
-===================================================== */
+
+   夜行動リセット
+
+   ===================================================== */
 
 function resetNightActions(){
 
-  game.wolfTarget=null;
+  game.wolfTarget = null;
 
-  game.raiderTarget=null;
+  game.wolfTargets = [];
 
-  game.guardTarget=null;
+  game.raiderTarget = null;
 
-  game.knightTarget=null;
+  game.guardTarget = null;
 
-  game.trapTarget=null;
+  game.knightTarget = null;
 
-  game.magicTarget=null;
+  game.trapTarget = null;
 
-  game.counselTarget=null;
+  game.magicTarget = null;
+
+  game.counselTarget = null;
 
 }
   /* =====================================================
 
-   死亡処理
+   夜の処理
+
+===================================================== */
+
+function nightStep(){
+
+  if(game.nightIndex >= NIGHT_ORDER.length){
+
+    morning();
+
+    return;
+
+  }
+
+  const role = NIGHT_ORDER[game.nightIndex];
+
+  game.nightIndex++;
+
+  if(role === "裏切り者確認"){
+
+    betrayerCheckStep();
+
+    return;
+
+  }
+
+  if(!hasRole(role)){
+
+    nightStep();
+
+    return;
+
+  }
+
+  wakeRole(role);
+
+}
+
+/* =====================================================
+
+   夜の役職呼び出し
+
+===================================================== */
+
+function wakeRole(role){
+
+  const actor =
+
+    rolePlayers(role).find(p => p.alive);
+
+  const roleNames = {
+
+    "呪われた者":
+
+      "呪われた者の方",
+
+    "スパイ":
+
+      "スパイの方",
+
+    "アンドロイド":
+
+      "アンドロイドの方",
+
+    "罠師":
+
+      "罠師の方",
+
+    "ボディーガード":
+
+      "ボディーガードの方",
+
+    "騎士団":
+
+      "騎士団の方",
+
+    "人狼":
+
+      "人狼の方",
+
+    "裏切りの襲撃者":
+
+      "裏切りの襲撃者の方",
+
+    "カウンセラー":
+
+      "カウンセラーの方",
+
+    "奇術師":
+
+      "奇術師の方",
+
+    "予言者":
+
+      "予言者の方",
+
+    "霊媒師":
+
+      "霊媒師の方"
+
+  };
+
+  const caller =
+
+    roleNames[role] || `${role}の方`;
+
+  speak(
+
+    `${caller}、目を覚ましてください。`
+
+  );
+
+  render(`
+
+    <div class="card">
+
+      <div class="wake">
+
+        ${escapeHTML(caller)}<br>
+
+        目を覚ましてください。
+
+      </div>
+
+      ${
+
+        actor
+
+        ?
+
+        `
+
+        <p>
+
+          ${escapeHTML(actor.name)}さん、
+
+          行動してください。
+
+        </p>
+
+        `
+
+        :
+
+        `
+
+        <p class="small">
+
+          生存している${escapeHTML(role)}はいません。
+
+        </p>
+
+        `
+
+      }
+
+    </div>
+
+    <button
+
+      class="blue"
+
+      onclick="performNightRole('${role}')"
+
+    >
+
+      目を覚ましました
+
+    </button>
+
+  `);
+
+}
+
+/* =====================================================
+
+   夜の役職行動
+
+===================================================== */
+
+function performNightRole(role){
+
+  const actors =
+
+    rolePlayers(role).filter(p => p.alive);
+
+  /*
+
+    役職は採用されているが、
+
+    生存者がいない場合はそのまま次へ。
+
+  */
+
+  if(!actors.length){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const actor = actors[0];
+
+  if(role === "呪われた者"){
+
+    nightStep();
+
+    return;
+
+  }
+
+  if(role === "スパイ"){
+
+    spyAction(actor);
+
+    return;
+
+  }
+
+  if(role === "アンドロイド"){
+
+    androidAction(actor);
+
+    return;
+
+  }
+
+  if(role === "罠師"){
+
+    trapAction(actor);
+
+    return;
+
+  }
+
+  if(role === "ボディーガード"){
+
+    bodyguardAction(actor);
+
+    return;
+
+  }
+
+  if(role === "騎士団"){
+
+    knightAction(actor);
+
+    return;
+
+  }
+
+  if(role === "人狼"){
+
+    wolfAction();
+
+    return;
+
+  }
+
+  if(role === "裏切りの襲撃者"){
+
+    raiderAction(actor);
+
+    return;
+
+  }
+
+  if(role === "カウンセラー"){
+
+    counselorAction(actor);
+
+    return;
+
+  }
+
+  if(role === "奇術師"){
+
+    magicAction(actor);
+
+    return;
+
+  }
+
+  if(role === "予言者"){
+
+    seerAction(actor);
+
+    return;
+
+  }
+
+  if(role === "霊媒師"){
+
+    mediumAction(actor);
+
+    return;
+
+  }
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   共通選択画面
+
+===================================================== */
+
+function choose(
+
+  title,
+
+  players,
+
+  callback,
+
+  skip = true
+
+){
+
+  let html = `
+
+    <div class="card">
+
+      <h2>${title}</h2>
+
+  `;
+
+  if(players.length === 0){
+
+    html += `
+
+      <p class="small">
+
+        選択できる人はいません。
+
+      </p>
+
+    `;
+
+  }
+
+  players.forEach(p => {
+
+    html += `
+
+      <button
+
+        class="name-button"
+
+        onclick="${callback}(${p.id})"
+
+      >
+
+        ${escapeHTML(p.name)}
+
+      </button>
+
+    `;
+
+  });
+
+  if(skip){
+
+    html += `
+
+      <br>
+
+      <button
+
+        class="orange"
+
+        onclick="nightStep()"
+
+      >
+
+        行動しない
+
+      </button>
+
+    `;
+
+  }
+
+  html += `</div>`;
+
+  render(html);
+
+}
+
+/* =====================================================
+
+   スパイ
+
+===================================================== */
+
+function spyAction(actor){
+
+  /*
+
+    スパイは市民陣営の役職の能力を妨害する。
+
+    1つの役職につき1回だけ妨害可能。
+
+    その夜だけではなく、
+
+    「その役職に対する妨害済み」を記録する。
+
+  */
+
+  if(actor.blocked){
+
+    render(`
+
+      <div class="card">
+
+        <div class="wake">
+
+          🕵️ スパイの能力は妨害されています。
+
+        </div>
+
+      </div>
+
+      <button
+
+        class="blue"
+
+        onclick="nightStep()"
+
+      >
+
+        次へ
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  const targets =
+
+    living().filter(
+
+      p => p.id !== actor.id
+
+    );
+
+  choose(
+
+    "🕵️ スパイの方、妨害する人を選んでください",
+
+    targets,
+
+    "spyPick"
+
+  );
+
+}
+
+function spyPick(id){
+
+  const target = getPlayer(id);
+
+  if(!target){
+
+    nightStep();
+
+    return;
+
+  }
+
+  /*
+
+    妨害対象にできる市民陣営の役職。
+
+  */
+
+  const citizenRoles = [
+
+    "市民",
+
+    "預言者",
+
+    "ボディーガード",
+
+    "霊媒師",
+
+    "ハンター",
+
+    "共有者",
+
+    "独裁者",
+
+    "タフガイ",
+
+    "カウンセラー",
+
+    "奇術師",
+
+    "罠師",
+
+    "騎士団",
+
+    "影武者",
+
+    "王様",
+
+    "妖狐",
+
+    "神様",
+
+    "恋人",
+
+    "呪われた者",
+
+    "アンドロイド"
+
+  ];
+
+  /*
+
+    人狼側・裏切り者系は
+
+    スパイの妨害対象ではない。
+
+  */
+
+  if(citizenRoles.includes(target.role)){
+
+    if(!game.blockedRoles[target.role]){
+
+      target.blocked = true;
+
+      game.blockedRoles[target.role] = true;
+
+    }
+
+  }
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   アンドロイド
+
+===================================================== */
+
+function androidAction(actor){
+
+  /*
+
+    アンドロイドは最初に1人をコピー。
+
+    一度コピーしたら変更できない。
+
+  */
+
+  if(
+
+    game.android &&
+
+    game.android[actor.id] !== undefined
+
+  ){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const targets =
+
+    living().filter(
+
+      p => p.id !== actor.id
+
+    );
+
+  choose(
+
+    "🤖 アンドロイドの方、コピーする人を選んでください",
+
+    targets,
+
+    "androidPick",
+
+    false
+
+  );
+
+}
+
+function androidPick(id){
+
+  const actor =
+
+    rolePlayers("アンドロイド")
+
+      .find(p => p.alive);
+
+  if(!actor){
+
+    nightStep();
+
+    return;
+
+  }
+
+  if(!game.android){
+
+    game.android = {};
+
+  }
+
+  if(game.android[actor.id] === undefined){
+
+    game.android[actor.id] = Number(id);
+
+    actor.androidCopied = true;
+
+  }
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   罠師
+
+===================================================== */
+
+function trapAction(actor){
+
+  const targets =
+
+    living().filter(
+
+      p => p.id !== game.lastTrap
+
+    );
+
+  choose(
+
+    "🪤 罠師の方、罠を仕掛ける人を選んでください",
+
+    targets,
+
+    "trapPick"
+
+  );
+
+}
+
+function trapPick(id){
+
+  game.trapTarget = Number(id);
+
+  game.lastTrap = Number(id);
+
+  game.trapActive = true;
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   ボディーガード
+
+===================================================== */
+
+function bodyguardAction(actor){
+
+  const targets =
+
+    living().filter(
+
+      p =>
+
+        p.id !== actor.id &&
+
+        p.id !== game.lastGuard
+
+    );
+
+  choose(
+
+    "🛡️ ボディーガードの方、今夜守る人を選んでください",
+
+    targets,
+
+    "bodyguardPick"
+
+  );
+
+}
+
+function bodyguardPick(id){
+
+  game.guardTarget = Number(id);
+
+  game.lastGuard = Number(id);
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   騎士団
+
+===================================================== */
+
+function knightAction(actor){
+
+  const targets = living();
+
+  choose(
+
+    "⚔️ 騎士団の方、今夜守る人を選んでください",
+
+    targets,
+
+    "knightPick"
+
+  );
+
+}
+
+function knightPick(id){
+
+  game.knightTarget = Number(id);
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   人狼
+
+===================================================== */
+
+function wolfAction(){
+
+  const targets =
+
+    living().filter(
+
+      p => !isWolfRole(p.role)
+
+    );
+
+  if(targets.length === 0){
+
+    nightStep();
+
+    return;
+
+  }
+
+  /*
+
+    人狼の子どもが昼に追放された場合、
+
+    今夜は2回襲撃できる。
+
+  */
+
+  if(game.childRage){
+
+    render(`
+
+      <div class="card">
+
+        <h2>🐺 人狼の方</h2>
+
+        <div class="wake">
+
+          人狼の子どもが追放されました。
+
+        </div>
+
+        <p>
+
+          今夜は<strong>2人</strong>を襲撃できます。
+
+        </p>
+
+      </div>
+
+      <button
+
+        class="blue"
+
+        onclick="wolfFirstAttack()"
+
+      >
+
+        1人目を選ぶ
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  choose(
+
+    "🐺 人狼の方、今夜の襲撃先を選んでください",
+
+    targets,
+
+    "wolfPick",
+
+    false
+
+  );
+
+}
+
+function wolfFirstAttack(){
+
+  const targets =
+
+    living().filter(
+
+      p => !isWolfRole(p.role)
+
+    );
+
+  choose(
+
+    "🐺 人狼の方、1人目の襲撃先を選んでください",
+
+    targets,
+
+    "wolfPickFirst",
+
+    false
+
+  );
+
+}
+
+function wolfPickFirst(id){
+
+  game.wolfTarget = Number(id);
+
+  const targets =
+
+    living().filter(
+
+      p =>
+
+        !isWolfRole(p.role) &&
+
+        p.id !== game.wolfTarget
+
+    );
+
+  choose(
+
+    "🐺 人狼の方、2人目の襲撃先を選んでください",
+
+    targets,
+
+    "wolfPickSecond",
+
+    false
+
+  );
+
+}
+
+function wolfPickSecond(id){
+
+  game.wolfTarget2 = Number(id);
+
+  game.childRage = false;
+
+  nightStep();
+
+}
+
+function wolfPick(id){
+
+  game.wolfTarget = Number(id);
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   裏切りの襲撃者
+
+===================================================== */
+
+function raiderAction(actor){
+
+  const targets = living();
+
+  choose(
+
+    "🐺 裏切りの襲撃者の方、襲撃先を選んでください",
+
+    targets,
+
+    "raiderPick"
+
+  );
+
+}
+
+function raiderPick(id){
+
+  game.raiderTarget = Number(id);
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   カウンセラー
+
+===================================================== */
+
+function counselorAction(actor){
+
+  if(actor.blocked){
+
+    render(`
+
+      <div class="card">
+
+        <div class="wake">
+
+          💭 カウンセラーの能力は妨害されています。
+
+        </div>
+
+      </div>
+
+      <button
+
+        class="blue"
+
+        onclick="nightStep()"
+
+      >
+
+        次へ
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  const targets = living();
+
+  choose(
+
+    "💭 カウンセラーの方、カウンセリングする人を選んでください",
+
+    targets,
+
+    "counselPick"
+
+  );
+
+}
+
+function counselPick(id){
+
+  game.counselTarget = Number(id);
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   奇術師
+
+===================================================== */
+
+function magicAction(actor){
+
+  if(actor.blocked){
+
+    render(`
+
+      <div class="card">
+
+        <div class="wake">
+
+          🎩 奇術師の能力は妨害されています。
+
+        </div>
+
+      </div>
+
+      <button
+
+        class="blue"
+
+        onclick="nightStep()"
+
+      >
+
+        次へ
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  if(game.magicUsed){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const targets = living();
+
+  choose(
+
+    "🎩 奇術師の方、人狼の襲撃先を変更してください",
+
+    targets,
+
+    "magicPick"
+
+  );
+
+}
+
+function magicPick(id){
+
+  game.magicTarget = Number(id);
+
+  game.magicUsed = true;
+
+  nightStep();
+
+}
+
+/* =====================================================
+
+   予言者
+
+===================================================== */
+
+function seerAction(actor){
+
+  if(actor.blocked){
+
+    render(`
+
+      <div class="card">
+
+        <div class="wake">
+
+          🔮 予言者の能力は妨害されています。
+
+        </div>
+
+      </div>
+
+      <button
+
+        class="blue"
+
+        onclick="nightStep()"
+
+      >
+
+        次へ
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  /*
+
+    初日の予言は
+
+    「役職確認中」に行う。
+
+    夜1では初日占いを行わない。
+
+  */
+
+  if(game.night === 1){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const targets =
+
+    living().filter(
+
+      p => p.id !== actor.id
+
+    );
+
+  choose(
+
+    "🔮 予言者の方、占う人を選んでください",
+
+    targets,
+
+    "seerPick",
+
+    false
+
+  );
+
+}
+
+function seerPick(id){
+
+  const target = getPlayer(id);
+
+  if(!target){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const result = seerResult(target);
+
+  /*
+
+    妖狐は占われた瞬間に死亡。
+
+  */
+
+  if(target.role === "妖狐"){
+
+    target.alive = false;
+
+  }
+
+  /*
+
+    結果は音声では読まない。
+
+    予言者本人だけが画面で確認する。
+
+  */
+
+  render(`
+
+    <div class="card private">
+
+      <h2>🔮 占い結果</h2>
+
+      <div class="big">
+
+        ${escapeHTML(target.name)}さんは<br>
+
+        「${escapeHTML(result)}」です。
+
+      </div>
+
+      <p class="small">
+
+        この結果は予言者本人だけが確認してください。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="green"
+
+      onclick="nightStep()"
+
+    >
+
+      確認しました
+
+    </button>
+
+  `);
+
+}
+
+/* =====================================================
+
+   初日の予言
+
+===================================================== */
+
+function firstDaySeerAction(){
+
+  const seers =
+
+    rolePlayers("予言者")
+
+      .filter(p => p.alive);
+
+  if(!seers.length){
+
+    startFirstDay();
+
+    return;
+
+  }
+
+  const actor = seers[0];
+
+  if(actor.blocked){
+
+    render(`
+
+      <div class="card">
+
+        <h2>🔮 初日の予言</h2>
+
+        <div class="wake">
+
+          予言者の能力は妨害されています。
+
+        </div>
+
+      </div>
+
+      <button
+
+        class="blue"
+
+        onclick="finishFirstDaySeer()"
+
+      >
+
+        次へ
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  /*
+
+    「初日の予言をする」に設定されている場合だけ
+
+    役職確認終了後に予言を行う。
+
+  */
+
+  if(!game.firstSeer){
+
+    finishFirstDaySeer();
+
+    return;
+
+  }
+
+  const targets =
+
+    living().filter(
+
+      p => p.id !== actor.id
+
+    );
+
+  speak(
+
+    "予言者の方、初日の予言を行ってください。"
+
+  );
+
+  choose(
+
+    "🔮 初日の予言・占う人を選んでください",
+
+    targets,
+
+    "firstDaySeerPick",
+
+    false
+
+  );
+
+}
+
+function firstDaySeerPick(id){
+
+  const target = getPlayer(id);
+
+  if(!target){
+
+    finishFirstDaySeer();
+
+    return;
+
+  }
+
+  const result = seerResult(target);
+
+  /*
+
+    妖狐を初日に占った場合も死亡。
+
+  */
+
+  if(target.role === "妖狐"){
+
+    target.alive = false;
+
+  }
+
+  /*
+
+    初日の占い結果も音声では読まない。
+
+  */
+
+  render(`
+
+    <div class="card private">
+
+      <h2>🔮 初日の占い結果</h2>
+
+      <div class="big">
+
+        ${escapeHTML(target.name)}さんは<br>
+
+        「${escapeHTML(result)}」です。
+
+      </div>
+
+      <p class="small">
+
+        予言者本人だけが確認してください。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="green"
+
+      onclick="finishFirstDaySeer()"
+
+    >
+
+      確認しました
+
+    </button>
+
+  `);
+
+}
+
+function finishFirstDaySeer(){
+
+  game.firstSeerDone = true;
+
+  startFirstDay();
+
+}
+
+/* =====================================================
+
+   霊媒師
+
+===================================================== */
+
+function mediumAction(actor){
+
+  if(actor.blocked){
+
+    render(`
+
+      <div class="card">
+
+        <div class="wake">
+
+          👻 霊媒師の能力は妨害されています。
+
+        </div>
+
+      </div>
+
+      <button
+
+        class="blue"
+
+        onclick="nightStep()"
+
+      >
+
+        次へ
+
+      </button>
+
+    `);
+
+    return;
+
+  }
+
+  if(game.lastExiled === null){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const target =
+
+    getPlayer(game.lastExiled);
+
+  if(!target){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const result =
+
+    mediumResult(target);
+
+  render(`
+
+    <div class="card private">
+
+      <h2>👻 霊媒結果</h2>
+
+      <div class="big">
+
+        昨日追放された<br>
+
+        ${escapeHTML(target.name)}さんは<br>
+
+        「${escapeHTML(result)}」です。
+
+      </div>
+
+      <p class="small">
+
+        霊媒師だけが確認できます。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="green"
+
+      onclick="nightStep()"
+
+    >
+
+      確認しました
+
+    </button>
+
+  `);
+
+}
+
+/* =====================================================
+
+   裏切り者確認
+
+===================================================== */
+
+function betrayerCheckStep(){
+
+  const targets =
+
+    game.players.filter(
+
+      p =>
+
+        p.role === "内通者" ||
+
+        p.role === "裏切りの襲撃者"
+
+    );
+
+  if(!targets.length){
+
+    nightStep();
+
+    return;
+
+  }
+
+  const livingTargets =
+
+    targets.filter(p => p.alive);
+
+  if(!livingTargets.length){
+
+    nightStep();
+
+    return;
+
+  }
+
+  speak(
+
+    "内通者、または裏切りの襲撃者の方、確認してください。"
+
+  );
+
+  render(`
+
+    <div class="card">
+
+      <div class="wake">
+
+        📨 更生状態の確認
+
+      </div>
+
+      ${livingTargets.map(
+
+        p => `
+
+          <p>
+
+            ${escapeHTML(p.name)}さん
+
+          </p>
+
+        `
+
+      ).join("")}
+
+      <p class="small">
+
+        カウンセラーによる更生があった場合は、
+
+        次の夜から市民として扱います。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="blue"
+
+      onclick="nightStep()"
+
+    >
+
+      確認しました
+
+    </button>
+
+  `);
+
+}
+
+/* =====================================================
+
+   夜の死亡処理
 
 ===================================================== */
 
 function killPlayer(player){
 
-  if(
-
-    !player ||
-
-    !player.alive
-
-  ){
+  if(!player || !player.alive){
 
     return false;
 
@@ -4004,29 +6720,23 @@ function killPlayer(player){
 
   /*
 
-    タフガイは最初の襲撃では
-
-    その夜に死亡しない。
+    タフガイは最初の襲撃では死亡しない。
 
   */
 
   if(
 
-    player.role==="タフガイ" &&
+    player.role === "タフガイ" &&
 
     !player.toughHit
 
   ){
 
-    player.toughHit=true;
+    player.toughHit = true;
 
     if(
 
-      !game.toughPending.includes(
-
-        player.id
-
-      )
+      !game.toughPending.includes(player.id)
 
     ){
 
@@ -4042,7 +6752,7 @@ function killPlayer(player){
 
   }
 
-  player.alive=false;
+  player.alive = false;
 
   return true;
 
@@ -4050,561 +6760,139 @@ function killPlayer(player){
 
 /* =====================================================
 
-   タフガイ翌日死亡処理
+   恋人の連動死亡
 
 ===================================================== */
 
-function processToughPending(){
+function killLoverPartner(player){
 
-  if(
-
-    !game.toughPending ||
-
-    !game.toughPending.length
-
-  ){
+  if(!player){
 
     return;
 
   }
 
-  game.toughPending.forEach(
+  const pair =
 
-    id=>{
+    game.loverPairs.find(
 
-      const p=
+      p => p.includes(player.id)
 
-        getPlayer(id);
+    );
 
-      if(
+  if(!pair){
 
-        p &&
+    return;
 
-        p.alive &&
+  }
 
-        p.toughHit
+  pair.forEach(id => {
 
-      ){
+    if(id === player.id){
 
-        p.alive=false;
-
-      }
+      return;
 
     }
 
-  );
+    const mate = getPlayer(id);
 
-  game.toughPending=[];
+    if(mate && mate.alive){
+
+      mate.alive = false;
+
+    }
+
+  });
 
 }
 
 /* =====================================================
 
-   夜の襲撃処理
+   朝の処理
 
-===================================================== */
-
-function resolveNightDeaths(){
-
-  /*
-
-    人狼の襲撃先。
-
-    奇術師が使用されていれば
-
-    襲撃先を変更する。
-
-  */
-
-  let wolfTarget=
-
-    game.wolfTarget;
-
-  if(
-
-    game.magicUsed &&
-
-    game.magicTarget!==null
-
-  ){
-
-    wolfTarget=
-
-      game.magicTarget;
-
-  }
-
-  const deaths=[];
-
-  /*
-
-    人狼の襲撃
-
-  */
-
-  if(
-
-    wolfTarget!==null &&
-
-    wolfTarget!==undefined
-
-  ){
-
-    const target=
-
-      getPlayer(wolfTarget);
-
-    if(
-
-      target &&
-
-      target.alive
-
-    ){
-
-      /*
-
-        ボディーガードが守っている。
-
-      */
-
-      if(
-
-        game.guardTarget===target.id
-
-      ){
-
-        /* 守られる */
-
-      }
-
-      /*
-
-        騎士団が守っている。
-
-      */
-
-      else if(
-
-        game.knightTarget===target.id
-
-      ){
-
-        /* 守られる */
-
-      }
-
-      /*
-
-        罠師の罠。
-
-      */
-
-      else if(
-
-        game.trapActive &&
-
-        game.trapTarget===target.id
-
-      ){
-
-        /*
-
-          ボディーガードには罠が効かない。
-
-          それ以外の場合、
-
-          人狼側からランダムに1人死亡。
-
-        */
-
-        if(
-
-          target.role==="ボディーガード"
-
-        ){
-
-          if(
-
-            killPlayer(target)
-
-          ){
-
-            deaths.push(target);
-
-          }
-
-        }
-
-        else{
-
-          const wolves=
-
-            living().filter(
-
-              p=>isWolfRole(p.role)
-
-            );
-
-          if(wolves.length){
-
-            const deadWolf=
-
-              wolves[
-
-                Math.floor(
-
-                  Math.random()*
-
-                  wolves.length
-
-                )
-
-              ];
-
-            if(
-
-              killPlayer(deadWolf)
-
-            ){
-
-              deaths.push(deadWolf);
-
-            }
-
-          }
-
-        }
-
-      }
-
-      else{
-
-        if(
-
-          killPlayer(target)
-
-        ){
-
-          deaths.push(target);
-
-        }
-
-      }
-
-    }
-
-  }
-
-  /*
-
-    裏切りの襲撃者による襲撃。
-
-  */
-
-  if(
-
-    game.raiderTarget!==null &&
-
-    game.raiderTarget!==undefined
-
-  ){
-
-    const target=
-
-      getPlayer(game.raiderTarget);
-
-    if(
-
-      target &&
-
-      target.alive
-
-    ){
-
-      if(
-
-        game.guardTarget===target.id ||
-
-        game.knightTarget===target.id
-
-      ){
-
-        /* 守られる */
-
-      }
-
-      else{
-
-        if(
-
-          killPlayer(target)
-
-        ){
-
-          deaths.push(target);
-
-        }
-
-      }
-
-    }
-
-  }
-
-  /*
-
-    重複死亡を整理。
-
-  */
-
-  const uniqueDeaths=[];
-
-  deaths.forEach(
-
-    p=>{
-
-      if(
-
-        !uniqueDeaths.some(
-
-          x=>x.id===p.id
-
-        )
-
-      ){
-
-        uniqueDeaths.push(p);
-
-      }
-
-    }
-
-  );
-
-  return uniqueDeaths;
-
-}
-
-/* =====================================================
-
-   恋人の道連れ
-
-===================================================== */
-
-function resolveLoverDeaths(deaths){
-
-  const result=[
-
-    ...deaths
-
-  ];
-
-  deaths.forEach(
-
-    dead=>{
-
-      const pair=
-
-        game.loverPairs.find(
-
-          pair=>pair.includes(dead.id)
-
-        );
-
-      if(!pair){
-
-        return;
-
-      }
-
-      pair.forEach(
-
-        id=>{
-
-          if(id===dead.id){
-
-            return;
-
-          }
-
-          const lover=
-
-            getPlayer(id);
-
-          if(
-
-            lover &&
-
-            lover.alive
-
-          ){
-
-            lover.alive=false;
-
-            if(
-
-              !result.some(
-
-                p=>p.id===lover.id
-
-              )
-
-            ){
-
-              result.push(lover);
-
-            }
-
-          }
-
-        }
-
-      );
-
-    }
-
-  );
-
-  return result;
-
-}
-  /* =====================================================
-   朝
 ===================================================== */
 
 function morning(){
 
   /*
-    タフガイの翌日死亡を処理。
+
+    タフガイの翌夜死亡処理。
+
   */
 
-  processToughPending();
+  game.toughPending =
 
-  /*
-    夜の死亡者を処理。
-  */
+    game.toughPending || [];
 
-  let deaths=
-    resolveNightDeaths();
+  const pending =
 
-  /*
-    恋人の道連れ。
-  */
+    [...game.toughPending];
 
-  deaths=
-    resolveLoverDeaths(deaths);
+  game.toughPending = [];
 
-  /*
-    朝の結果表示。
+  pending.forEach(id => {
 
-    死亡理由は公開しない。
-  */
+    const p = getPlayer(id);
 
-  showMorning(deaths);
+    if(
 
-}
+      p &&
 
-/* =====================================================
-   朝の表示
-===================================================== */
+      p.alive &&
 
-function showMorning(deaths){
+      p.toughHit
 
-  const names=
-    deaths.map(
-      p=>escapeHTML(p.name)
-    );
+    ){
 
-  let text=
-    "朝になりました。みなさん目を覚ましてください。";
+      p.alive = false;
 
-  if(names.length){
+      killLoverPartner(p);
 
-    text+=
-      `残念ながら${names.join("、")}さんが亡くなってしまいました。`;
-
-  }
-  else{
-
-    text+=
-      "昨夜は誰も亡くなりませんでした。";
-
-  }
-
-  text+=
-    "お昼です。議論スタート。";
-
-  speak(text);
-
-  render(`
-
-  <div class="card">
-
-    <div class="big">
-
-      ☀️ 朝になりました
-
-    </div>
-
-    <p style="text-align:center">
-
-      みなさん目を覚ましてください。
-
-    </p>
-
-    ${
-      names.length
-      ? `
-
-        <div class="vote-result">
-
-          残念ながら<br>
-
-          ${names.join("、")}さんが
-
-          亡くなってしまいました。
-
-        </div>
-
-      `
-      : `
-
-        <div class="success">
-
-          昨夜は誰も亡くなりませんでした。
-
-        </div>
-
-      `
     }
 
-    <p class="small">
+  });
 
-      ※死亡した理由は公開しません。
+  /*
 
-    </p>
+    カウンセラー処理。
 
-  </div>
+  */
 
-  <button
-    class="blue"
-    onclick="beginDayAfterMorning()"
-  >
+  processCounselor();
 
-    ☀️ お昼の議論へ
+  /*
 
-  </button>
+    人狼の襲撃処理。
 
-  `);
+  */
 
-}
+  processWolfAttack();
 
-/* =====================================================
-   朝 → 昼
-===================================================== */
+  /*
 
-function beginDayAfterMorning(){
+    裏切りの襲撃者の処理。
+
+  */
+
+  processRaiderAttack();
+
+  /*
+
+    妖狐などの死亡も含め、
+
+    恋人の連動死亡を整理。
+
+  */
+
+  game.players.forEach(p => {
+
+    if(!p.alive){
+
+      killLoverPartner(p);
+
+    }
+
+  });
 
   if(checkVictory()){
 
@@ -4612,61 +6900,914 @@ function beginDayAfterMorning(){
 
   }
 
-  game.day++;
+  const deaths =
 
-  startDiscussion(false);
+    game.nightDeaths || [];
+
+  const names =
+
+    deaths
+
+      .map(id => getPlayer(id))
+
+      .filter(Boolean)
+
+      .map(p => p.name);
+
+  let message =
+
+    "朝になりました。みなさん目を覚ましてください。";
+
+  if(names.length){
+
+    message +=
+
+      `残念ながら${names.join("、")}さんが亡くなってしまいました。`;
+
+  }else{
+
+    message +=
+
+      "昨夜は誰も亡くなりませんでした。";
+
+  }
+
+  message +=
+
+    "お昼です。議論スタート。";
+
+  speak(message);
+
+  render(`
+
+    <div class="card">
+
+      <div class="big">
+
+        ☀️ 朝になりました
+
+      </div>
+
+      ${
+
+        names.length
+
+        ?
+
+        `
+
+        <p>
+
+          残念ながら
+
+          <strong>
+
+            ${names.map(
+
+              n => escapeHTML(n)
+
+            ).join("、")}
+
+          </strong>
+
+          さんが亡くなってしまいました。
+
+        </p>
+
+        `
+
+        :
+
+        `
+
+        <p>
+
+          昨夜は誰も亡くなりませんでした。
+
+        </p>
+
+        `
+
+      }
+
+      <p>
+
+        お昼です。議論スタート。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="blue"
+
+      onclick="startDiscussion(false)"
+
+    >
+
+      ☀️ 昼の議論を開始
+
+    </button>
+
+  `);
 
 }
 
 /* =====================================================
-   勝敗判定
+
+   カウンセラー処理
+
 ===================================================== */
+
+function processCounselor(){
+
+  const id = game.counselTarget;
+
+  if(id === null || id === undefined){
+
+    return;
+
+  }
+
+  const target = getPlayer(id);
+
+  if(!target || !target.alive){
+
+    return;
+
+  }
+
+  /*
+
+    人狼を対象にした場合、
+
+    カウンセラー自身が犠牲になる。
+
+  */
+
+  if(isWolfRole(target.role)){
+
+    const counselor =
+
+      rolePlayers("カウンセラー")
+
+        .find(p => p.alive);
+
+    if(counselor){
+
+      counselor.alive = false;
+
+      killLoverPartner(counselor);
+
+    }
+
+    return;
+
+  }
+
+  /*
+
+    裏切り者系なら市民へ更生。
+
+  */
+
+  if(isBetrayer(target.role)){
+
+    target.role = "市民";
+
+    game.convertedThisNight.push(
+
+      target.id
+
+    );
+
+  }
+
+}
+
+/* =====================================================
+
+   人狼襲撃処理
+
+===================================================== */
+
+function processWolfAttack(){
+
+  game.nightDeaths =
+
+    game.nightDeaths || [];
+
+  const targets = [];
+
+  if(game.wolfTarget !== null){
+
+    targets.push(
+
+      game.wolfTarget
+
+    );
+
+  }
+
+  if(game.wolfTarget2 !== null &&
+
+     game.wolfTarget2 !== undefined){
+
+    targets.push(
+
+      game.wolfTarget2
+
+    );
+
+  }
+
+  targets.forEach(
+
+    targetId => {
+
+      let target =
+
+        getPlayer(targetId);
+
+      if(!target || !target.alive){
+
+        return;
+
+      }
+
+      /*
+
+        奇術師が襲撃先を変更した場合、
+
+        変更先は守り・罠などを無視して死亡。
+
+      */
+
+      if(
+
+        game.magicTarget !== null &&
+
+        game.magicTarget !== undefined
+
+      ){
+
+        target =
+
+          getPlayer(
+
+            game.magicTarget
+
+          );
+
+        if(
+
+          target &&
+
+          target.alive
+
+        ){
+
+          target.alive = false;
+
+          game.nightDeaths.push(
+
+            target.id
+
+          );
+
+          killLoverPartner(target);
+
+        }
+
+        return;
+
+      }
+
+      /*
+
+        ボディーガードが守っている場合。
+
+      */
+
+      if(
+
+        game.guardTarget === target.id
+
+      ){
+
+        /*
+
+          罠対象がボディーガードだった場合は
+
+          ボディーガードには罠が効かず、
+
+          襲撃した人狼が死亡する。
+
+        */
+
+        if(
+
+          game.trapTarget === target.id
+
+        ){
+
+          killAttackingWolf();
+
+        }
+
+        return;
+
+      }
+
+      /*
+
+        騎士団の護衛。
+
+      */
+
+      if(
+
+        game.knightTarget === target.id
+
+      ){
+
+        return;
+
+      }
+
+      /*
+
+        罠。
+
+      */
+
+      if(
+
+        game.trapTarget === target.id
+
+      ){
+
+        killAttackingWolf();
+
+        return;
+
+      }
+
+      /*
+
+        通常の襲撃。
+
+      */
+
+      const died =
+
+        killPlayer(target);
+
+      if(died){
+
+        game.nightDeaths.push(
+
+          target.id
+
+        );
+
+        killLoverPartner(target);
+
+      }
+
+    }
+
+  );
+
+}
+
+/* =====================================================
+
+   襲撃した人狼を死亡させる
+
+===================================================== */
+
+function killAttackingWolf(){
+
+  const wolves =
+
+    living().filter(
+
+      p => isNormalWolf(p.role)
+
+    );
+
+  if(!wolves.length){
+
+    return;
+
+  }
+
+  const victim =
+
+    wolves[
+
+      Math.floor(
+
+        Math.random() * wolves.length
+
+      )
+
+    ];
+
+  victim.alive = false;
+
+  game.nightDeaths =
+
+    game.nightDeaths || [];
+
+  game.nightDeaths.push(
+
+    victim.id
+
+  );
+
+  killLoverPartner(victim);
+
+}
+
+/* =====================================================
+
+   裏切りの襲撃者の処理
+
+===================================================== */
+
+function processRaiderAttack(){
+
+  if(
+
+    game.raiderTarget === null ||
+
+    game.raiderTarget === undefined
+
+  ){
+
+    return;
+
+  }
+
+  let target =
+
+    getPlayer(game.raiderTarget);
+
+  if(!target || !target.alive){
+
+    return;
+
+  }
+
+  /*
+
+    罠師の罠にかかっていた場合、
+
+    裏切りの襲撃者自身が死亡。
+
+  */
+
+  if(
+
+    game.trapTarget === target.id
+
+  ){
+
+    const raider =
+
+      rolePlayers("裏切りの襲撃者")
+
+        .find(p => p.alive);
+
+    if(raider){
+
+      raider.alive = false;
+
+      game.nightDeaths =
+
+        game.nightDeaths || [];
+
+      game.nightDeaths.push(
+
+        raider.id
+
+      );
+
+      killLoverPartner(raider);
+
+    }
+
+    return;
+
+  }
+
+  /*
+
+    通常の襲撃。
+
+    裏切りの襲撃者は人狼を襲撃することもできる。
+
+  */
+
+  if(
+
+    game.guardTarget === target.id ||
+
+    game.knightTarget === target.id
+
+  ){
+
+    return;
+
+  }
+
+  const died =
+
+    killPlayer(target);
+
+  if(died){
+
+    game.nightDeaths =
+
+      game.nightDeaths || [];
+
+    game.nightDeaths.push(
+
+      target.id
+
+    );
+
+    killLoverPartner(target);
+
+  }
+
+}
+  /* =====================================================
+
+   勝利判定
+
+===================================================== */
+
+const WIN_PRIORITY = [
+
+  "案山子",
+
+  "アンドロイド",
+
+  "神様",
+
+  "妖狐",
+
+  "恋人",
+
+  "人狼・市民"
+
+];
 
 function checkVictory(){
 
-  const alive=
-    living();
+  const alive = living();
 
-  const wolves=
-    alive.filter(
-      p=>isWolfRole(p.role)
-    );
-
-  const humans=
-    alive.filter(
-      p=>!isWolfRole(p.role)
-    );
-
-  /*
-    人狼が0人
-  */
-
-  if(wolves.length===0){
+  if(!alive.length){
 
     return showVictory(
 
-      "市民陣営の勝利！",
+      "案山子",
 
-      "人狼が全員いなくなりました。"
+      "全員が死亡しました。案山子の勝利です。"
 
     );
 
   }
 
   /*
-    人狼の人数が
-    人狼以外と同数以上になった場合。
+
+    案山子
+
+    「全員死亡」が勝利条件。
+
   */
 
   if(
-    wolves.length>=humans.length
+
+    hasLivingRole("案山子") &&
+
+    alive.length === 1
+
   ){
 
     return showVictory(
 
-      "人狼陣営の勝利！",
+      "案山子",
 
-      "人狼が生存者を上回りました。"
+      "最後まで生き残った案山子の勝利です。"
+
+    );
+
+  }
+
+  /*
+
+    神様
+
+    生存していれば最優先。
+
+  */
+
+  if(hasLivingRole("神様")){
+
+    return showVictory(
+
+      "神様",
+
+      "神様が生き残っています。神様の勝利です。"
+
+    );
+
+  }
+
+  /*
+
+    アンドロイド
+
+    コピーした対象の陣営に従う。
+
+  */
+
+  const androids =
+
+    alive.filter(
+
+      p => p.role === "アンドロイド"
+
+    );
+
+  if(androids.length){
+
+    const wolfAndroid =
+
+      androids.some(
+
+        p =>
+
+          androidCurrentAlignment(p) === "wolf"
+
+      );
+
+    /*
+
+      人狼化したアンドロイドが
+
+      人狼側勝利条件を満たしている場合は
+
+      後段で判定する。
+
+    */
+
+    if(!wolfAndroid){
+
+      const fox =
+
+        alive.some(
+
+          p => p.role === "妖狐"
+
+        );
+
+      if(!fox){
+
+        const wolves =
+
+          alive.filter(
+
+            p => isWolfRole(p.role)
+
+          );
+
+        const citizens =
+
+          alive.filter(
+
+            p => !isWolfRole(p.role)
+
+          );
+
+        if(
+
+          wolves.length === 0 &&
+
+          citizens.length > 0
+
+        ){
+
+          return showVictory(
+
+            "アンドロイド",
+
+            "アンドロイド陣営の勝利です。"
+
+          );
+
+        }
+
+      }
+
+    }
+
+  }
+
+  /*
+
+    妖狐
+
+    生存していて、人狼側・市民側の
+
+    通常勝利条件が成立した時に勝利。
+
+  */
+
+  const fox =
+
+    alive.find(
+
+      p => p.role === "妖狐"
+
+    );
+
+  if(fox){
+
+    const wolves =
+
+      alive.filter(
+
+        p => isWolfRole(p.role)
+
+      );
+
+    const citizens =
+
+      alive.filter(
+
+        p =>
+
+          !isWolfRole(p.role) &&
+
+          p.role !== "妖狐"
+
+      );
+
+    if(
+
+      wolves.length === 0 ||
+
+      wolves.length >= citizens.length
+
+    ){
+
+      return showVictory(
+
+        "妖狐",
+
+        "妖狐が生き残りました。妖狐の勝利です。"
+
+      );
+
+    }
+
+  }
+
+  /*
+
+    恋人
+
+    恋人が2人とも生存し、
+
+    恋人勝利条件になった場合。
+
+  */
+
+  if(game.loverPairs.length){
+
+    const aliveLoverPair =
+
+      game.loverPairs.find(
+
+        pair =>
+
+          pair.every(
+
+            id => {
+
+              const p = getPlayer(id);
+
+              return p && p.alive;
+
+            }
+
+          )
+
+      );
+
+    if(aliveLoverPair){
+
+      const wolves =
+
+        alive.filter(
+
+          p => isWolfRole(p.role)
+
+        );
+
+      const nonWolves =
+
+        alive.filter(
+
+          p => !isWolfRole(p.role)
+
+        );
+
+      if(
+
+        wolves.length === 0 ||
+
+        wolves.length >= nonWolves.length
+
+      ){
+
+        return showVictory(
+
+          "恋人",
+
+          "恋人が生き残りました。恋人の勝利です。"
+
+        );
+
+      }
+
+    }
+
+  }
+
+  /*
+
+    通常の人狼・市民陣営の勝利。
+
+  */
+
+  const wolves =
+
+    alive.filter(
+
+      p => isWolfRole(p.role)
+
+    );
+
+  const nonWolves =
+
+    alive.filter(
+
+      p =>
+
+        !isWolfRole(p.role) &&
+
+        p.role !== "妖狐"
+
+    );
+
+  /*
+
+    人狼が0人
+
+  */
+
+  if(wolves.length === 0){
+
+    return showVictory(
+
+      "市民陣営",
+
+      "人狼がいなくなりました。市民陣営の勝利です。"
+
+    );
+
+  }
+
+  /*
+
+    人狼数が市民陣営以上になった場合
+
+  */
+
+  if(wolves.length >= nonWolves.length){
+
+    return showVictory(
+
+      "人狼",
+
+      "人狼が市民陣営を上回りました。人狼の勝利です。"
 
     );
 
@@ -4677,51 +7818,98 @@ function checkVictory(){
 }
 
 /* =====================================================
+
    勝利画面
+
 ===================================================== */
 
-function showVictory(title,message){
+function showVictory(team,message){
 
-  clearInterval(
-    game.discussionTimer
-  );
+  clearInterval(game.discussionTimer);
 
-  if(game.timer){
+  clearInterval(game.timer);
 
-    clearInterval(game.timer);
+  game.gameOver = true;
 
-  }
-
-  speak(
-    `${title}${message}`
-  );
+  speak(message);
 
   render(`
 
-  <div class="card">
+    <div class="card">
 
-    <div class="big">
+      <div class="big">
 
-      🏆 ${title}
+        🏆 ゲーム終了
+
+      </div>
+
+      <h2>
+
+        ${escapeHTML(team)}の勝利！
+
+      </h2>
+
+      <p>
+
+        ${escapeHTML(message)}
+
+      </p>
 
     </div>
 
-    <p style="text-align:center">
+    <div class="card">
 
-      ${message}
+      <h2>📋 最終結果</h2>
 
-    </p>
+      ${game.players.map(
 
-  </div>
+        p => `
 
-  <button
-    class="green"
-    onclick="showFinalRoles()"
-  >
+        <div class="role-row">
 
-    📋 最終役職を見る
+          <span>
 
-  </button>
+            ${escapeHTML(p.name)}
+
+          </span>
+
+          <span>
+
+            ${
+
+              p.alive
+
+              ? "🟢 生存"
+
+              : "⚫ 死亡"
+
+            }
+
+            ／
+
+            ${escapeHTML(p.role)}
+
+          </span>
+
+        </div>
+
+        `
+
+      ).join("")}
+
+    </div>
+
+    <button
+
+      class="blue"
+
+      onclick="location.reload()"
+
+    >
+
+      🔄 もう一度遊ぶ
+
+    </button>
 
   `);
 
@@ -4730,72 +7918,595 @@ function showVictory(title,message){
 }
 
 /* =====================================================
-   最終役職一覧
+
+   フォーマット
+
 ===================================================== */
 
-function showFinalRoles(){
+function formatTime(seconds){
 
-  render(`
+  const min =
 
-  <div class="card">
+    Math.floor(seconds / 60);
 
-    <h2>📋 最終結果</h2>
+  const sec =
 
-    ${game.players.map(
-      p=>`
+    seconds % 60;
 
-      <div class="role-row">
+  return (
 
-        <span>
+    String(min).padStart(2,"0") +
 
-          ${escapeHTML(p.name)}
+    ":" +
 
-        </span>
+    String(sec).padStart(2,"0")
 
-        <span>
+  );
 
-          ${escapeHTML(p.role)}
+}
 
-          ${
-            p.alive
-            ? " 🟢"
-            : " ⚫"
-          }
+/* =====================================================
 
-        </span>
+   役職確認後の初日処理
+
+===================================================== */
+
+function afterRoleConfirmation(){
+
+  /*
+
+    役職確認終了後、
+
+    予言者が採用されていて、
+
+    「初日の予言をする」設定なら
+
+    ここで初日占いを行う。
+
+    夜1では行わない。
+
+  */
+
+  const seer =
+
+    rolePlayers("予言者")
+
+      .find(p => p.alive);
+
+  if(
+
+    seer &&
+
+    game.firstSeer &&
+
+    !game.firstSeerDone
+
+  ){
+
+    firstDaySeerAction();
+
+    return;
+
+  }
+
+  startFirstDay();
+
+}
+
+/* =====================================================
+
+   役職確認
+
+===================================================== */
+
+function roleConfirmation(){
+
+  /*
+
+    全員の役職確認が終わったら、
+
+    初日の予言へ進む。
+
+  */
+
+  if(
+
+    game.confirmIndex >=
+
+    game.players.length
+
+  ){
+
+    game.confirmRevealed = false;
+
+    afterRoleConfirmation();
+
+    return;
+
+  }
+
+  const p =
+
+    game.players[
+
+      game.confirmIndex
+
+    ];
+
+  const number =
+
+    game.confirmIndex + 1;
+
+  const total =
+
+    game.players.length;
+
+  /*
+
+    まだ役職を見ていない。
+
+  */
+
+  if(!game.confirmRevealed){
+
+    speak(
+
+      `${p.name}さん、役職を確認してください。`
+
+    );
+
+    render(`
+
+      <div class="card">
+
+        <div class="progress">
+
+          ${number} / ${total}
+
+        </div>
+
+        <h2>
+
+          ${escapeHTML(p.name)}さん
+
+        </h2>
+
+        <p>
+
+          あなたの役職を確認してください。
+
+        </p>
+
+        <div
+
+          class="big"
+
+          style="font-size:42px"
+
+        >
+
+          ？？？
+
+        </div>
+
+        <button
+
+          class="blue"
+
+          onclick="revealRole()"
+
+        >
+
+          👀 役職を見る
+
+        </button>
 
       </div>
 
-    `).join("")}
+    `);
 
-  </div>
+    return;
 
-  <button
-    class="blue"
-    onclick="location.reload()"
-  >
+  }
 
-    🔄 新しいゲーム
+  /*
 
-  </button>
+    役職を表示。
+
+  */
+
+  render(`
+
+    <div class="card private">
+
+      <div class="progress">
+
+        ${number} / ${total}
+
+      </div>
+
+      <h2>
+
+        ${escapeHTML(p.name)}さん
+
+      </h2>
+
+      <div class="big">
+
+        ${escapeHTML(p.role)}
+
+      </div>
+
+      ${roleInfoFor(p)}
+
+      <p class="small">
+
+        この画面は本人だけが確認してください。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="green"
+
+      onclick="finishRoleConfirmation()"
+
+    >
+
+      ✅ 確認しました
+
+    </button>
 
   `);
 
 }
 
 /* =====================================================
-   補助関数
+
+   役職表示
+
 ===================================================== */
+
+function revealRole(){
+
+  game.confirmRevealed = true;
+
+  roleConfirmation();
+
+}
 
 /* =====================================================
-   最初の画面を表示
+
+   役職確認終了
+
 ===================================================== */
 
-startScreen();
+function finishRoleConfirmation(){
 
-</script>
+  game.confirmRevealed = false;
 
-</body>
+  game.confirmIndex++;
 
-</html>
-  
+  roleConfirmation();
+
+}
+
+/* =====================================================
+
+   最初の昼
+
+===================================================== */
+
+function startFirstDay(){
+
+  game.day = 1;
+
+  game.night = 0;
+
+  game.firstDay = true;
+
+  game.discussionEnded = false;
+
+  speak(
+
+    "役職の確認が終わりました。みなさん目を覚ましてください。お昼です。議論スタート。"
+
+  );
+
+  setTimeout(
+
+    () => startDiscussion(true),
+
+    700
+
+  );
+
+}
+
+/* =====================================================
+
+   議論開始
+
+===================================================== */
+
+function startDiscussion(firstDay=false){
+
+  clearInterval(
+
+    game.discussionTimer
+
+  );
+
+  game.discussionEnded = false;
+
+  let remain =
+
+    game.discussionTime;
+
+  render(`
+
+    <div class="card">
+
+      <h2>
+
+        ☀️ ${game.day}日目・昼
+
+      </h2>
+
+      <div
+
+        class="timer"
+
+        id="discussionTimer"
+
+      >
+
+        ${formatTime(remain)}
+
+      </div>
+
+      <div class="big">
+
+        💬 議論スタート
+
+      </div>
+
+      <p>
+
+        生存者で話し合ってください。
+
+      </p>
+
+      <hr>
+
+      <p class="small">
+
+        議論を早く終わらせたい場合は、
+
+        下のボタンを押してください。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="orange"
+
+      onclick="endDiscussion()"
+
+    >
+
+      🛑 議論を終了する
+
+    </button>
+
+  `);
+
+  game.discussionTimer =
+
+    setInterval(
+
+      () => {
+
+        remain--;
+
+        const el =
+
+          document.getElementById(
+
+            "discussionTimer"
+
+          );
+
+        if(el){
+
+          el.textContent =
+
+            formatTime(
+
+              Math.max(0,remain)
+
+            );
+
+        }
+
+        if(remain <= 0){
+
+          clearInterval(
+
+            game.discussionTimer
+
+          );
+
+          game.discussionEnded = true;
+
+          speak(
+
+            "議論時間が終了しました。投票を開始します。"
+
+          );
+
+          startVote();
+
+        }
+
+      },
+
+      1000
+
+    );
+
+}
+
+/* =====================================================
+
+   議論終了
+
+===================================================== */
+
+function endDiscussion(){
+
+  if(game.discussionEnded){
+
+    return;
+
+  }
+
+  game.discussionEnded = true;
+
+  clearInterval(
+
+    game.discussionTimer
+
+  );
+
+  speak(
+
+    "議論を終了します。投票を開始します。"
+
+  );
+
+  startVote();
+
+}
+
+/* =====================================================
+
+   初期化
+
+===================================================== */
+
+function initializeGame(){
+
+  /*
+
+    gameの初期値を安全に整える。
+
+  */
+
+  game.players =
+
+    game.players || [];
+
+  game.roleCount =
+
+    game.roleCount || {};
+
+  game.android =
+
+    game.android || {};
+
+  game.loverPairs =
+
+    game.loverPairs || [];
+
+  game.lovers =
+
+    game.lovers || [];
+
+  game.blockedRoles =
+
+    game.blockedRoles || {};
+
+  game.toughPending =
+
+    game.toughPending || [];
+
+  game.convertedThisNight =
+
+    game.convertedThisNight || [];
+
+  game.nightDeaths =
+
+    game.nightDeaths || [];
+
+  game.wolfTarget2 = null;
+
+  game.firstSeerDone = false;
+
+  game.gameOver = false;
+
+}
+
+/* =====================================================
+
+   タイトル画面
+
+===================================================== */
+
+function titleScreen(){
+
+  render(`
+
+    <div class="card">
+
+      <div class="big">
+
+        🐺
+
+      </div>
+
+      <h1>
+
+        人狼コンプリートGM
+
+      </h1>
+
+      <p>
+
+        みんなで遊ぶ人狼ゲームを
+
+        GMが進行します。
+
+      </p>
+
+    </div>
+
+    <button
+
+      class="blue"
+
+      onclick="startScreen()"
+
+    >
+
+      🎮 ゲームを始める
+
+    </button>
+
+  `);
+
+}
+
+/* =====================================================
+
+   起動
+
+===================================================== */
+
+initializeGame();
+
+titleScreen();
