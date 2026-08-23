@@ -29,6 +29,10 @@ button:disabled{opacity:.4}
 .warning{background:#fff3cd;border-radius:12px;padding:14px;margin:10px 0}
 .danger{background:#ffe5e5;border-radius:12px;padding:14px;margin:10px 0}
 input,select{font-size:17px;padding:9px;border-radius:9px;border:1px solid #bbb;max-width:100%}
+.player-count-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.player-count-button{width:100%;margin:0;padding:14px 6px;font-size:17px}
+.selected-count{text-align:center;font-size:24px;font-weight:bold;margin:12px}
+.small-button{display:block;margin:8px auto;background:#666;font-size:14px}
 label{display:block;margin:10px 0}
 hr{border:0;border-top:1px solid #ddd;margin:18px 0}
 </style>
@@ -90,26 +94,39 @@ function titleScreen(){
 
 /* ===== 設定・役職選択 ===== */
 function startScreen(){
+ render(`<div class="card"><h2>👥 プレイヤー人数を選択</h2>
+ <p class="center">参加する人数を選んでください。</p>
+ <div class="player-count-grid">
+ ${Array.from({length:25},(_,i)=>{const n=i+4;return `<button class="name-button player-count-button" onclick="selectPlayerCount(${n})">${n}人</button>`}).join("")}
+ </div></div>`);
+}
+function selectPlayerCount(n){
+ game.playerCount=Number(n);
+ game.roleCount={};
+ showGameSettings();
+}
+function showGameSettings(){
+ const pc=Number(game.playerCount||4);
  render(`<div class="card"><h2>🎮 ゲーム設定</h2>
- <label>👥 プレイヤー人数　
- <select id="playerCount">${Array.from({length:25},(_,i)=>`<option value="${i+4}">${i+4}人</option>`).join("")}</select></label>
- <label>🔮 初日の予言　
+ <div class="selected-count">👥 ${pc}人でプレイ</div>
+ <button class="small-button" onclick="startScreen()">人数を変更</button>
+ <label>🔮 初日の予言
  <select id="firstSeer"><option value="yes">する</option><option value="no">しない</option></select></label>
- <label>⏱️ 議論時間　
+ <label>⏱️ 議論時間
  <select id="discussion"><option value="60">1分</option><option value="180">3分</option><option value="300" selected>5分</option><option value="600">10分</option><option value="900">15分</option><option value="0">なし</option></select></label>
- <label>❤️ 恋人　<select id="loverMode"><option value="off">恋人カードのみ</option><option value="on">他の役職と兼用</option></select></label></div>
- <div class="card"><h2>🃏 役職選択</h2><div id="roleTotal" class="total-count">0 / 4</div><div id="roleList">
- ${ROLES.map((r,i)=>`<div class="role-row"><span>${esc(r)}</span><span><button onclick="changeRole(${JSON.stringify(r)},-1)">−</button><span class="count" id="c${i}">0</span><button onclick="changeRole(${JSON.stringify(r)},1)">＋</button></span></div>`).join("")}
+ <label>❤️ 恋人
+ <select id="loverMode"><option value="off">恋人カードのみ</option><option value="on">他の役職と兼用</option></select></label></div>
+ <div class="card"><h2>🃏 役職選択</h2><div id="roleTotal" class="total-count">0 / ${pc}</div><div id="roleList">
+ ${ROLES.map((r,i)=>`<div class="role-row"><span>${esc(r)}</span><span><button type="button" onclick="changeRole(${JSON.stringify(r)},-1)">−</button><span class="count" id="c${i}">0</span><button type="button" onclick="changeRole(${JSON.stringify(r)},1)">＋</button></span></div>`).join("")}
  </div></div>
  <button class="green" onclick="goNames()">👤 プレイヤー名入力へ</button>`);
  updateTotal();
 }
 function updateTotal(){
- const pc=Number(document.getElementById("playerCount")?.value||4);
- const total=Object.values(game.roleCount).reduce((a,b)=>a+Number(b||0),0);
+ const pc=Number(game.playerCount||document.getElementById("playerCount")?.value||4);
+ const total=Object.values(game.roleCount||{}).reduce((a,b)=>a+Number(b||0),0);
  const e=document.getElementById("roleTotal"); if(e)e.textContent=`${total} / ${pc}`;
 }
-document.addEventListener("change",e=>{if(e.target?.id==="playerCount")updateTotal()});
 function changeRole(role,d){
  let v=(game.roleCount[role]||0)+d;
  if(v<0)v=0;
@@ -118,7 +135,7 @@ function changeRole(role,d){
  if(role==="裏切りの共有者")v=Math.min(v,2);
  if(role==="騎士団")v=Math.min(v,3);
  if(role==="案山子")v=Math.min(v,3);
- const pc=Number(document.getElementById("playerCount")?.value||4);
+ const pc=Number(game.playerCount||4);
  const total=Object.values(game.roleCount).reduce((a,b)=>a+Number(b||0),0);
  if(d>0&&total>=pc)return;
  game.roleCount[role]=v;
@@ -128,7 +145,7 @@ function changeRole(role,d){
 
 /* ===== 名前・カード ===== */
 function goNames(){
- const pc=Number(document.getElementById("playerCount").value);
+ const pc=Number(game.playerCount||4);
  const total=Object.values(game.roleCount).reduce((a,b)=>a+Number(b||0),0);
  if(total!==pc){alert(`役職カードの合計を${pc}枚にしてください。現在 ${total}枚です。`);return}
  game.discussionTime=Number(document.getElementById("discussion").value);
@@ -141,7 +158,7 @@ function goNames(){
  <button class="green" onclick="assignRoles()">🎴 役職を決定する</button>`);
 }
 function assignRoles(){
- const pc=Number(document.getElementById("playerCount").value),players=[];
+ const pc=Number(game.playerCount||4),players=[];
  for(let i=0;i<pc;i++){let n=(document.getElementById("n"+i).value||"").trim();if(!n){alert(`${i+1}人目の名前を入力してください`);return}players.push({id:i+1,name:n,alive:true,role:"",blocked:false,cursedWolf:false,tough:false})}
  localStorage.setItem("jinroNames",JSON.stringify(players.map(p=>p.name)));
  let deck=[];ROLES.forEach(r=>{for(let i=0;i<(game.roleCount[r]||0);i++)deck.push(r)});
