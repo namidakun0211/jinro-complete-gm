@@ -117,7 +117,7 @@ function showGameSettings(){
  <label>❤️ 恋人
  <select id="loverMode"><option value="off">恋人カードのみ</option><option value="on">他の役職と兼用</option></select></label></div>
  <div class="card"><h2>🃏 役職選択</h2><div id="roleTotal" class="total-count">0 / ${pc}</div><div id="roleList">
- ${ROLES.map((r,i)=>`<div class="role-row"><span>${esc(r)}</span><span><button type="button" onclick="changeRole(${JSON.stringify(r)},-1)">−</button><span class="count" id="c${i}">0</span><button type="button" onclick="changeRole(${JSON.stringify(r)},1)">＋</button></span></div>`).join("")}
+ ${ROLES.map((r,i)=>`<div class="role-row"><span>${esc(r)}</span><span><button type="button" onclick='changeRole(${JSON.stringify(r)},-1)'>−</button><span class="count" id="c${i}">0</span><button type="button" onclick='changeRole(${JSON.stringify(r)},1)'>＋</button></span></div>`).join("")}
  </div></div>
  <button class="green" onclick="goNames()">👤 プレイヤー名入力へ</button>`);
  updateTotal();
