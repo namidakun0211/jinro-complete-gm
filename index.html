@@ -193,33 +193,52 @@ function roleInfo(p){
  "妖狐":"夜の能力はありません。占われると死亡します。最後まで生き残ると勝利します。","神様":"全員の役職を知っています。生存していれば勝利します。",
  "恋人":"恋人の一方が死亡すると、もう一方も死亡します。","一匹狼":"独立した人狼側です。","アンドロイド":"1人の能力をコピーします。","案山子":"全員が死亡する前にゲームが終了しなければ勝利できません。"
  };return `<p>${esc(info[r]||"")}</p>`}
+function wolfAllyInfo(p){
+ const wolfIds=new Set(WOLF);
+ if(!wolfIds.has(p.role)) return "";
+ const allies=game.players.filter(x=>x.id!==p.id && WOLF.includes(x.role));
+ if(!allies.length) return `<div class="ally-box"><strong>🐺 人狼の仲間</strong><p>ほかの仲間はいません。</p></div>`;
+ return `<div class="ally-box"><strong>🐺 人狼の仲間</strong>${allies.map(x=>`<div class="role-row"><span>${esc(x.name)}</span><span>${esc(x.role)}</span></div>`).join("")}</div>`;
+}
 function roleConfirmation(){
- if(game.confirmIndex>=game.players.length){game.confirmRevealed=false;afterRoleConfirmation();return}
+ if(game.confirmIndex>=game.players.length){game.confirmRevealed=false;startFirstDay();return}
  const p=game.players[game.confirmIndex],num=game.confirmIndex+1,total=game.players.length;
  if(!game.confirmRevealed){
   render(`<div class="card"><div class="progress">${num} / ${total}</div><h2>${esc(p.name)}さん</h2><div class="big">？？？</div><p class="center">あなたの役職を確認してください。</p></div><button class="blue" onclick="revealRole()">👀 役職を見る</button>`);
- }else{
-  render(`<div class="card private"><div class="progress">${num} / ${total}</div><h2>${esc(p.name)}さん</h2><div class="big">${esc(p.role)}</div>${roleInfo(p)}<p class="small center">この画面は本人だけが確認してください。</p></div><button class="green" onclick="finishRole()">✅ 確認しました</button>`);
+  return;
  }
+ const isSeer=p.role==="予言者";
+ const seerChoice=(isSeer && game.firstSeer && !game.firstSeerDone)
+  ? `<div class="card"><h3>🔮 初日の占い</h3><p class="center">初日の占いをするか選んでください。</p><button class="blue" onclick="beginFirstSeerChoice()">🔮 初日の占いをする</button><button class="gray" onclick="skipFirstSeer()">今回は占わない</button></div>`
+  : `<button class="green" onclick="finishRole()">✅ 確認しました</button>`;
+ render(`<div class="card private"><div class="progress">${num} / ${total}</div><h2>${esc(p.name)}さん</h2><div class="big">${esc(p.role)}</div>${roleInfo(p)}${wolfAllyInfo(p)}<p class="small center">この画面は本人だけが確認してください。</p></div>${seerChoice}`);
 }
 function revealRole(){game.confirmRevealed=true;roleConfirmation()}
-function finishRole(){game.confirmRevealed=false;game.confirmIndex++;roleConfirmation()}
-function afterRoleConfirmation(){
- const s=rolePlayers("予言者").find(p=>p.alive);
- if(s&&game.firstSeer&&!game.firstSeerDone){firstDaySeerAction(s);return}
- startFirstDay();
+function finishRole(){
+ const p=game.players[game.confirmIndex];
+ if(p && p.role==="予言者" && game.firstSeer && !game.firstSeerDone){return}
+ game.confirmRevealed=false;game.confirmIndex++;roleConfirmation()
+}
+function beginFirstSeerChoice(){
+ const seer=game.players[game.confirmIndex];
+ if(!seer || seer.role!=="予言者"){finishRole();return}
+ firstDaySeerAction(seer);
+}
+function skipFirstSeer(){
+ game.firstSeerDone=true;
+ finishRole();
 }
 function firstDaySeerAction(seer){
- if(blocked("予言者",seer.id)){game.firstSeerDone=true;startFirstDay();return}
+ if(blocked("予言者",seer.id)){game.firstSeerDone=true;finishRole();return}
  const targets=living().filter(p=>p.id!==seer.id);
- render(`<div class="card private"><h2>🔮 初日の予言</h2><p class="center">${esc(seer.name)}さん、占う人を1人選んでください。</p>${targets.map(p=>`<button class="name-button" onclick="firstSeerPick(${p.id})">${esc(p.name)}</button>`).join("")}</div>`);
+ render(`<div class="card private"><div class="progress">${game.confirmIndex+1} / ${game.players.length}</div><h2>🔮 初日の予言</h2><p class="center">${esc(seer.name)}さん、占う人を1人選んでください。</p>${targets.map(p=>`<button class="name-button" onclick="firstSeerPick(${p.id})">${esc(p.name)}</button>`).join("")}</div>`);
  window.firstSeerPick=id=>{
-  const t=get(id);if(!t)return;
-  if(t.role==="妖狐"){t.alive=false;render(`<div class="card private"><div class="big">🔮 結果</div><p class="center">${esc(t.name)}さんは「人間」です。</p><div class="danger">妖狐を占ったため、死亡しました。</div></div><button class="blue" onclick="finishFirstSeer()">次へ</button>`)}
+  const t=get(id);if(!t || !t.alive)return;
+  if(t.role==="妖狐"){t.alive=false;loverDeath(t.id);render(`<div class="card private"><div class="big">🔮 結果</div><p class="center">${esc(t.name)}さんは「人間」です。</p><div class="danger">妖狐を占ったため死亡しました。</div></div><button class="blue" onclick="finishFirstSeer()">次へ</button>`)}
   else{render(`<div class="card private"><div class="big">🔮 結果</div><p class="center">${esc(t.name)}さんは「${esc(seerResult(t))}」です。</p></div><button class="blue" onclick="finishFirstSeer()">次へ</button>`)}
  }
 }
-function finishFirstSeer(){game.firstSeerDone=true;if(checkVictory())return;startFirstDay()}
+function finishFirstSeer(){game.firstSeerDone=true;game.confirmRevealed=true;finishRole()}
 
 /* ===== 昼・投票 ===== */
 function startFirstDay(){game.day=1;game.night=0;game.firstDay=true;speak("役職の確認が終わりました。みなさん目を覚ましてください。お昼です。議論スタート。");setTimeout(()=>startDiscussion(),500)}
