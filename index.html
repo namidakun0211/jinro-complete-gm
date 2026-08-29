@@ -2725,6 +2725,159 @@ function mediumNext(){
 }
 
 function resolveNight(){
+  function morningScreen(){
+
+  let html="";
+
+  const deaths=[
+
+    ...new Set(
+
+      state.nightDeaths
+
+        .filter(i=>!isAlive(i))
+
+    )
+
+  ];
+
+  if(deaths.length===0){
+
+    html+=`
+
+      <div class="notice">
+
+        昨夜の犠牲者はいませんでした。
+
+      </div>
+
+    `;
+
+    speak(
+
+      "朝になりました。みなさん目を覚ましてください。"+
+
+      "昨夜の犠牲者はいませんでした。"+
+
+      "お昼です。議論スタートです。"
+
+    );
+
+  }else{
+
+    html+=`
+
+      <div class="notice">
+
+        朝になりました。みなさん目を覚ましてください。
+
+      </div>
+
+    `;
+
+    deaths.forEach(index=>{
+
+      html+=`
+
+        <div class="big">
+
+          ${esc(state.names[index])}さんが亡くなりました。
+
+        </div>
+
+      `;
+
+    });
+
+    html+=`
+
+      <div class="notice">
+
+        お昼です。議論スタートです。
+
+      </div>
+
+    `;
+
+    speak(
+
+      "朝になりました。みなさん目を覚ましてください。"+
+
+      deaths.map(index=>
+
+        `${state.names[index]}さんが亡くなりました。`
+
+      ).join("")+
+
+      "お昼です。議論スタートです。"
+
+    );
+
+  }
+
+  html+=`
+
+    <button onclick="startNextDay()">
+
+      🌞 昼の議論へ
+
+    </button>
+
+  `;
+
+  card(
+
+    `🌅 ${state.day+1}日目の朝`,
+
+    html
+
+  );
+
+}
+
+function startNextDay(){
+
+  state.day++;
+
+  state.lastExecuted=null;
+
+  state.screen="day";
+
+  state.seconds=
+
+    state.discussionMinutes*60;
+
+  clearInterval(state.timer);
+
+  render();
+
+  speak(
+
+    "お昼です。みなさんで話し合ってください。"
+
+  );
+
+  if(state.discussionMinutes>0){
+
+    state.timer=setInterval(()=>{
+
+      state.seconds--;
+
+      updateTimer();
+
+      if(state.seconds<=0){
+
+        clearInterval(state.timer);
+
+        openVote();
+
+      }
+
+    },1000);
+
+  }
+
+}
 
   state.nightDeaths=[];
 
