@@ -30,7 +30,13 @@ body{
 
 }
 
-#app{max-width:700px;margin:auto}
+#app{
+
+  max-width:700px;
+
+  margin:auto;
+
+}
 
 .card{
 
@@ -42,13 +48,23 @@ body{
 
   margin:12px 0;
 
-  box-shadow:0 3px 12px rgba(0,0,0,.08)
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
 
 }
 
-h1{font-size:27px;margin:5px 0 20px}
+h1{
 
-h2{margin:5px 0 18px}
+  font-size:27px;
+
+  margin:5px 0 20px;
+
+}
+
+h2{
+
+  margin:5px 0 18px;
+
+}
 
 button{
 
@@ -68,17 +84,31 @@ button{
 
   font-size:16px;
 
-  font-weight:bold
+  font-weight:bold;
 
 }
 
-button.gray{background:#777}
+button.gray{
 
-button.red{background:#a00}
+  background:#777;
 
-button:disabled{opacity:.4}
+}
 
-input,select{
+button.red{
+
+  background:#a00000;
+
+}
+
+button:disabled{
+
+  opacity:.4;
+
+}
+
+input,
+
+select{
 
   width:100%;
 
@@ -90,7 +120,7 @@ input,select{
 
   background:#fff;
 
-  font-size:16px
+  font-size:16px;
 
 }
 
@@ -102,7 +132,7 @@ label{
 
   margin:12px 0 6px;
 
-  font-weight:bold
+  font-weight:bold;
 
 }
 
@@ -116,7 +146,7 @@ label{
 
   border-radius:12px;
 
-  line-height:1.7
+  line-height:1.7;
 
 }
 
@@ -126,7 +156,7 @@ label{
 
   font-weight:bold;
 
-  margin:16px 0
+  margin:16px 0;
 
 }
 
@@ -134,7 +164,7 @@ label{
 
   font-size:13px;
 
-  color:#666
+  color:#666;
 
 }
 
@@ -144,7 +174,7 @@ label{
 
   grid-template-columns:1fr 1fr;
 
-  gap:8px
+  gap:8px;
 
 }
 
@@ -158,7 +188,7 @@ label{
 
   text-align:center;
 
-  background:#fff
+  background:#fff;
 
 }
 
@@ -166,7 +196,7 @@ label{
 
   font-weight:bold;
 
-  margin-bottom:8px
+  margin-bottom:8px;
 
 }
 
@@ -178,7 +208,9 @@ label{
 
   justify-content:center;
 
-  gap:10px
+  gap:10px;
+
+  margin-top:8px;
 
 }
 
@@ -194,7 +226,7 @@ label{
 
   font-size:25px;
 
-  border-radius:12px
+  border-radius:12px;
 
 }
 
@@ -204,7 +236,7 @@ label{
 
   font-size:22px;
 
-  font-weight:bold
+  font-weight:bold;
 
 }
 
@@ -214,7 +246,7 @@ label{
 
   font-weight:bold;
 
-  margin:18px 0
+  margin:18px 0;
 
 }
 
@@ -224,7 +256,7 @@ label{
 
   grid-template-columns:1fr 1fr;
 
-  gap:8px
+  gap:8px;
 
 }
 
@@ -234,7 +266,7 @@ label{
 
   font-weight:bold;
 
-  margin:8px 0 20px
+  margin:8px 0 20px;
 
 }
 
@@ -244,7 +276,7 @@ label{
 
   font-weight:bold;
 
-  margin:18px 0
+  margin:18px 0;
 
 }
 
@@ -252,15 +284,17 @@ label{
 
   text-decoration:line-through;
 
-  opacity:.3
+  opacity:.3;
 
 }
 
 @media(max-width:520px){
 
-  .roleGrid,.targetGrid{
+  .roleGrid,
 
-    grid-template-columns:1fr
+  .targetGrid{
+
+    grid-template-columns:1fr;
 
   }
 
@@ -320,15 +354,13 @@ const state={
 
   alive:{},
 
-  loverCompatible:false,
+  loverCompatible:null,
 
   loverPlayers:[],
 
   loverPairs:[],
 
   confirmIndex:0,
-
-  firstSeerChoice:null,
 
   firstSeerTarget:null,
 
@@ -450,7 +482,11 @@ function isAlive(i){
 
 function alivePlayers(){
 
-  return state.names.map((_,i)=>i).filter(isAlive);
+  return state.names
+
+    .map((_,i)=>i)
+
+    .filter(isAlive);
 
 }
 
@@ -482,6 +518,20 @@ function loverPairOf(i){
 
 }
 
+function getRoleTotal(){
+
+  let total=0;
+
+  Object.keys(ROLES).forEach(id=>{
+
+    total+=Number(state.roleCounts[id])||0;
+
+  });
+
+  return total;
+
+}
+
 function render(){
 
   app.innerHTML="";
@@ -492,9 +542,9 @@ function render(){
 
   if(state.screen==="names")namesScreen();
 
-  if(state.screen==="roles")rolesScreen();
+  if(state.screen==="loverMode")loverModeScreen();
 
-  if(state.screen==="lover")loverScreen();
+  if(state.screen==="roles")rolesScreen();
 
   if(state.screen==="confirm")confirmScreen();
 
@@ -670,7 +720,9 @@ function saveNames(){
 
     const value=
 
-      document.getElementById("name"+i)
+      document
+
+        .getElementById("name"+i)
 
         .value
 
@@ -706,23 +758,53 @@ function saveNames(){
 
   );
 
-  state.screen="roles";
+  state.screen="loverMode";
 
   render();
 
 }
 
-function getRoleTotal(){
+function loverModeScreen(){
 
-  let total=0;
+  card("❤️ 恋人設定",`
 
-  Object.keys(ROLES).forEach(id=>{
+    <div class="notice">
 
-    total+=Number(state.roleCounts[id])||0;
+      恋人を他の役職と兼用するか、
 
-  });
+      先に設定してください。
 
-  return total;
+      <br>
+
+      恋人を選ばない場合でも
+
+      ゲームを進められます。
+
+    </div>
+
+    <button onclick="setLoverMode(true)">
+
+      ❤️ 兼用する
+
+    </button>
+
+    <button class="gray" onclick="setLoverMode(false)">
+
+      ❤️ 兼用しない
+
+    </button>
+
+  `);
+
+}
+
+function setLoverMode(value){
+
+  state.loverCompatible=value;
+
+  state.screen="roles";
+
+  render();
 
 }
 
@@ -741,6 +823,14 @@ function rolesScreen(){
     <div class="notice">
 
       役職の枚数を選択してください。
+
+      <br>
+
+      ❤️ 恋人を選ぶ場合は2枚1組です。
+
+      <br>
+
+      🤝 共有者を選ぶ場合は2枚1セットです。
 
     </div>
 
@@ -834,15 +924,45 @@ function changeRoleCount(id,change){
 
     Number(state.roleCounts[id])||0;
 
-  const total=getRoleTotal();
-
   const next=current+change;
 
   if(next<0)return;
 
   if(next>ROLES[id].max)return;
 
-  if(change>0 && total>=state.playerCount)return;
+  const total=getRoleTotal();
+
+  if(change>0&&total>=state.playerCount)return;
+
+  if(
+
+    id==="lover" &&
+
+    next%2!==0
+
+  ){
+
+    alert("恋人は2枚1組なので、2枚ずつ選択してください。");
+
+    return;
+
+  }
+
+  if(
+
+    id==="shared" &&
+
+    next!==0 &&
+
+    next!==2
+
+  ){
+
+    alert("共有者は2枚1セットです。");
+
+    return;
+
+  }
 
   state.roleCounts[id]=next;
 
@@ -866,15 +986,19 @@ function saveRoles(){
 
   }
 
-  if(
+  const lovers=
 
-    state.roleCounts.lover%2!==0
+    Number(state.roleCounts.lover)||0;
 
-  ){
+  const shared=
+
+    Number(state.roleCounts.shared)||0;
+
+  if(lovers%2!==0){
 
     alert(
 
-      "恋人は2枚1組なので偶数枚にしてください。"
+      "恋人を選ぶ場合は2枚1組です。"
 
     );
 
@@ -882,79 +1006,13 @@ function saveRoles(){
 
   }
 
-  if(
-
-    state.roleCounts.shared!==0 &&
-
-    state.roleCounts.shared!==2
-
-  ){
+  if(shared!==0&&shared!==2){
 
     alert(
 
-      "共有者は2枚1セットです。"
+      "共有者を選ぶ場合は2枚1セットです。"
 
     );
-
-    return;
-
-  }
-
-  if(state.roleCounts.lover>0){
-
-    state.screen="lover";
-
-    render();
-
-    return;
-
-  }
-
-  assignRoles();
-
-}
-
-function loverScreen(){
-
-  card("❤️ 恋人設定",`
-
-    <div class="notice">
-
-      恋人を他の役職と兼用するか選んでください。
-
-    </div>
-
-    <button onclick="setLoverMode(true)">
-
-      ❤️ 兼用する
-
-    </button>
-
-    <button class="gray" onclick="setLoverMode(false)">
-
-      ❤️ 兼用しない
-
-    </button>
-
-  `);
-
-}
-
-function setLoverMode(value){
-
-  state.loverCompatible=value;
-
-  if(
-
-    value &&
-
-    getRoleTotal()!==state.playerCount
-
-  ){
-
-    state.screen="roles";
-
-    render();
 
     return;
 
@@ -968,9 +1026,9 @@ function assignRoles(){
 
   let rolePool=[];
 
-  Object.entries(state.roleCounts).forEach(
+  Object.entries(state.roleCounts)
 
-    ([role,count])=>{
+    .forEach(([role,count])=>{
 
       for(let i=0;i<count;i++){
 
@@ -978,41 +1036,9 @@ function assignRoles(){
 
       }
 
-    }
-
-  );
-
-  if(state.loverCompatible){
-
-    rolePool=
-
-      rolePool.filter(role=>role!=="lover");
-
-  }
+    });
 
   rolePool=shuffle(rolePool);
-
-  if(
-
-    state.loverCompatible &&
-
-    rolePool.length!==state.playerCount
-
-  ){
-
-    alert(
-
-      "恋人を兼用する場合、恋人以外の役職枚数を人数と同じにしてください。"
-
-    );
-
-    state.screen="roles";
-
-    render();
-
-    return;
-
-  }
 
   state.roles={};
 
@@ -1022,15 +1048,21 @@ function assignRoles(){
 
   });
 
-  if(!state.loverCompatible){
+  state.alive={};
+
+  for(let i=0;i<state.playerCount;i++){
+
+    state.alive[i]=true;
+
+  }
+
+  if(state.loverCompatible){
+
+    const loverCount=
+
+      Number(state.roleCounts.lover)||0;
 
     state.loverPlayers=
-
-      playersWithRole("lover");
-
-  }else{
-
-    const lovers=
 
       shuffle(
 
@@ -1042,25 +1074,19 @@ function assignRoles(){
 
         )
 
-      ).slice(0,state.roleCounts.lover);
+      ).slice(0,loverCount);
 
-    state.loverPlayers=lovers;
+  }else{
 
-  }
+    state.loverPlayers=
 
-  state.alive={};
-
-  for(let i=0;i<state.playerCount;i++){
-
-    state.alive[i]=true;
+      playersWithRole("lover");
 
   }
 
   createLoverPairs();
 
   state.confirmIndex=0;
-
-  state.firstSeerChoice=null;
 
   state.firstSeerTarget=null;
 
@@ -1086,11 +1112,7 @@ function createLoverPairs(){
 
   const lovers=
 
-    state.loverCompatible
-
-      ?state.loverPlayers
-
-      :playersWithRole("lover");
+    state.loverPlayers;
 
   const shuffled=shuffle(lovers);
 
@@ -1112,11 +1134,9 @@ function createLoverPairs(){
 
 }
 
-function roleDescription(i){
+function getDisplayRole(i){
 
-  const role=state.roles[i];
-
-  let text=roleName(role);
+  let text=roleName(state.roles[i]);
 
   if(
 
@@ -1129,6 +1149,16 @@ function roleDescription(i){
     text+=" + ❤️ 恋人";
 
   }
+
+  return text;
+
+}
+
+function roleDescription(i){
+
+  const role=state.roles[i];
+
+  let text=getDisplayRole(i);
 
   if(role==="werewolf"){
 
@@ -1252,8 +1282,6 @@ function revealCurrentRole(){
 
   const role=state.roles[i];
 
-  let extra="";
-
   if(
 
     role==="seer" &&
@@ -1262,7 +1290,31 @@ function revealCurrentRole(){
 
   ){
 
-    extra=`
+    card("👤 役職確認",`
+
+      <div class="notice">
+
+        ${esc(state.names[i])}さんの役職
+
+      </div>
+
+      <div class="big">
+
+        ${esc(getDisplayRole(i))}
+
+      </div>
+
+      <div
+
+        class="notice"
+
+        style="white-space:pre-line"
+
+      >
+
+        ${esc(roleDescription(i))}
+
+      </div>
 
       <div class="notice">
 
@@ -1288,19 +1340,9 @@ function revealCurrentRole(){
 
       </button>
 
-    `;
+    `);
 
-  }else{
-
-    extra=`
-
-      <button onclick="finishCurrentRoleConfirm()">
-
-        確認しました
-
-      </button>
-
-    `;
+    return;
 
   }
 
@@ -1314,7 +1356,7 @@ function revealCurrentRole(){
 
     <div class="big">
 
-      ${esc(roleName(role))}
+      ${esc(getDisplayRole(i))}
 
     </div>
 
@@ -1330,7 +1372,11 @@ function revealCurrentRole(){
 
     </div>
 
-    ${extra}
+    <button onclick="finishCurrentRoleConfirm()">
+
+      確認しました
+
+    </button>
 
   `);
 
@@ -1392,7 +1438,11 @@ function firstSeerTargetScreen(){
 
     });
 
-  html+=`</div>`;
+  html+=`
+
+    </div>
+
+  `;
 
   card("🔮 初日の占い",html);
 
@@ -1410,12 +1460,6 @@ function chooseFirstSeerTarget(index){
 
     killLoverPartner(index);
 
-    alert(
-
-      `${state.names[index]}さんは人間です。`
-
-    );
-
   }else{
 
     state.firstSeerResult=
@@ -1426,13 +1470,13 @@ function chooseFirstSeerTarget(index){
 
         :"人間";
 
-    alert(
-
-      `${state.names[index]}さんは${state.firstSeerResult}です。`
-
-    );
-
   }
+
+  alert(
+
+    `${state.names[index]}さんは${state.firstSeerResult}です。`
+
+  );
 
   finishCurrentRoleConfirm();
 
@@ -1554,7 +1598,9 @@ function updateTimer(){
 
   if(el){
 
-    el.textContent=formatTime(state.seconds);
+    el.textContent=
+
+      formatTime(state.seconds);
 
   }
 
@@ -1668,7 +1714,9 @@ function useDictator(){
 
   const name=
 
-    document.getElementById("dictatorName")
+    document
+
+      .getElementById("dictatorName")
 
       .value
 
@@ -1684,7 +1732,11 @@ function useDictator(){
 
   if(index!==dictator){
 
-    alert("独裁者の名前が一致しません。");
+    alert(
+
+      "独裁者の名前が一致しません。"
+
+    );
 
     return;
 
@@ -1692,7 +1744,11 @@ function useDictator(){
 
   const targetName=
 
-    prompt("追放する人の名前を入力してください。");
+    prompt(
+
+      "追放する人の名前を入力してください。"
+
+    );
 
   if(!targetName)return;
 
@@ -1714,7 +1770,11 @@ function useDictator(){
 
   ){
 
-    alert("追放対象が正しくありません。");
+    alert(
+
+      "追放対象が正しくありません。"
+
+    );
 
     return;
 
@@ -1796,13 +1856,15 @@ function voteScreen(){
 
     state.voteVoters[state.voteIndex];
 
-  let options=
+  let options=`
 
-    `<option value="">
+    <option value="">
 
       投票先を選択
 
-    </option>`;
+    </option>
+
+  `;
 
   alivePlayers()
 
@@ -1864,7 +1926,11 @@ function submitSingleVote(){
 
   if(value===""){
 
-    alert("投票先を選んでください。");
+    alert(
+
+      "投票先を選んでください。"
+
+    );
 
     return;
 
@@ -1886,17 +1952,9 @@ function finishVote(){
 
     .forEach(([voter,target])=>{
 
-      const weight=
-
-        state.roles[voter]==="dictator"
-
-          ?2
-
-          :1;
-
       counts[target]=
 
-        (counts[target]||0)+weight;
+        (counts[target]||0)+1;
 
     });
 
@@ -1992,13 +2050,15 @@ function runoffScreen(){
 
     state.voteVoters[state.voteIndex];
 
-  let options=
+  let options=`
 
-    `<option value="">
+    <option value="">
 
       投票先を選択
 
-    </option>`;
+    </option>
+
+  `;
 
   state.runoffCandidates
 
@@ -2074,7 +2134,11 @@ function submitRunoffVote(){
 
   if(value===""){
 
-    alert("投票先を選んでください。");
+    alert(
+
+      "投票先を選んでください。"
+
+    );
 
     return;
 
@@ -2096,17 +2160,9 @@ function finishRunoff(){
 
     .forEach(([voter,target])=>{
 
-      const weight=
-
-        state.roles[voter]==="dictator"
-
-          ?2
-
-          :1;
-
       counts[target]=
 
-        (counts[target]||0)+weight;
+        (counts[target]||0)+1;
 
     });
 
@@ -2402,7 +2458,11 @@ function renderWerewolfAction(){
 
   });
 
-  html+=`</div>`;
+  html+=`
+
+    </div>
+
+  `;
 
   card("🐺 人狼",html);
 
@@ -2478,7 +2538,11 @@ function renderBodyguardAction(){
 
   });
 
-  html+=`</div>`;
+  html+=`
+
+    </div>
+
+  `;
 
   card("🛡️ ボディーガード",html);
 
@@ -2546,7 +2610,11 @@ function renderSeerAction(){
 
   });
 
-  html+=`</div>`;
+  html+=`
+
+    </div>
+
+  `;
 
   card("🔮 予言者",html);
 
@@ -2600,9 +2668,13 @@ function renderMediumAction(){
 
   }
 
+  const role=
+
+    state.roles[index];
+
   state.mediumResult=
 
-    state.roles[index]==="werewolf"
+    role==="werewolf"
 
       ?"人狼"
 
@@ -2616,7 +2688,9 @@ function renderMediumAction(){
 
 function mediumResultScreen(){
 
-  const index=state.lastExecuted;
+  const index=
+
+    state.lastExecuted;
 
   card("👻 霊媒師",`
 
@@ -2664,7 +2738,9 @@ function resolveNight(){
 
   ){
 
-    const target=state.wolfTarget;
+    const target=
+
+      state.wolfTarget;
 
     if(
 
@@ -2758,7 +2834,9 @@ function killNightLovers(){
 
 function hunterScreen(){
 
-  const hunter=state.hunterIndex;
+  const hunter=
+
+    state.hunterIndex;
 
   const targets=
 
@@ -2804,7 +2882,11 @@ function hunterScreen(){
 
   });
 
-  html+=`</div>`;
+  html+=`
+
+    </div>
+
+  `;
 
   card("🔫 ハンター",html);
 
@@ -2848,7 +2930,9 @@ function hunterChoose(target){
 
 function killLoverPartner(index){
 
-  const pair=loverPairOf(index);
+  const pair=
+
+    loverPairOf(index);
 
   if(!pair)return;
 
@@ -2873,86 +2957,6 @@ function killLoverPartner(index){
     }
 
   }
-
-}
-
-function morningScreen(){
-
-  const deaths=[
-
-    ...new Set(
-
-      state.nightDeaths
-
-        .filter(i=>!isAlive(i))
-
-    )
-
-  ];
-
-  let message="";
-
-  if(deaths.length){
-
-    message=
-
-      "残念ながら"+
-
-      deaths
-
-        .map(i=>state.names[i])
-
-        .join("、")+
-
-      "さんが亡くなってしまいました。";
-
-  }else{
-
-    message=
-
-      "昨夜の犠牲者はいませんでした。";
-
-  }
-
-  card("🌅 朝",`
-
-    <div class="notice">
-
-      ${esc(message)}
-
-    </div>
-
-    <div class="notice">
-
-      お昼です。議論スタート。
-
-    </div>
-
-    <button onclick="startNextDay()">
-
-      昼の議論を開始
-
-    </button>
-
-  `);
-
-  speak(
-
-    "朝になりました。みなさん目を覚ましてください。"+
-
-    message+
-
-    "お昼です。議論スタート。"
-
-  );
-
-}
-
-function startNextDay(){
-
-  state.day++;
-
-  startDay();
 
 }
 
@@ -3010,6 +3014,12 @@ function foxVictory(){
 
 function loverVictory(){
 
+  if(!state.loverPairs.length){
+
+    return false;
+
+  }
+
   return state.loverPairs.some(pair=>
 
     isAlive(pair[0]) &&
@@ -3022,11 +3032,17 @@ function loverVictory(){
 
 function checkVictory(){
 
-  const base=baseVictory();
+  const base=
 
-  const lover=loverVictory();
+    baseVictory();
 
-  const fox=foxVictory();
+  const lover=
+
+    loverVictory();
+
+  const fox=
+
+    foxVictory();
 
   if(!base&&!lover&&!fox){
 
@@ -3056,7 +3072,9 @@ function checkVictory(){
 
 function winScreen(){
 
-  const r=state.winResult;
+  const r=
+
+    state.winResult;
 
   const results=[];
 
