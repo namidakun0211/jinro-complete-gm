@@ -466,7 +466,7 @@ const ROLE_INFO={
 
     voice:"共有者",
 
-    max:6,
+    max:2,
 
     team:"citizen"
 
@@ -602,15 +602,7 @@ const state={
 
   cardIndex:0,
 
-  cardRoles:[],
-
-  voteResultCounts:{},
-
-  voteResultTarget:null,
-
-  voteResultDeaths:[],
-
-  runoffResultCounts:{}
+  cardRoles:[]
 
 };
 
@@ -622,47 +614,57 @@ const app=document.getElementById("app");
 
 ========================= */
 
+function cleanSpeech(text){
+
+  return String(text)
+
+    .replace(
+
+      /\p{Extended_Pictographic}/gu,
+
+      ""
+
+    )
+
+    .replace(
+
+      /[\uFE0E\uFE0F\u200D]/g,
+
+      ""
+
+    )
+
+    .replace(
+
+      /妖狐/g,
+
+      "ようこ"
+
+    )
+
+    .replace(
+
+      /\s+/g,
+
+      " "
+
+    )
+
+    .trim();
+
+}
+
 function speak(text){
 
   try{
 
     speechSynthesis.cancel();
 
-    let voiceText=String(text);
-
-    voiceText=voiceText
-
-      .replace(/🐺/g,"")
-
-      .replace(/👤/g,"")
-
-      .replace(/🔮/g,"")
-
-      .replace(/👻/g,"")
-
-      .replace(/🛡️/g,"")
-
-      .replace(/🃏/g,"")
-
-      .replace(/📡/g,"")
-
-      .replace(/🦊/g,"")
-
-      .replace(/🔫/g,"")
-
-      .replace(/🤝/g,"")
-
-      .replace(/❤️/g,"")
-
-      .replace(/👑/g,"")
-
-      .replace(/妖狐/g,"ようこ");
-
     const utterance=
 
       new SpeechSynthesisUtterance(
 
-        voiceText
+        cleanSpeech(text)
 
       );
 
@@ -679,12 +681,6 @@ function speak(text){
   }catch(e){}
 
 }
-
-/* =========================
-
-   共通
-
-========================= */
 
 function esc(value){
 
@@ -1418,11 +1414,11 @@ function renderRoles(){
 
       <br>
 
-      ❤️ 恋人は2枚単位で選択できます。
+      ❤️ 恋人は2・4・6枚で選択できます。
 
       <br>
 
-      🤝 共有者は2枚単位で選択できます。
+      🤝 共有者は0・2枚で選択できます。
 
       <br><br>
 
@@ -1504,7 +1500,21 @@ function renderRoles(){
 
                 onclick="changeRole('${id}',1)"
 
-                ${count>=info.max?"disabled":""}
+                ${
+
+                  (
+
+                    id==="lover"
+
+                      ?count>=info.max
+
+                      :count>=info.max
+
+                  )
+
+                    ?"disabled":""
+
+                }
 
               >
 
@@ -1544,12 +1554,6 @@ function renderRoles(){
 
 }
 
-/* =========================
-
-   ★ 恋人・共有者を2枚単位で変更
-
-========================= */
-
 function changeRole(id,change){
 
   const current=
@@ -1560,35 +1564,97 @@ function changeRole(id,change){
 
     )||0;
 
-  let next;
+  /* 恋人は2枚ずつ */
 
-  if(
+  if(id==="lover"){
 
-    id==="lover" ||
+    if(change>0){
 
-    id==="shared"
+      const next=current+2;
 
-  ){
+      if(next>ROLE_INFO[id].max){
 
-    next=
+        return;
 
-      current+
+      }
 
-      (
+      state.roleCounts[id]=next;
 
-        change>0
+      render();
 
-          ?2
+      return;
 
-          :-2
+    }
 
-      );
+    if(change<0){
 
-  }else{
+      const next=current-2;
 
-    next=current+change;
+      if(next<0){
+
+        return;
+
+      }
+
+      state.roleCounts[id]=next;
+
+      render();
+
+      return;
+
+    }
+
+    return;
 
   }
+
+  /* 共有者は2枚ずつ */
+
+  if(id==="shared"){
+
+    if(change>0){
+
+      const next=current+2;
+
+      if(next>ROLE_INFO[id].max){
+
+        return;
+
+      }
+
+      state.roleCounts[id]=next;
+
+      render();
+
+      return;
+
+    }
+
+    if(change<0){
+
+      const next=current-2;
+
+      if(next<0){
+
+        return;
+
+      }
+
+      state.roleCounts[id]=next;
+
+      render();
+
+      return;
+
+    }
+
+    return;
+
+  }
+
+  const next=
+
+    current+change;
 
   if(next<0){
 
@@ -1608,35 +1674,11 @@ function changeRole(id,change){
 
   }
 
-  if(
-
-    (
-
-      id==="lover" ||
-
-      id==="shared"
-
-    ) &&
-
-    next%2!==0
-
-  ){
-
-    return;
-
-  }
-
   state.roleCounts[id]=next;
 
   render();
 
 }
-
-/* =========================
-
-   役職選択終了
-
-========================= */
 
 function finishRoleSelection(){
 
@@ -1678,7 +1720,9 @@ function finishRoleSelection(){
 
   if(
 
-    state.roleCounts.shared%2!==0
+    state.roleCounts.shared!==0 &&
+
+    state.roleCounts.shared!==2
 
   ){
 
@@ -2484,11 +2528,7 @@ function revealRole(){
 
         <div class="big">
 
-          ${esc(
-
-            getRoleDisplay(index)
-
-          )}
+          ${esc(getRoleDisplay(index))}
 
         </div>
 
@@ -2562,11 +2602,7 @@ function revealRole(){
 
       <div class="big">
 
-        ${esc(
-
-          getRoleDisplay(index)
-
-        )}
+        ${esc(getRoleDisplay(index))}
 
       </div>
 
@@ -2666,11 +2702,7 @@ function renderFirstSeerTarget(){
 
           >
 
-            ${esc(
-
-              state.names[index]
-
-            )}
+            ${esc(state.names[index])}
 
           </button>
 
@@ -2836,11 +2868,7 @@ function renderInitialMorning(){
 
           <div class="big">
 
-            ${esc(
-
-              state.names[index]
-
-            )}さんが亡くなりました。
+            ${esc(state.names[index])}さんが亡くなりました。
 
           </div>
 
@@ -3124,6 +3152,12 @@ function formatTime(seconds){
 
 }
 
+/* =========================
+
+   昼画面
+
+========================= */
+
 function renderDay(){
 
   let html="";
@@ -3144,11 +3178,7 @@ function renderDay(){
 
       >
 
-        ${formatTime(
-
-          state.seconds
-
-        )}
+        ${formatTime(state.seconds)}
 
       </div>
 
@@ -3182,19 +3212,23 @@ function renderDay(){
 
   `;
 
-  const dictator=
+  /*
 
-    playersWithRole(
+    独裁者がゲームに存在していて、
 
-      "dictator",
+    まだ能力を使っていないなら、
 
-      true
+    生死に関係なくボタンを表示する。
 
-    )[0];
+  */
+
+  const dictatorExists=
+
+    hasRole("dictator");
 
   if(
 
-    dictator!==undefined &&
+    dictatorExists &&
 
     !state.dictatorUsed
 
@@ -3204,9 +3238,7 @@ function renderDay(){
 
       <div class="notice">
 
-        独裁者の能力を使う場合は、
-
-        自分の名前を入力してください。
+        独裁者の名前を入力してください。
 
       </div>
 
@@ -3218,7 +3250,11 @@ function renderDay(){
 
       >
 
-      <button onclick="useDictator()">
+      <button
+
+        onclick="useDictator()"
+
+      >
 
         独裁者を使う
 
@@ -3272,6 +3308,14 @@ function useDictator(){
 
       .trim();
 
+  /*
+
+    生存している独裁者本人だけ使用可能。
+
+    死亡した独裁者の名前では使用できない。
+
+  */
+
   const dictator=
 
     playersWithRole(
@@ -3292,7 +3336,7 @@ function useDictator(){
 
     alert(
 
-      "独裁者の名前が一致しません。"
+      "独裁者本人の名前と一致しません。"
 
     );
 
@@ -3462,11 +3506,7 @@ function renderVote(){
 
           <option value="${index}">
 
-            ${esc(
-
-              state.names[index]
-
-            )}
+            ${esc(state.names[index])}
 
           </option>
 
@@ -3492,11 +3532,7 @@ function renderVote(){
 
       <div class="notice">
 
-        ${esc(
-
-          state.names[voter]
-
-        )}さんだけが
+        ${esc(state.names[voter])}さんだけが
 
         画面を見てください。
 
@@ -3640,11 +3676,7 @@ function voteSummaryHTML(counts){
 
             <div class="voteName">
 
-              ${esc(
-
-                state.names[index]
-
-              )}
+              ${esc(state.names[index])}
 
             </div>
 
@@ -3768,11 +3800,7 @@ function renderVoteResultScreen(){
 
       <div class="big">
 
-        ${esc(
-
-          state.names[target]
-
-        )}さんが追放されました。
+        ${esc(state.names[target])}さんが追放されました。
 
       </div>
 
@@ -3880,11 +3908,7 @@ function renderRunoff(){
 
           <option value="${index}">
 
-            ${esc(
-
-              state.names[index]
-
-            )}
+            ${esc(state.names[index])}
 
           </option>
 
@@ -3934,11 +3958,7 @@ function renderRunoff(){
 
       <div class="notice">
 
-        ${esc(
-
-          state.names[voter]
-
-        )}さんだけが
+        ${esc(state.names[voter])}さんだけが
 
         画面を見てください。
 
@@ -4104,7 +4124,11 @@ function renderRunoffResultScreen(){
 
       </div>
 
-      <button onclick="continueAfterNoExecution()">
+      <button
+
+        onclick="continueAfterNoExecution()"
+
+      >
 
         夜へ
 
@@ -4290,7 +4314,11 @@ function renderNightIntro(){
 
       </div>
 
-      <button onclick="startNightActions()">
+      <button
+
+        onclick="startNightActions()"
+
+      >
 
         夜の行動を開始
 
@@ -4722,11 +4750,7 @@ function renderWerewolfNight(){
 
           >
 
-            ${esc(
-
-              state.names[index]
-
-            )}
+            ${esc(state.names[index])}
 
           </button>
 
@@ -4878,11 +4902,7 @@ function renderBodyguardNight(){
 
           >
 
-            ${esc(
-
-              state.names[index]
-
-            )}
+            ${esc(state.names[index])}
 
           </button>
 
@@ -5022,11 +5042,7 @@ function renderSeerNight(){
 
           >
 
-            ${esc(
-
-              state.names[index]
-
-            )}
+            ${esc(state.names[index])}
 
           </button>
 
@@ -5106,6 +5122,14 @@ function chooseNightSeerTarget(index){
 
   }
 
+  /*
+
+    予言結果は画面だけ。
+
+    音声では読まない。
+
+  */
+
   alert(
 
     `${state.names[index]}さんは${result}です。`
@@ -5164,7 +5188,11 @@ function renderMediumNight(){
 
         </div>
 
-        <button onclick="finishNight()">
+        <button
+
+          onclick="finishNight()"
+
+        >
 
           確認しました
 
@@ -5196,7 +5224,11 @@ function renderMediumNight(){
 
         </div>
 
-        <button onclick="finishNight()">
+        <button
+
+          onclick="finishNight()"
+
+        >
 
           確認しました
 
@@ -5254,7 +5286,11 @@ function renderMediumNight(){
 
       </div>
 
-      <button onclick="finishNight()">
+      <button
+
+        onclick="finishNight()"
+
+      >
 
         確認しました
 
@@ -5295,6 +5331,14 @@ function finishNight(){
     ...state.nightDeaths
 
   ];
+
+  /*
+
+    人狼襲撃。
+
+    妖狐は通常襲撃では死なない。
+
+  */
 
   if(
 
@@ -5343,6 +5387,12 @@ function finishNight(){
     ...new Set(deaths)
 
   ];
+
+  /*
+
+    ハンターは死亡したら道連れ。
+
+  */
 
   if(
 
@@ -5450,11 +5500,9 @@ function renderHunter(){
 
     <div class="notice">
 
-      ${esc(
+      ${esc(state.names[hunter])}さんの
 
-        state.names[hunter]
-
-      )}さんの死亡が確定しました。
+      死亡が確定しました。
 
     </div>
 
@@ -5492,11 +5540,7 @@ function renderHunter(){
 
           >
 
-            ${esc(
-
-              state.names[index]
-
-            )}
+            ${esc(state.names[index])}
 
           </button>
 
@@ -5622,9 +5666,7 @@ function renderMorning(){
 
         .filter(
 
-          index=>
-
-            !isAlive(index)
+          index=>!isAlive(index)
 
         )
 
@@ -5672,11 +5714,7 @@ function renderMorning(){
 
           <div class="big">
 
-            ${esc(
-
-              state.names[index]
-
-            )}さんが亡くなりました。
+            ${esc(state.names[index])}さんが亡くなりました。
 
           </div>
 
@@ -5780,6 +5818,12 @@ function goToNextDay(){
 
 ========================= */
 
+/*
+
+  市民陣営の生存者
+
+*/
+
 function getCitizenTeamAlive(){
 
   return alivePlayers()
@@ -5798,6 +5842,12 @@ function getCitizenTeamAlive(){
 
 }
 
+/*
+
+  人狼陣営の人狼
+
+*/
+
 function getWerewolfTeamAlive(){
 
   return alivePlayers()
@@ -5811,6 +5861,12 @@ function getWerewolfTeamAlive(){
     );
 
 }
+
+/*
+
+  通常勝利条件
+
+*/
 
 function normalVictory(){
 
@@ -5846,6 +5902,52 @@ function normalVictory(){
 
 }
 
+/*
+
+  恋人は「生きているだけ」では
+
+  勝利しない。
+
+  通常勝利条件が成立したときだけ
+
+  恋人勝利の判定対象になる。
+
+*/
+
+function loverVictory(){
+
+  if(
+
+    state.loverPairs.length===0
+
+  ){
+
+    return false;
+
+  }
+
+  return state.loverPairs.some(
+
+    pair=>
+
+      isAlive(pair[0]) &&
+
+      isAlive(pair[1])
+
+  );
+
+}
+
+/*
+
+  妖狐は通常勝利条件が成立した時、
+
+  生存していれば勝利。
+
+  恋人より妖狐を優先する。
+
+*/
+
 function foxVictory(){
 
   const foxes=
@@ -5876,29 +5978,17 @@ function foxVictory(){
 
 }
 
-function loverVictory(){
+/*
 
-  if(
+  勝利優先順位
 
-    state.loverPairs.length===0
+  1. 妖狐
 
-  ){
+  2. 恋人
 
-    return false;
+  3. 人狼・市民
 
-  }
-
-  return state.loverPairs.some(
-
-    pair=>
-
-      isAlive(pair[0]) &&
-
-      isAlive(pair[1])
-
-  );
-
-}
+*/
 
 function checkVictory(){
 
@@ -5916,21 +6006,17 @@ function checkVictory(){
 
     normalVictory();
 
-  const lovers=
+  /*
 
-    loverVictory();
+    通常勝利条件が成立していない間は
 
-  const fox=
+    恋人・妖狐も勝利確定しない。
 
-    foxVictory();
+  */
 
   if(
 
-    !normal &&
-
-    !lovers &&
-
-    !fox
+    normal===null
 
   ){
 
@@ -5938,15 +6024,73 @@ function checkVictory(){
 
   }
 
-  state.winner={
+  const fox=
 
-    normal:normal,
+    foxVictory();
 
-    lovers:lovers,
+  const lovers=
 
-    fox:fox
+    loverVictory();
 
-  };
+  /*
+
+    妖狐が最優先
+
+  */
+
+  if(fox){
+
+    state.winner={
+
+      normal:null,
+
+      lovers:false,
+
+      fox:true
+
+    };
+
+  }
+
+  /*
+
+    次に恋人
+
+  */
+
+  else if(lovers){
+
+    state.winner={
+
+      normal:null,
+
+      lovers:true,
+
+      fox:false
+
+    };
+
+  }
+
+  /*
+
+    最後に人狼・市民
+
+  */
+
+  else{
+
+    state.winner={
+
+      normal:normal,
+
+      lovers:false,
+
+      fox:false
+
+    };
+
+  }
 
   state.gameOver=true;
 
@@ -5969,6 +6113,14 @@ function checkVictory(){
 function getWinnerResults(){
 
   const results=[];
+
+  /*
+
+    実際に成立した勝利を、
+
+    優先順位を示すために並べる。
+
+  */
 
   if(
 
@@ -6016,6 +6168,50 @@ function getWinnerResults(){
 
   }
 
+  /*
+
+    妖狐が最終勝利の場合は
+
+    通常勝利 → 恋人 → 妖狐
+
+    の順で表示できるようにする。
+
+  */
+
+  if(
+
+    state.winner.fox
+
+  ){
+
+    return [
+
+      "🐺 人狼の勝利です！",
+
+      "❤️ 恋人の勝利です！",
+
+      "🦊 妖狐の勝利です！"
+
+    ];
+
+  }
+
+  if(
+
+    state.winner.lovers
+
+  ){
+
+    return [
+
+      "🐺 人狼・市民の勝利判定です！",
+
+      "❤️ 恋人の勝利です！"
+
+    ];
+
+  }
+
   return results;
 
 }
@@ -6027,6 +6223,14 @@ function renderWin(){
     getWinnerResults();
 
   let html="";
+
+  /*
+
+    winStageより後の結果は
+
+    最初から表示しない。
+
+  */
 
   for(
 
@@ -6130,17 +6334,17 @@ function renderWin(){
 
       <strong>
 
-        ${results[
-
-          results.length-1
-
-        ]}
+        ${results[results.length-1]}
 
       </strong>
 
     </div>
 
-    <button onclick="location.reload()">
+    <button
+
+      onclick="location.reload()"
+
+    >
 
       もう一度遊ぶ
 
@@ -6156,31 +6360,27 @@ function renderWin(){
 
   );
 
-  let voice=
+  /*
+
+    音声には絵文字を入れない。
+
+    妖狐は「ようこ」と読む。
+
+  */
+
+  const finalResult=
 
     results[
 
       results.length-1
 
-    ]
+    ];
 
-    .replace(
+  speak(
 
-      /🐺|👤|🔮|👻|🛡️|🃏|📡|🦊|🔫|🤝|❤️|👑/g,
+    finalResult
 
-      ""
-
-    )
-
-    .replace(
-
-      "妖狐",
-
-      "ようこ"
-
-    );
-
-  speak(voice);
+  );
 
 }
 
