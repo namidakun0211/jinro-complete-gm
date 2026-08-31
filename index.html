@@ -602,7 +602,15 @@ const state={
 
   cardIndex:0,
 
-  cardRoles:[]
+  cardRoles:[],
+
+  voteResultCounts:{},
+
+  voteResultTarget:null,
+
+  voteResultDeaths:[],
+
+  runoffResultCounts:{}
 
 };
 
@@ -2748,11 +2756,7 @@ function renderInitialMorning(){
 
   html+=`
 
-    <button
-
-      onclick="goInitialDaySettings()"
-
-    >
+    <button onclick="goInitialDaySettings()">
 
       昼の設定へ
 
@@ -3512,11 +3516,7 @@ function getTopCandidates(counts){
 
 }
 
-function voteSummaryHTML(
-
-  counts
-
-){
+function voteSummaryHTML(counts){
 
   let html="";
 
@@ -3930,9 +3930,7 @@ function finishRunoff(){
 
   ){
 
-    state.screen=
-
-      "runoffResult";
+    state.screen="runoffResult";
 
     state.runoffResultCounts=
 
@@ -4242,9 +4240,7 @@ function runNightStep(step){
 
       "werewolf";
 
-    state.screen=
-
-      "nightAction";
+    state.screen="nightAction";
 
     render();
 
@@ -4302,9 +4298,7 @@ function runNightStep(step){
 
       "bodyguard";
 
-    state.screen=
-
-      "nightAction";
+    state.screen="nightAction";
 
     render();
 
@@ -4362,9 +4356,7 @@ function runNightStep(step){
 
       "seer";
 
-    state.screen=
-
-      "nightAction";
+    state.screen="nightAction";
 
     render();
 
@@ -4422,9 +4414,7 @@ function runNightStep(step){
 
       "medium";
 
-    state.screen=
-
-      "nightAction";
+    state.screen="nightAction";
 
     render();
 
@@ -4796,7 +4786,9 @@ function chooseGuardTarget(index){
 
   state.guardTarget=index;
 
-  state.previousGuardTarget=index;
+  state.previousGuardTarget=
+
+    index;
 
   runNightStep(
 
@@ -5046,11 +5038,7 @@ function renderMediumNight(){
 
         </div>
 
-        <button
-
-          onclick="finishNight()"
-
-        >
+        <button onclick="finishNight()">
 
           確認しました
 
@@ -5082,11 +5070,7 @@ function renderMediumNight(){
 
         </div>
 
-        <button
-
-          onclick="finishNight()"
-
-        >
+        <button onclick="finishNight()">
 
           確認しました
 
@@ -5144,11 +5128,7 @@ function renderMediumNight(){
 
       </div>
 
-      <button
-
-        onclick="finishNight()"
-
-      >
+      <button onclick="finishNight()">
 
         確認しました
 
@@ -5667,6 +5647,7 @@ function goToNextDay(){
   startDiscussion();
 
 }
+
 /* =========================
 
    勝利判定
@@ -5705,7 +5686,21 @@ function getWerewolfTeamAlive(){
 
 }
 
-/* 通常勝利 */
+/*
+
+  通常勝利条件
+
+  人狼が0人
+
+  または
+
+  人狼数が市民陣営人数以上
+
+  この条件になった時だけ
+
+  ゲーム終了の判定を行う。
+
+*/
 
 function normalVictory(){
 
@@ -5717,25 +5712,21 @@ function normalVictory(){
 
     getCitizenTeamAlive().length;
 
-  /*
+  if(
 
-    人狼が全滅
+    wolves===0
 
-    → 市民陣営の勝利
-
-    人狼数が市民陣営以上
-
-    → 人狼の勝利
-
-  */
-
-  if(wolves===0){
+  ){
 
     return "citizen";
 
   }
 
-  if(wolves>=citizens){
+  if(
+
+    wolves>=citizens
+
+  ){
 
     return "werewolf";
 
@@ -5745,11 +5736,17 @@ function normalVictory(){
 
 }
 
-/* =========================
+/*
 
-   恋人勝利条件
+  恋人はゲーム途中で勝利しない。
 
-========================= */
+  通常勝利条件が成立した時に、
+
+  恋人2人がともに生存していれば
+
+  恋人勝利候補になる。
+
+*/
 
 function loverVictory(){
 
@@ -5758,28 +5755,6 @@ function loverVictory(){
     state.loverPairs.length===0
 
   ){
-
-    return false;
-
-  }
-
-  /*
-
-    恋人が勝利するのは
-
-    通常勝利条件が成立した時だけ。
-
-    恋人が生きているだけでは
-
-    勝利にはならない。
-
-  */
-
-  const normal=
-
-    normalVictory();
-
-  if(normal===null){
 
     return false;
 
@@ -5797,13 +5772,31 @@ function loverVictory(){
 
 }
 
-/* =========================
+/*
 
-   妖狐勝利条件
+  妖狐も通常勝利条件成立時に判定する。
 
-========================= */
+  妖狐が生存していれば
+
+  最終的に妖狐が最優先で勝利する。
+
+*/
 
 function foxVictory(){
+
+  const normal=
+
+    normalVictory();
+
+  if(
+
+    normal===null
+
+  ){
+
+    return false;
+
+  }
 
   const foxes=
 
@@ -5815,39 +5808,35 @@ function foxVictory(){
 
     );
 
-  if(
-
-    foxes.length===0
-
-  ){
-
-    return false;
-
-  }
-
-  /*
-
-    妖狐が生存していて
-
-    通常勝利条件が成立したら
-
-    妖狐が勝利。
-
-  */
-
-  return(
-
-    normalVictory()!==null
-
-  );
+  return foxes.length>0;
 
 }
 
-/* =========================
+/*
 
-   勝利判定
+  勝利判定
 
-========================= */
+  妖狐 ＞ 恋人 ＞ 人狼・市民
+
+  ただし画面では、
+
+  ① 人狼・市民
+
+  ↓
+
+  ② 恋人
+
+  ↓
+
+  ③ 妖狐
+
+  の順番で表示し、
+
+  より上位の勝利がある場合は
+
+  下位の勝利をバッテンで消していく。
+
+*/
 
 function checkVictory(){
 
@@ -5865,25 +5854,19 @@ function checkVictory(){
 
     normalVictory();
 
-  const lovers=
-
-    loverVictory();
-
-  const fox=
-
-    foxVictory();
-
   /*
 
-    まだ誰も勝利条件を
+    通常勝利条件がまだ成立していない間は、
 
-    満たしていない
+    恋人・妖狐が生存していても
+
+    ゲーム終了にしない。
 
   */
 
   if(
 
-    !normal
+    normal===null
 
   ){
 
@@ -5891,29 +5874,13 @@ function checkVictory(){
 
   }
 
-  /*
+  const lovers=
 
-    勝利演出用に
+    loverVictory();
 
-    全段階を保存する。
+  const fox=
 
-    表示順は
-
-    人狼・市民
-
-    ↓
-
-    恋人
-
-    ↓
-
-    妖狐
-
-    ただし、実際に存在する
-
-    勝利だけを表示する。
-
-  */
+    foxVictory();
 
   state.winner={
 
@@ -5927,12 +5894,6 @@ function checkVictory(){
 
   state.gameOver=true;
 
-  /*
-
-    0から順番に表示
-
-  */
-
   state.winStage=0;
 
   state.screen="win";
@@ -5945,7 +5906,7 @@ function checkVictory(){
 
 /* =========================
 
-   勝利結果リスト
+   勝利結果
 
 ========================= */
 
@@ -5955,9 +5916,7 @@ function getWinnerResults(){
 
   /*
 
-    最初は必ず
-
-    人狼・市民の勝利
+    まず通常勝利
 
   */
 
@@ -5969,15 +5928,19 @@ function getWinnerResults(){
 
   ){
 
-    results.push(
+    results.push({
 
-      state.winner.normal==="werewolf"
+      type:"normal",
 
-        ?"🐺 人狼の勝利です！"
+      text:
 
-        :"👤 市民の勝利です！"
+        state.winner.normal==="werewolf"
 
-    );
+          ?"🐺 人狼の勝利です！"
+
+          :"👤 市民の勝利です！"
+
+    });
 
   }
 
@@ -5995,11 +5958,13 @@ function getWinnerResults(){
 
   ){
 
-    results.push(
+    results.push({
 
-      "❤️ 恋人の勝利です！"
+      type:"lovers",
 
-    );
+      text:"❤️ 恋人の勝利です！"
+
+    });
 
   }
 
@@ -6017,11 +5982,13 @@ function getWinnerResults(){
 
   ){
 
-    results.push(
+    results.push({
 
-      "🦊 妖狐の勝利です！"
+      type:"fox",
 
-    );
+      text:"🦊 妖狐の勝利です！"
+
+    });
 
   }
 
@@ -6029,11 +5996,63 @@ function getWinnerResults(){
 
 }
 
-/* =========================
+/*
 
-   勝利結果表示
+  実際の最終勝者を取得
 
-========================= */
+  妖狐 ＞ 恋人 ＞ 人狼・市民
+
+*/
+
+function getFinalWinner(){
+
+  if(
+
+    state.winner &&
+
+    state.winner.fox
+
+  ){
+
+    return "🦊 妖狐の勝利です！";
+
+  }
+
+  if(
+
+    state.winner &&
+
+    state.winner.lovers
+
+  ){
+
+    return "❤️ 恋人の勝利です！";
+
+  }
+
+  if(
+
+    state.winner &&
+
+    state.winner.normal
+
+  ){
+
+    return(
+
+      state.winner.normal==="werewolf"
+
+        ?"🐺 人狼の勝利です！"
+
+        :"👤 市民の勝利です！"
+
+    );
+
+  }
+
+  return "";
+
+}
 
 function renderWin(){
 
@@ -6041,25 +6060,11 @@ function renderWin(){
 
     getWinnerResults();
 
-  /*
-
-    万が一結果が空なら
-
-    何もせず終了画面にしない
-
-  */
-
   if(
 
-    results.length===0
+    !results.length
 
   ){
-
-    state.gameOver=false;
-
-    state.screen="day";
-
-    render();
 
     return;
 
@@ -6069,17 +6074,15 @@ function renderWin(){
 
   /*
 
-    現在の段階まで表示
+    現在表示する段階まで表示。
 
-    例：
+    winStageが0なら最初だけ。
 
-    人狼の勝利です！
+    winStageが1なら最初をバッテン、
 
-    ↓
+    2なら最初と2つ目をバッテン、
 
-    人狼の勝利です！（バッテン）
-
-    恋人の勝利です！
+    最後だけ残す。
 
   */
 
@@ -6107,7 +6110,7 @@ function renderWin(){
 
       }">
 
-        ${results[i]}
+        ${results[i].text}
 
       </div>
 
@@ -6117,7 +6120,7 @@ function renderWin(){
 
   /*
 
-    まだ次の勝利がある場合
+    まだ次の勝利結果がある場合
 
   */
 
@@ -6175,17 +6178,13 @@ function renderWin(){
 
   /*
 
-    最後の勝利者
+    最終勝利
 
   */
 
   const finalWinner=
 
-    results[
-
-      results.length-1
-
-    ];
+    getFinalWinner();
 
   html+=`
 
@@ -6211,11 +6210,7 @@ function renderWin(){
 
     </div>
 
-    <button
-
-      onclick="location.reload()"
-
-    >
+    <button onclick="location.reload()">
 
       もう一度遊ぶ
 
@@ -6250,240 +6245,6 @@ function renderWin(){
         "ようこ"
 
       );
-
-  speak(voice);
-
-}
-
-render();
-
-  return true;
-
-}
-
-/* =========================
-
-   勝利結果
-
-========================= */
-
-function getWinnerResults(){
-
-  const results=[];
-
-  if(
-
-    state.winner.normal
-
-  ){
-
-    results.push(
-
-      state.winner.normal==="werewolf"
-
-        ?"🐺 人狼の勝利です！"
-
-        :"👤 市民の勝利です！"
-
-    );
-
-  }
-
-  if(
-
-    state.winner.lovers
-
-  ){
-
-    results.push(
-
-      "❤️ 恋人の勝利です！"
-
-    );
-
-  }
-
-  if(
-
-    state.winner.fox
-
-  ){
-
-    results.push(
-
-      "🦊 妖狐の勝利です！"
-
-    );
-
-  }
-
-  return results;
-
-}
-
-function renderWin(){
-
-  const results=
-
-    getWinnerResults();
-
-  let html="";
-
-  for(
-
-    let i=0;
-
-    i<=state.winStage &&
-
-    i<results.length;
-
-    i++
-
-  ){
-
-    html+=`
-
-      <div class="result ${
-
-        i<state.winStage
-
-          ?"cross"
-
-          :""
-
-      }">
-
-        ${results[i]}
-
-      </div>
-
-    `;
-
-  }
-
-  if(
-
-    state.winStage<
-
-    results.length-1
-
-  ){
-
-    html+=`
-
-      <div class="small">
-
-        勝利判定を確認しています…
-
-      </div>
-
-    `;
-
-    showCard(
-
-      "🏆 ゲーム終了",
-
-      html
-
-    );
-
-    setTimeout(
-
-      ()=>{
-
-        if(
-
-          state.screen==="win"
-
-        ){
-
-          state.winStage++;
-
-          render();
-
-        }
-
-      },
-
-      1800
-
-    );
-
-    return;
-
-  }
-
-  html+=`
-
-    <div class="notice">
-
-      勝利の優先順位
-
-      <br>
-
-      妖狐 ＞ 恋人 ＞ 人狼・市民
-
-      <br><br>
-
-      最終勝利
-
-      <br>
-
-      <strong>
-
-        ${results[
-
-          results.length-1
-
-        ]}
-
-      </strong>
-
-    </div>
-
-    <button
-
-      onclick="location.reload()"
-
-    >
-
-      もう一度遊ぶ
-
-    </button>
-
-  `;
-
-  showCard(
-
-    "🏆 ゲーム終了",
-
-    html
-
-  );
-
-  let voice=
-
-    results[
-
-      results.length-1
-
-    ]
-
-    .replace(
-
-      /🐺|👤|🔮|👻|🛡️|🃏|📡|🦊|🔫|🤝|❤️|👑/g,
-
-      ""
-
-    )
-
-    .replace(
-
-      "妖狐",
-
-      "ようこ"
-
-    );
 
   speak(voice);
 
