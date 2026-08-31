@@ -5667,7 +5667,6 @@ function goToNextDay(){
   startDiscussion();
 
 }
-
 /* =========================
 
    勝利判定
@@ -5706,6 +5705,8 @@ function getWerewolfTeamAlive(){
 
 }
 
+/* 通常勝利 */
+
 function normalVictory(){
 
   const wolves=
@@ -5716,21 +5717,25 @@ function normalVictory(){
 
     getCitizenTeamAlive().length;
 
-  if(
+  /*
 
-    wolves===0
+    人狼が全滅
 
-  ){
+    → 市民陣営の勝利
+
+    人狼数が市民陣営以上
+
+    → 人狼の勝利
+
+  */
+
+  if(wolves===0){
 
     return "citizen";
 
   }
 
-  if(
-
-    wolves>=citizens
-
-  ){
+  if(wolves>=citizens){
 
     return "werewolf";
 
@@ -5740,7 +5745,63 @@ function normalVictory(){
 
 }
 
-/* 妖狐の勝利条件 */
+/* =========================
+
+   恋人勝利条件
+
+========================= */
+
+function loverVictory(){
+
+  if(
+
+    state.loverPairs.length===0
+
+  ){
+
+    return false;
+
+  }
+
+  /*
+
+    恋人が勝利するのは
+
+    通常勝利条件が成立した時だけ。
+
+    恋人が生きているだけでは
+
+    勝利にはならない。
+
+  */
+
+  const normal=
+
+    normalVictory();
+
+  if(normal===null){
+
+    return false;
+
+  }
+
+  return state.loverPairs.some(
+
+    pair=>
+
+      isAlive(pair[0]) &&
+
+      isAlive(pair[1])
+
+  );
+
+}
+
+/* =========================
+
+   妖狐勝利条件
+
+========================= */
 
 function foxVictory(){
 
@@ -5764,6 +5825,16 @@ function foxVictory(){
 
   }
 
+  /*
+
+    妖狐が生存していて
+
+    通常勝利条件が成立したら
+
+    妖狐が勝利。
+
+  */
+
   return(
 
     normalVictory()!==null
@@ -5772,55 +5843,11 @@ function foxVictory(){
 
 }
 
-/* 恋人の勝利条件
+/* =========================
 
-   恋人2人が生存しているだけでは勝利しない。
+   勝利判定
 
-   通常勝利条件が成立した場合のみ恋人勝利になる。
-
-*/
-
-function loverVictory(){
-
-  if(
-
-    state.loverPairs.length===0
-
-  ){
-
-    return false;
-
-  }
-
-  if(
-
-    normalVictory()===null
-
-  ){
-
-    return false;
-
-  }
-
-  return state.loverPairs.some(
-
-    pair=>
-
-      isAlive(pair[0]) &&
-
-      isAlive(pair[1])
-
-  );
-
-}
-
-/* 勝利判定
-
-   優先順位：
-
-   妖狐 ＞ 恋人 ＞ 人狼・市民
-
-*/
+========================= */
 
 function checkVictory(){
 
@@ -5848,15 +5875,15 @@ function checkVictory(){
 
   /*
 
-    通常勝利条件が成立していない場合、
+    まだ誰も勝利条件を
 
-    恋人が生存していてもゲームは続く。
+    満たしていない
 
   */
 
   if(
 
-    normal===null
+    !normal
 
   ){
 
@@ -5866,83 +5893,369 @@ function checkVictory(){
 
   /*
 
-    妖狐が最優先
+    勝利演出用に
+
+    全段階を保存する。
+
+    表示順は
+
+    人狼・市民
+
+    ↓
+
+    恋人
+
+    ↓
+
+    妖狐
+
+    ただし、実際に存在する
+
+    勝利だけを表示する。
 
   */
 
-  if(
+  state.winner={
 
-    fox
+    normal:normal,
 
-  ){
+    lovers:lovers,
 
-    state.winner={
+    fox:fox
 
-      normal:null,
-
-      lovers:false,
-
-      fox:true
-
-    };
-
-  }
-
-  /*
-
-    妖狐がいない場合、
-
-    恋人が通常勝利条件成立時に両方生存していれば
-
-    恋人の勝利
-
-  */
-
-  else if(
-
-    lovers
-
-  ){
-
-    state.winner={
-
-      normal:null,
-
-      lovers:true,
-
-      fox:false
-
-    };
-
-  }
-
-  /*
-
-    それ以外は通常勝利
-
-  */
-
-  else{
-
-    state.winner={
-
-      normal:normal,
-
-      lovers:false,
-
-      fox:false
-
-    };
-
-  }
+  };
 
   state.gameOver=true;
+
+  /*
+
+    0から順番に表示
+
+  */
 
   state.winStage=0;
 
   state.screen="win";
 
   render();
+
+  return true;
+
+}
+
+/* =========================
+
+   勝利結果リスト
+
+========================= */
+
+function getWinnerResults(){
+
+  const results=[];
+
+  /*
+
+    最初は必ず
+
+    人狼・市民の勝利
+
+  */
+
+  if(
+
+    state.winner &&
+
+    state.winner.normal
+
+  ){
+
+    results.push(
+
+      state.winner.normal==="werewolf"
+
+        ?"🐺 人狼の勝利です！"
+
+        :"👤 市民の勝利です！"
+
+    );
+
+  }
+
+  /*
+
+    次に恋人
+
+  */
+
+  if(
+
+    state.winner &&
+
+    state.winner.lovers
+
+  ){
+
+    results.push(
+
+      "❤️ 恋人の勝利です！"
+
+    );
+
+  }
+
+  /*
+
+    最後に妖狐
+
+  */
+
+  if(
+
+    state.winner &&
+
+    state.winner.fox
+
+  ){
+
+    results.push(
+
+      "🦊 妖狐の勝利です！"
+
+    );
+
+  }
+
+  return results;
+
+}
+
+/* =========================
+
+   勝利結果表示
+
+========================= */
+
+function renderWin(){
+
+  const results=
+
+    getWinnerResults();
+
+  /*
+
+    万が一結果が空なら
+
+    何もせず終了画面にしない
+
+  */
+
+  if(
+
+    results.length===0
+
+  ){
+
+    state.gameOver=false;
+
+    state.screen="day";
+
+    render();
+
+    return;
+
+  }
+
+  let html="";
+
+  /*
+
+    現在の段階まで表示
+
+    例：
+
+    人狼の勝利です！
+
+    ↓
+
+    人狼の勝利です！（バッテン）
+
+    恋人の勝利です！
+
+  */
+
+  for(
+
+    let i=0;
+
+    i<=state.winStage &&
+
+    i<results.length;
+
+    i++
+
+  ){
+
+    html+=`
+
+      <div class="result ${
+
+        i<state.winStage
+
+          ?"cross"
+
+          :""
+
+      }">
+
+        ${results[i]}
+
+      </div>
+
+    `;
+
+  }
+
+  /*
+
+    まだ次の勝利がある場合
+
+  */
+
+  if(
+
+    state.winStage<
+
+    results.length-1
+
+  ){
+
+    html+=`
+
+      <div class="small">
+
+        勝利判定を確認しています…
+
+      </div>
+
+    `;
+
+    showCard(
+
+      "🏆 ゲーム終了",
+
+      html
+
+    );
+
+    setTimeout(
+
+      ()=>{
+
+        if(
+
+          state.screen==="win"
+
+        ){
+
+          state.winStage++;
+
+          render();
+
+        }
+
+      },
+
+      1800
+
+    );
+
+    return;
+
+  }
+
+  /*
+
+    最後の勝利者
+
+  */
+
+  const finalWinner=
+
+    results[
+
+      results.length-1
+
+    ];
+
+  html+=`
+
+    <div class="notice">
+
+      勝利の優先順位
+
+      <br>
+
+      妖狐 ＞ 恋人 ＞ 人狼・市民
+
+      <br><br>
+
+      最終勝利
+
+      <br>
+
+      <strong>
+
+        ${finalWinner}
+
+      </strong>
+
+    </div>
+
+    <button
+
+      onclick="location.reload()"
+
+    >
+
+      もう一度遊ぶ
+
+    </button>
+
+  `;
+
+  showCard(
+
+    "🏆 ゲーム終了",
+
+    html
+
+  );
+
+  let voice=
+
+    finalWinner
+
+      .replace(
+
+        /🐺|👤|🔮|👻|🛡️|🃏|📡|🦊|🔫|🤝|❤️|👑/g,
+
+        ""
+
+      )
+
+      .replace(
+
+        "妖狐",
+
+        "ようこ"
+
+      );
+
+  speak(voice);
+
+}
+
+render();
 
   return true;
 
