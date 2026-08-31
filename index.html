@@ -1498,12 +1498,6 @@ function changeRole(id,change){
 
     )||0;
 
-  /*
-
-    恋人・共有者は2枚ずつ変更
-
-  */
-
   if(
 
     id==="lover" ||
@@ -1705,8 +1699,6 @@ function assignRandomRoles(){
 /* =========================
 
    カードあり
-
-   1人ずつ入力
 
 ========================= */
 
@@ -2426,11 +2418,7 @@ function revealRole(){
 
         </div>
 
-        <button
-
-          onclick="firstSeerStart()"
-
-        >
+        <button onclick="firstSeerStart()">
 
           占う
 
@@ -2502,11 +2490,7 @@ function revealRole(){
 
       }
 
-      <button
-
-        onclick="finishConfirmation()"
-
-      >
+      <button onclick="finishConfirmation()">
 
         確認しました
 
@@ -2522,9 +2506,7 @@ function firstSeerStart(){
 
   state.firstSeerDone=true;
 
-  state.screen=
-
-    "firstSeerTarget";
+  state.screen="firstSeerTarget";
 
   render();
 
@@ -2818,9 +2800,7 @@ function renderInitialMorning(){
 
 function goInitialDaySettings(){
 
-  state.screen=
-
-    "daySettings";
+  state.screen="daySettings";
 
   render();
 
@@ -2886,11 +2866,7 @@ function renderDaySettings(){
 
       </select>
 
-      <button
-
-        onclick="startFirstDay()"
-
-      >
+      <button onclick="startFirstDay()">
 
         昼の議論へ
 
@@ -3138,11 +3114,7 @@ function renderDay(){
 
       >
 
-      <button
-
-        onclick="useDictator()"
-
-      >
+      <button onclick="useDictator()">
 
         独裁者を使う
 
@@ -3154,11 +3126,7 @@ function renderDay(){
 
   html+=`
 
-    <button
-
-      onclick="openVote()"
-
-    >
+    <button onclick="openVote()">
 
       投票へ
 
@@ -3436,11 +3404,7 @@ function renderVote(){
 
       </select>
 
-      <button
-
-        onclick="submitVote()"
-
-      >
+      <button onclick="submitVote()">
 
         投票する
 
@@ -3712,11 +3676,7 @@ function renderVoteResultScreen(){
 
       </div>
 
-      <button
-
-        onclick="afterVoteResult()"
-
-      >
+      <button onclick="afterVoteResult()">
 
         次へ
 
@@ -3890,11 +3850,7 @@ function renderRunoff(){
 
       </select>
 
-      <button
-
-        onclick="submitRunoffVote()"
-
-      >
+      <button onclick="submitRunoffVote()">
 
         投票する
 
@@ -4048,11 +4004,7 @@ function renderRunoffResultScreen(){
 
       </div>
 
-      <button
-
-        onclick="continueAfterNoExecution()"
-
-      >
+      <button onclick="continueAfterNoExecution()">
 
         夜へ
 
@@ -4238,11 +4190,7 @@ function renderNightIntro(){
 
       </div>
 
-      <button
-
-        onclick="startNightActions()"
-
-      >
+      <button onclick="startNightActions()">
 
         夜の行動を開始
 
@@ -4848,9 +4796,7 @@ function chooseGuardTarget(index){
 
   state.guardTarget=index;
 
-  state.previousGuardTarget=
-
-    index;
+  state.previousGuardTarget=index;
 
   runNightStep(
 
@@ -5638,11 +5584,7 @@ function renderMorning(){
 
   html+=`
 
-    <button
-
-      onclick="goToNextDay()"
-
-    >
+    <button onclick="goToNextDay()">
 
       昼の議論へ
 
@@ -5798,6 +5740,8 @@ function normalVictory(){
 
 }
 
+/* 妖狐の勝利条件 */
+
 function foxVictory(){
 
   const foxes=
@@ -5828,11 +5772,29 @@ function foxVictory(){
 
 }
 
+/* 恋人の勝利条件
+
+   恋人2人が生存しているだけでは勝利しない。
+
+   通常勝利条件が成立した場合のみ恋人勝利になる。
+
+*/
+
 function loverVictory(){
 
   if(
 
     state.loverPairs.length===0
+
+  ){
+
+    return false;
+
+  }
+
+  if(
+
+    normalVictory()===null
 
   ){
 
@@ -5851,6 +5813,14 @@ function loverVictory(){
   );
 
 }
+
+/* 勝利判定
+
+   優先順位：
+
+   妖狐 ＞ 恋人 ＞ 人狼・市民
+
+*/
 
 function checkVictory(){
 
@@ -5876,13 +5846,17 @@ function checkVictory(){
 
     foxVictory();
 
+  /*
+
+    通常勝利条件が成立していない場合、
+
+    恋人が生存していてもゲームは続く。
+
+  */
+
   if(
 
-    !normal &&
-
-    !lovers &&
-
-    !fox
+    normal===null
 
   ){
 
@@ -5890,15 +5864,77 @@ function checkVictory(){
 
   }
 
-  state.winner={
+  /*
 
-    normal:normal,
+    妖狐が最優先
 
-    lovers:lovers,
+  */
 
-    fox:fox
+  if(
 
-  };
+    fox
+
+  ){
+
+    state.winner={
+
+      normal:null,
+
+      lovers:false,
+
+      fox:true
+
+    };
+
+  }
+
+  /*
+
+    妖狐がいない場合、
+
+    恋人が通常勝利条件成立時に両方生存していれば
+
+    恋人の勝利
+
+  */
+
+  else if(
+
+    lovers
+
+  ){
+
+    state.winner={
+
+      normal:null,
+
+      lovers:true,
+
+      fox:false
+
+    };
+
+  }
+
+  /*
+
+    それ以外は通常勝利
+
+  */
+
+  else{
+
+    state.winner={
+
+      normal:normal,
+
+      lovers:false,
+
+      fox:false
+
+    };
+
+  }
 
   state.gameOver=true;
 
