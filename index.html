@@ -328,23 +328,9 @@ label{
 
 }
 
-.winnerNames{
+.death{
 
-  margin-top:16px;
-
-  padding:14px;
-
-  border-radius:12px;
-
-  background:#f0f0f0;
-
-  line-height:1.8;
-
-}
-
-.deathNotice{
-
-  font-size:26px;
+  font-size:28px;
 
   font-weight:bold;
 
@@ -354,11 +340,43 @@ label{
 
 .alarm{
 
-  font-size:42px;
+  font-size:46px;
 
   font-weight:bold;
 
-  margin:18px 0;
+  margin:20px 0;
+
+  animation:alarmFlash .35s infinite alternate;
+
+}
+
+@keyframes alarmFlash{
+
+  from{
+
+    transform:scale(1);
+
+  }
+
+  to{
+
+    transform:scale(1.08);
+
+  }
+
+}
+
+.winNames{
+
+  margin:10px 0 20px;
+
+  padding:14px;
+
+  background:#f5f5f5;
+
+  border-radius:12px;
+
+  line-height:1.9;
 
 }
 
@@ -626,8 +644,6 @@ const state={
 
   hunterReason:"",
 
-  hunterDeaths:[],
-
   gameOver:false,
 
   winner:null,
@@ -640,7 +656,25 @@ const state={
 
   cardRoles:[],
 
-  deathMessages:[]
+  pendingDeaths:[],
+
+  pendingDeathReason:"",
+
+  pendingHunter:null,
+
+  pendingHunterReason:"",
+
+  deathQueue:[],
+
+  deathQueueReason:"",
+
+  voteResultCounts:{},
+
+  voteResultTarget:null,
+
+  voteResultDeaths:[],
+
+  runoffResultCounts:{}
 
 };
 
@@ -661,6 +695,56 @@ function speak(text){
     utterance.rate=.95;
 
     speechSynthesis.speak(utterance);
+
+  }catch(e){}
+
+}
+
+function alarm(){
+
+  try{
+
+    const AudioContext=
+
+      window.AudioContext ||
+
+      window.webkitAudioContext;
+
+    if(!AudioContext){
+
+      return;
+
+    }
+
+    const ctx=new AudioContext();
+
+    const oscillator=
+
+      ctx.createOscillator();
+
+    const gain=
+
+      ctx.createGain();
+
+    oscillator.type="square";
+
+    oscillator.frequency.value=880;
+
+    gain.gain.value=.12;
+
+    oscillator.connect(gain);
+
+    gain.connect(ctx.destination);
+
+    oscillator.start();
+
+    setTimeout(()=>{
+
+      oscillator.stop();
+
+      ctx.close();
+
+    },700);
 
   }catch(e){}
 
@@ -955,6 +1039,12 @@ function render(){
     case"morning":
 
       renderMorning();
+
+      break;
+
+    case"deathResult":
+
+      renderDeathResult();
 
       break;
 
@@ -1300,7 +1390,7 @@ function saveNames(){
 
 /* =========================
 
-   恋人兼用設定
+   恋人兼用
 
 ========================= */
 
@@ -1366,15 +1456,13 @@ function setLoverCompatible(value){
 
 /* =========================
 
-   役職選択
+   役職
 
 ========================= */
 
 function renderRoles(){
 
-  const total=
-
-    primaryTotal();
+  const total=primaryTotal();
 
   let html=`
 
@@ -1572,9 +1660,7 @@ function changeRole(id,change){
 
 function finishRoleSelection(){
 
-  const total=
-
-    primaryTotal();
+  const total=primaryTotal();
 
   if(
 
@@ -1624,11 +1710,7 @@ function finishRoleSelection(){
 
   }
 
-  if(
-
-    state.mode==="card"
-
-  ){
+  if(state.mode==="card"){
 
     state.cardIndex=0;
 
@@ -1648,7 +1730,7 @@ function finishRoleSelection(){
 
 /* =========================
 
-   ランダム役職
+   ランダム
 
 ========================= */
 
@@ -1730,15 +1812,13 @@ function assignRandomRoles(){
 
 /* =========================
 
-   カードあり
+   カード
 
 ========================= */
 
 function renderCardInput(){
 
-  const index=
-
-    state.cardIndex;
+  const index=state.cardIndex;
 
   let options=`
 
@@ -1998,11 +2078,7 @@ function setupLovers(){
 
   let candidates=[];
 
-  if(
-
-    state.loverCompatible
-
-  ){
+  if(state.loverCompatible){
 
     candidates=
 
@@ -2042,9 +2118,7 @@ function setupLovers(){
 
   }
 
-  state.lovers=
-
-    candidates;
+  state.lovers=candidates;
 
   for(
 
@@ -2116,19 +2190,13 @@ function startRoleConfirmation(){
 
   state.hunterUsed=[];
 
-  state.hunterIndex=null;
-
-  state.hunterReason="";
-
-  state.hunterDeaths=[];
-
   state.gameOver=false;
 
   state.winner=null;
 
   state.winStage=0;
 
-  state.deathMessages=[];
+  state.previousGuardTarget=null;
 
   state.screen="confirm";
 
@@ -2166,15 +2234,9 @@ function getConfirmationDetails(index){
 
   const lines=[];
 
-  const role=
+  const role=state.roles[index];
 
-    state.roles[index];
-
-  if(
-
-    role==="werewolf"
-
-  ){
+  if(role==="werewolf"){
 
     const wolves=
 
@@ -2208,11 +2270,7 @@ function getConfirmationDetails(index){
 
   }
 
-  if(
-
-    role==="informant"
-
-  ){
+  if(role==="informant"){
 
     const wolves=
 
@@ -2240,11 +2298,7 @@ function getConfirmationDetails(index){
 
   }
 
-  if(
-
-    role==="shared"
-
-  ){
+  if(role==="shared"){
 
     const partners=
 
@@ -2328,15 +2382,11 @@ function renderConfirm(){
 
     ){
 
-      state.screen=
-
-        "initialMorning";
+      state.screen="initialMorning";
 
     }else{
 
-      state.screen=
-
-        "daySettings";
+      state.screen="daySettings";
 
     }
 
@@ -2346,9 +2396,7 @@ function renderConfirm(){
 
   }
 
-  const index=
-
-    state.confirmIndex;
+  const index=state.confirmIndex;
 
   showCard(
 
@@ -2386,13 +2434,9 @@ function renderConfirm(){
 
 function revealRole(){
 
-  const index=
+  const index=state.confirmIndex;
 
-    state.confirmIndex;
-
-  const role=
-
-    state.roles[index];
+  const role=state.roles[index];
 
   const details=
 
@@ -2554,9 +2598,7 @@ function firstSeerSkip(){
 
 function renderFirstSeerTarget(){
 
-  const seer=
-
-    state.confirmIndex;
+  const seer=state.confirmIndex;
 
   let html=`
 
@@ -2632,13 +2674,7 @@ function chooseFirstSeerTarget(index){
 
     const deaths=
 
-      killPlayer(
-
-        index,
-
-        "seer"
-
-      );
+      killPlayer(index);
 
     deaths.forEach(
 
@@ -2738,11 +2774,7 @@ function renderInitialMorning(){
 
   `;
 
-  if(
-
-    deaths.length===0
-
-  ){
+  if(deaths.length===0){
 
     html+=`
 
@@ -2762,7 +2794,7 @@ function renderInitialMorning(){
 
         html+=`
 
-          <div class="deathNotice">
+          <div class="death">
 
             ${esc(state.names[index])}さんが亡くなりました。
 
@@ -2936,11 +2968,7 @@ function startDiscussion(){
 
     state.discussionMinutes*60;
 
-  clearInterval(
-
-    state.timer
-
-  );
+  clearInterval(state.timer);
 
   render();
 
@@ -2976,11 +3004,7 @@ function startDiscussion(){
 
           ){
 
-            clearInterval(
-
-              state.timer
-
-            );
+            clearInterval(state.timer);
 
             openVote();
 
@@ -3000,21 +3024,13 @@ function updateTimer(){
 
   const timer=
 
-    document.getElementById(
-
-      "timer"
-
-    );
+    document.getElementById("timer");
 
   if(timer){
 
     timer.textContent=
 
-      formatTime(
-
-        state.seconds
-
-      );
+      formatTime(state.seconds);
 
   }
 
@@ -3024,15 +3040,9 @@ function formatTime(seconds){
 
   const min=
 
-    Math.floor(
+    Math.floor(seconds/60);
 
-      seconds/60
-
-    );
-
-  const sec=
-
-    seconds%60;
+  const sec=seconds%60;
 
   return(
 
@@ -3260,11 +3270,7 @@ function useDictator(){
 
   }
 
-  clearInterval(
-
-    state.timer
-
-  );
+  clearInterval(state.timer);
 
   state.dictatorUsed=true;
 
@@ -3272,27 +3278,15 @@ function useDictator(){
 
     executePlayer(target);
 
-  state.voteResultDeaths=
+  state.pendingDeathReason="day";
 
-    deaths;
-
-  showDeathMessages(
+  showDeathResult(
 
     deaths,
 
     "day",
 
     ()=>{
-
-      if(
-
-        checkVictory()
-
-      ){
-
-        return;
-
-      }
 
       beginNight();
 
@@ -3310,11 +3304,7 @@ function useDictator(){
 
 function openVote(){
 
-  clearInterval(
-
-    state.timer
-
-  );
+  clearInterval(state.timer);
 
   state.voteVoters=
 
@@ -3398,9 +3388,7 @@ function renderVote(){
 
       <div class="confirmNumber">
 
-        ${state.voteIndex+1}/
-
-        ${state.voteVoters.length}
+        ${state.voteIndex+1}/${state.voteVoters.length}
 
       </div>
 
@@ -3576,35 +3564,19 @@ function finishVote(){
 
   const counts=
 
-    countVotes(
-
-      state.votes
-
-    );
+    countVotes(state.votes);
 
   const top=
 
-    getTopCandidates(
+    getTopCandidates(counts);
 
-      counts
+  if(top.length>1){
 
-    );
-
-  if(
-
-    top.length>1
-
-  ){
-
-    state.runoffCandidates=
-
-      top;
+    state.runoffCandidates=top;
 
     state.runoffVotes={};
 
-    state.voteVoters=
-
-      alivePlayers();
+    state.voteVoters=alivePlayers();
 
     state.voteIndex=0;
 
@@ -3616,11 +3588,7 @@ function finishVote(){
 
   }
 
-  if(
-
-    top.length===0
-
-  ){
+  if(top.length===0){
 
     beginNight();
 
@@ -3628,27 +3596,19 @@ function finishVote(){
 
   }
 
-  const target=
-
-    top[0];
+  const target=top[0];
 
   const deaths=
 
     executePlayer(target);
 
+  state.voteResultCounts=counts;
+
+  state.voteResultTarget=target;
+
+  state.voteResultDeaths=deaths;
+
   state.screen="voteResult";
-
-  state.voteResultCounts=
-
-    counts;
-
-  state.voteResultTarget=
-
-    target;
-
-  state.voteResultDeaths=
-
-    deaths;
 
   render();
 
@@ -3660,29 +3620,25 @@ function renderVoteResultScreen(){
 
     state.voteResultTarget;
 
-  let html=`
-
-    ${voteSummaryHTML(
-
-      state.voteResultCounts
-
-    )}
-
-    <div class="deathNotice">
-
-      ${esc(state.names[target])}さんが追放されました。
-
-    </div>
-
-  `;
-
   showCard(
 
     "投票結果",
 
-    html+
-
     `
+
+      ${voteSummaryHTML(
+
+        state.voteResultCounts
+
+      )}
+
+      <div class="death">
+
+        ${esc(state.names[target])}さんが追放されました。
+
+      </div>
+
+      <div id="extraDeathArea"></div>
 
       <button onclick="afterVoteResult()">
 
@@ -3694,33 +3650,91 @@ function renderVoteResultScreen(){
 
   );
 
+  speak(
+
+    `${state.names[target]}さんが追放されました。`
+
+  );
+
 }
 
 function afterVoteResult(){
 
-  showDeathMessages(
+  const deaths=
 
-    state.voteResultDeaths,
+    state.voteResultDeaths;
 
-    "day",
+  const extra=
 
-    ()=>{
+    deaths.filter(
 
-      if(
+      index=>
 
-        checkVictory()
+        index!==state.voteResultTarget
 
-      ){
+    );
 
-        return;
+  if(extra.length){
+
+    state.deathQueue=[
+
+      ...extra
+
+    ];
+
+    state.deathQueueReason="day";
+
+    renderDeathQueue(
+
+      ()=>{
+
+        beginNight();
 
       }
 
-      beginNight();
+    );
 
-    }
+    return;
 
-  );
+  }
+
+  const hunter=
+
+    findPendingHunter(deaths);
+
+  if(hunter!==null){
+
+    startHunterSequence(
+
+      hunter,
+
+      "day",
+
+      ()=>{
+
+        if(checkVictory()){
+
+          return;
+
+        }
+
+        beginNight();
+
+      }
+
+    );
+
+    return;
+
+  }
+
+  if(checkVictory()){
+
+    return;
+
+  }
+
+  beginNight();
 
 }
 
@@ -3822,9 +3836,7 @@ function renderRunoff(){
 
       <div class="confirmNumber">
 
-        ${state.voteIndex+1}/
-
-        ${state.voteVoters.length}
+        ${state.voteIndex+1}/${state.voteVoters.length}
 
       </div>
 
@@ -3910,25 +3922,13 @@ function finishRunoff(){
 
   const top=
 
-    getTopCandidates(
+    getTopCandidates(counts);
 
-      counts
+  if(top.length>1){
 
-    );
+    state.screen="runoffResult";
 
-  if(
-
-    top.length>1
-
-  ){
-
-    state.screen=
-
-      "runoffResult";
-
-    state.runoffResultCounts=
-
-      counts;
+    state.runoffResultCounts=counts;
 
     render();
 
@@ -3936,11 +3936,7 @@ function finishRunoff(){
 
   }
 
-  if(
-
-    top.length===0
-
-  ){
+  if(top.length===0){
 
     beginNight();
 
@@ -3948,27 +3944,19 @@ function finishRunoff(){
 
   }
 
-  const target=
-
-    top[0];
+  const target=top[0];
 
   const deaths=
 
     executePlayer(target);
 
+  state.voteResultCounts=counts;
+
+  state.voteResultTarget=target;
+
+  state.voteResultDeaths=deaths;
+
   state.screen="voteResult";
-
-  state.voteResultCounts=
-
-    counts;
-
-  state.voteResultTarget=
-
-    target;
-
-  state.voteResultDeaths=
-
-    deaths;
 
   render();
 
@@ -4026,11 +4014,7 @@ function continueAfterNoExecution(){
 
 function executePlayer(index){
 
-  if(
-
-    !isAlive(index)
-
-  ){
+  if(!isAlive(index)){
 
     return [];
 
@@ -4060,13 +4044,9 @@ function executePlayer(index){
 
 }
 
-function killPlayer(index,reason="night"){
+function killPlayer(index){
 
-  if(
-
-    !isAlive(index)
-
-  ){
+  if(!isAlive(index)){
 
     return [];
 
@@ -4138,7 +4118,7 @@ function killLoverPartner(index){
 
 ========================= */
 
-function showDeathMessages(
+function showDeathResult(
 
   deaths,
 
@@ -4148,59 +4128,75 @@ function showDeathMessages(
 
 ){
 
-  const unique=[
+  state.pendingDeaths=[
 
-    ...new Set(
-
-      deaths.filter(
-
-        index=>
-
-          index!==undefined
-
-      )
-
-    )
+    ...new Set(deaths)
 
   ];
 
+  state.pendingDeathReason=reason;
+
+  state.pendingHunter=
+
+    findPendingHunter(deaths);
+
+  state.pendingHunterReason=reason;
+
+  state.screen="deathResult";
+
+  state._deathCallback=callback;
+
+  render();
+
+}
+
+function renderDeathResult(){
+
+  const deaths=
+
+    state.pendingDeaths;
+
+  let html="";
+
   if(
 
-    unique.length===0
+    state.pendingDeathReason==="day"
 
   ){
 
-    callback();
+    html+=`
 
-    return;
+      <div class="notice">
+
+        追放結果
+
+      </div>
+
+    `;
+
+  }else{
+
+    html+=`
+
+      <div class="notice">
+
+        死亡者
+
+      </div>
+
+    `;
 
   }
 
-  let html=`
-
-    <div class="notice">
-
-      ${reason==="day"
-
-        ?"追放による死亡"
-
-        :"夜の死亡"}
-
-    </div>
-
-  `;
-
-  unique.forEach(
+  deaths.forEach(
 
     index=>{
 
       html+=`
 
-        <div class="deathNotice">
+        <div class="death">
 
-          ${esc(state.names[index])}さんが
-
-          亡くなりました。
+          ${esc(state.names[index])}さんが亡くなりました。
 
         </div>
 
@@ -4212,7 +4208,7 @@ function showDeathMessages(
 
   html+=`
 
-    <button id="deathNextButton">
+    <button onclick="continueDeathResult()">
 
       次へ
 
@@ -4222,39 +4218,421 @@ function showDeathMessages(
 
   showCard(
 
-    "💀 死亡",
+    "死亡結果",
 
     html
 
   );
 
-  speak(
+}
 
-    unique
+function continueDeathResult(){
 
-      .map(
+  const hunter=
 
-        index=>
+    state.pendingHunter;
 
-          state.names[index]+
+  if(hunter!==null){
 
-          "さんが亡くなりました。"
+    startHunterSequence(
 
-      )
+      hunter,
 
-      .join("")
+      state.pendingHunterReason,
+
+      ()=>{
+
+        if(
+
+          state._deathCallback
+
+        ){
+
+          const callback=
+
+            state._deathCallback;
+
+          state._deathCallback=null;
+
+          callback();
+
+        }
+
+      }
+
+    );
+
+    return;
+
+  }
+
+  if(checkVictory()){
+
+    return;
+
+  }
+
+  if(state._deathCallback){
+
+    const callback=
+
+      state._deathCallback;
+
+    state._deathCallback=null;
+
+    callback();
+
+  }
+
+}
+
+function renderDeathQueue(callback){
+
+  if(
+
+    state.deathQueue.length===0
+
+  ){
+
+    const hunter=
+
+      findPendingHunter(
+
+        state.pendingDeaths
+
+      );
+
+    if(hunter!==null){
+
+      startHunterSequence(
+
+        hunter,
+
+        state.deathQueueReason,
+
+        callback
+
+      );
+
+      return;
+
+    }
+
+    if(checkVictory()){
+
+      return;
+
+    }
+
+    callback();
+
+    return;
+
+  }
+
+  const index=
+
+    state.deathQueue.shift();
+
+  showCard(
+
+    "道連れ",
+
+    `
+
+      <div class="death">
+
+        ${esc(state.names[index])}さんが亡くなりました。
+
+      </div>
+
+      <button onclick="renderDeathQueueContinue()">
+
+        次へ
+
+      </button>
+
+    `
 
   );
 
-  document
+  state._deathQueueCallback=callback;
 
-    .getElementById(
+  state._deathQueueLast=index;
 
-      "deathNextButton"
+}
+
+function renderDeathQueueContinue(){
+
+  const callback=
+
+    state._deathQueueCallback;
+
+  renderDeathQueue(callback);
+
+}
+
+/* =========================
+
+   ハンター
+
+========================= */
+
+function findPendingHunter(deaths){
+
+  for(
+
+    const index of deaths
+
+  ){
+
+    if(
+
+      state.roles[index]==="hunter" &&
+
+      !state.hunterUsed.includes(index)
+
+    ){
+
+      return index;
+
+    }
+
+  }
+
+  return null;
+
+}
+
+function startHunterSequence(
+
+  hunter,
+
+  reason,
+
+  callback
+
+){
+
+  state.hunterUsed.push(hunter);
+
+  state.hunterIndex=hunter;
+
+  state.hunterReason=reason;
+
+  state._hunterCallback=callback;
+
+  state.screen="hunter";
+
+  render();
+
+  alarm();
+
+  speak(
+
+    "ハンターです。"+
+
+    "ハンターの方、目を覚ましてください。"+
+
+    "道連れにする人を選んでください。"
+
+  );
+
+}
+
+function renderHunter(){
+
+  const hunter=
+
+    state.hunterIndex;
+
+  let html=`
+
+    <div class="alarm">
+
+      🔫 ハンターです！
+
+    </div>
+
+    <div class="notice">
+
+      ${esc(state.names[hunter])}さんが
+
+      ハンターでした。
+
+      <br><br>
+
+      道連れにする人を1人選んでください。
+
+    </div>
+
+    <div class="targetGrid">
+
+  `;
+
+  alivePlayers()
+
+    .filter(
+
+      index=>
+
+        index!==hunter
 
     )
 
-    .onclick=callback;
+    .forEach(
+
+      index=>{
+
+        html+=`
+
+          <button
+
+            class="gray"
+
+            onclick="chooseHunterTarget(${index})"
+
+          >
+
+            ${esc(state.names[index])}
+
+          </button>
+
+        `;
+
+      }
+
+    );
+
+  html+=`
+
+    </div>
+
+  `;
+
+  showCard(
+
+    "🔫 ハンター",
+
+    html
+
+  );
+
+}
+
+function chooseHunterTarget(index){
+
+  if(!isAlive(index)){
+
+    return;
+
+  }
+
+  const deaths=
+
+    killPlayer(index);
+
+  showCard(
+
+    "ハンターの道連れ",
+
+    `
+
+      <div class="death">
+
+        ${esc(state.names[index])}さんが亡くなりました。
+
+      </div>
+
+      <button onclick="finishHunterDeath(${index})">
+
+        次へ
+
+      </button>
+
+    `
+
+  );
+
+  state.pendingHunterDeaths=deaths;
+
+}
+
+function finishHunterDeath(index){
+
+  const hunterDeaths=
+
+    state.pendingHunterDeaths||[];
+
+  const additional=
+
+    hunterDeaths.filter(
+
+      i=>i!==index
+
+    );
+
+  if(additional.length){
+
+    state.deathQueue=[
+
+      ...additional
+
+    ];
+
+    state.deathQueueReason=
+
+      state.hunterReason;
+
+    const callback=
+
+      state._hunterCallback;
+
+    state._hunterCallback=null;
+
+    renderDeathQueue(
+
+      ()=>{
+
+        if(
+
+          callback
+
+        ){
+
+          callback();
+
+        }
+
+      }
+
+    );
+
+    return;
+
+  }
+
+  const callback=
+
+    state._hunterCallback;
+
+  state._hunterCallback=null;
+
+  if(
+
+    checkVictory()
+
+  ){
+
+    return;
+
+  }
+
+  if(callback){
+
+    callback();
+
+  }
 
 }
 
@@ -4266,11 +4644,7 @@ function showDeathMessages(
 
 function beginNight(){
 
-  if(
-
-    checkVictory()
-
-  ){
+  if(checkVictory()){
 
     return;
 
@@ -4324,11 +4698,7 @@ function renderNightIntro(){
 
 function startNightActions(){
 
-  runNightStep(
-
-    "werewolf"
-
-  );
+  runNightStep("werewolf");
 
 }
 
@@ -4340,17 +4710,9 @@ function startNightActions(){
 
 function runNightStep(step){
 
-  if(
+  if(step==="werewolf"){
 
-    step==="werewolf"
-
-  ){
-
-    if(
-
-      !hasRole("werewolf")
-
-    ){
+    if(!hasRole("werewolf")){
 
       runNightStep("bodyguard");
 
@@ -4358,13 +4720,9 @@ function runNightStep(step){
 
     }
 
-    state.currentNightStep=
+    state.currentNightStep="werewolf";
 
-      "werewolf";
-
-    state.screen=
-
-      "nightAction";
+    state.screen="nightAction";
 
     render();
 
@@ -4400,17 +4758,9 @@ function runNightStep(step){
 
   }
 
-  if(
+  if(step==="bodyguard"){
 
-    step==="bodyguard"
-
-  ){
-
-    if(
-
-      !hasRole("bodyguard")
-
-    ){
+    if(!hasRole("bodyguard")){
 
       runNightStep("seer");
 
@@ -4418,13 +4768,9 @@ function runNightStep(step){
 
     }
 
-    state.currentNightStep=
+    state.currentNightStep="bodyguard";
 
-      "bodyguard";
-
-    state.screen=
-
-      "nightAction";
+    state.screen="nightAction";
 
     render();
 
@@ -4460,17 +4806,9 @@ function runNightStep(step){
 
   }
 
-  if(
+  if(step==="seer"){
 
-    step==="seer"
-
-  ){
-
-    if(
-
-      !hasRole("seer")
-
-    ){
+    if(!hasRole("seer")){
 
       runNightStep("medium");
 
@@ -4478,13 +4816,9 @@ function runNightStep(step){
 
     }
 
-    state.currentNightStep=
+    state.currentNightStep="seer";
 
-      "seer";
-
-    state.screen=
-
-      "nightAction";
+    state.screen="nightAction";
 
     render();
 
@@ -4520,17 +4854,9 @@ function runNightStep(step){
 
   }
 
-  if(
+  if(step==="medium"){
 
-    step==="medium"
-
-  ){
-
-    if(
-
-      !hasRole("medium")
-
-    ){
+    if(!hasRole("medium")){
 
       finishNight();
 
@@ -4538,13 +4864,9 @@ function runNightStep(step){
 
     }
 
-    state.currentNightStep=
+    state.currentNightStep="medium";
 
-      "medium";
-
-    state.screen=
-
-      "nightAction";
+    state.screen="nightAction";
 
     render();
 
@@ -4644,11 +4966,7 @@ function renderWerewolfNight(){
 
     );
 
-  if(
-
-    wolves.length===0
-
-  ){
+  if(wolves.length===0){
 
     showCard(
 
@@ -4756,11 +5074,7 @@ function chooseWolfTarget(index){
 
   state.wolfTarget=index;
 
-  runNightStep(
-
-    "bodyguard"
-
-  );
+  runNightStep("bodyguard");
 
 }
 
@@ -4782,11 +5096,7 @@ function renderBodyguardNight(){
 
     )[0];
 
-  if(
-
-    guard===undefined
-
-  ){
+  if(guard===undefined){
 
     showCard(
 
@@ -4908,15 +5218,9 @@ function chooseGuardTarget(index){
 
   state.guardTarget=index;
 
-  state.previousGuardTarget=
+  state.previousGuardTarget=index;
 
-    index;
-
-  runNightStep(
-
-    "seer"
-
-  );
+  runNightStep("seer");
 
 }
 
@@ -4938,11 +5242,7 @@ function renderSeerNight(){
 
     )[0];
 
-  if(
-
-    seer===undefined
-
-  ){
+  if(seer===undefined){
 
     showCard(
 
@@ -5076,13 +5376,7 @@ function chooseNightSeerTarget(index){
 
     const deaths=
 
-      killPlayer(
-
-        index,
-
-        "seer"
-
-      );
+      killPlayer(index);
 
     deaths.forEach(
 
@@ -5110,11 +5404,7 @@ function chooseNightSeerTarget(index){
 
   );
 
-  runNightStep(
-
-    "medium"
-
-  );
+  runNightStep("medium");
 
 }
 
@@ -5136,11 +5426,7 @@ function renderMediumNight(){
 
     )[0];
 
-  if(
-
-    medium===undefined
-
-  ){
+  if(medium===undefined){
 
     showCard(
 
@@ -5176,11 +5462,7 @@ function renderMediumNight(){
 
   }
 
-  if(
-
-    state.lastExecuted===null
-
-  ){
+  if(state.lastExecuted===null){
 
     showCard(
 
@@ -5320,13 +5602,7 @@ function finishNight(){
 
       const killed=
 
-        killPlayer(
-
-          target,
-
-          "wolf"
-
-        );
+        killPlayer(target);
 
       killed.forEach(
 
@@ -5348,27 +5624,49 @@ function finishNight(){
 
   ];
 
-  if(
+  const uniqueDeaths=[
 
-    resolveHunterIfNeeded(
+    ...new Set(
 
-      state.nightDeaths,
-
-      "night"
+      state.nightDeaths
 
     )
 
-  ){
+  ];
+
+  const hunter=
+
+    findPendingHunter(uniqueDeaths);
+
+  if(hunter!==null){
+
+    startHunterSequence(
+
+      hunter,
+
+      "night",
+
+      ()=>{
+
+        if(checkVictory()){
+
+          return;
+
+        }
+
+        state.screen="morning";
+
+        render();
+
+      }
+
+    );
 
     return;
 
   }
 
-  if(
-
-    checkVictory()
-
-  ){
+  if(checkVictory()){
 
     return;
 
@@ -5377,252 +5675,6 @@ function finishNight(){
   state.screen="morning";
 
   render();
-
-}
-
-/* =========================
-
-   ハンター
-
-========================= */
-
-function resolveHunterIfNeeded(
-
-  deaths,
-
-  reason
-
-){
-
-  const hunter=
-
-    deaths.find(
-
-      index=>
-
-        state.roles[index]==="hunter" &&
-
-        !state.hunterUsed.includes(index)
-
-    );
-
-  if(
-
-    hunter===undefined
-
-  ){
-
-    return false;
-
-  }
-
-  state.hunterUsed.push(
-
-    hunter
-
-  );
-
-  state.hunterIndex=
-
-    hunter;
-
-  state.hunterReason=
-
-    reason;
-
-  state.hunterDeaths=
-
-    [...deaths];
-
-  state.screen="hunter";
-
-  render();
-
-  speak(
-
-    "ハンターです！"
-
-  );
-
-  setTimeout(
-
-    ()=>{
-
-      speak(
-
-        "ハンターの方、道連れにする人を選んでください。"
-
-      );
-
-    },
-
-    700
-
-  );
-
-  return true;
-
-}
-
-function renderHunter(){
-
-  const hunter=
-
-    state.hunterIndex;
-
-  let html=`
-
-    <div class="alarm">
-
-      🔫 ハンターです！
-
-    </div>
-
-    <div class="notice">
-
-      ${esc(state.names[hunter])}さんは
-
-      ハンターです。
-
-      <br>
-
-      道連れにする人を1人選んでください。
-
-    </div>
-
-    <div class="targetGrid">
-
-  `;
-
-  alivePlayers()
-
-    .filter(
-
-      index=>
-
-        index!==hunter
-
-    )
-
-    .forEach(
-
-      index=>{
-
-        html+=`
-
-          <button
-
-            class="gray"
-
-            onclick="chooseHunterTarget(${index})"
-
-          >
-
-            ${esc(state.names[index])}
-
-          </button>
-
-        `;
-
-      }
-
-    );
-
-  html+=`
-
-    </div>
-
-  `;
-
-  showCard(
-
-    "🔫 ハンター",
-
-    html
-
-  );
-
-}
-
-function chooseHunterTarget(index){
-
-  if(
-
-    !isAlive(index)
-
-  ){
-
-    return;
-
-  }
-
-  const deaths=
-
-    killPlayer(
-
-      index,
-
-      state.hunterReason
-
-    );
-
-  state.hunterDeaths.push(
-
-    ...deaths
-
-  );
-
-  state.hunterDeaths=[
-
-    ...new Set(
-
-      state.hunterDeaths
-
-    )
-
-  ];
-
-  const continueAfter=
-
-    ()=>{
-
-      if(
-
-        checkVictory()
-
-      ){
-
-        return;
-
-      }
-
-      if(
-
-        state.hunterReason==="night"
-
-      ){
-
-        state.screen="morning";
-
-        render();
-
-      }else{
-
-        beginNight();
-
-      }
-
-    };
-
-  showDeathMessages(
-
-    deaths,
-
-    state.hunterReason,
-
-    continueAfter
-
-  );
 
 }
 
@@ -5666,11 +5718,7 @@ function renderMorning(){
 
   `;
 
-  if(
-
-    deaths.length===0
-
-  ){
+  if(deaths.length===0){
 
     html+=`
 
@@ -5690,11 +5738,9 @@ function renderMorning(){
 
         html+=`
 
-          <div class="deathNotice">
+          <div class="death">
 
-            ${esc(state.names[index])}さんが
-
-            亡くなりました。
+            ${esc(state.names[index])}さんが亡くなりました。
 
           </div>
 
@@ -5724,11 +5770,7 @@ function renderMorning(){
 
   );
 
-  if(
-
-    deaths.length===0
-
-  ){
+  if(deaths.length===0){
 
     speak(
 
@@ -5774,11 +5816,7 @@ function renderMorning(){
 
 function goToNextDay(){
 
-  if(
-
-    checkVictory()
-
-  ){
+  if(checkVictory()){
 
     return;
 
@@ -5800,43 +5838,43 @@ function goToNextDay(){
 
 /*
 
-  人狼陣営
+  人狼陣営として数えるのは
 
-  ├ 人狼
+  🐺 人狼
 
-  ├ 裏切り者
+  🃏 裏切り者
 
-  └ 内通者
+  📡 内通者
 
-  ※「人狼と市民の人数比較」では
+  の3役職。
 
-     裏切り者・内通者は市民人数に入れない。
+  したがって
+
+  人狼1＋内通者1＋市民1
+
+  の場合、
+
+  人狼陣営2
+
+  市民陣営1
+
+  なので通常勝利条件には到達する。
+
+  ただし、
+
+  「人狼1＋内通者1＋市民2」
+
+  なら
+
+  人狼陣営2
+
+  市民陣営2
+
+  で到達。
+
+  ここでは陣営人数を正確に比較する。
 
 */
-
-function getCitizenTeamAlive(){
-
-  return alivePlayers()
-
-    .filter(
-
-      index=>{
-
-        const role=
-
-          state.roles[index];
-
-        return(
-
-          ROLE_INFO[role].team==="citizen"
-
-        );
-
-      }
-
-    );
-
-}
 
 function getWerewolfTeamAlive(){
 
@@ -5852,7 +5890,11 @@ function getWerewolfTeamAlive(){
 
         return(
 
-          role==="werewolf"
+          role==="werewolf" ||
+
+          role==="traitor" ||
+
+          role==="informant"
 
         );
 
@@ -5862,25 +5904,31 @@ function getWerewolfTeamAlive(){
 
 }
 
-/*
+function getCitizenTeamAlive(){
 
-  通常勝利判定
+  return alivePlayers()
 
-  人狼が0人
+    .filter(
 
-    → 市民陣営勝利
+      index=>{
 
-  人狼の人数が
+        const role=
 
-  「市民陣営の人数以上」
+          state.roles[index];
 
-    → 人狼陣営勝利
+        return(
 
-  裏切り者・内通者は
+          ROLE_INFO[role] &&
 
-  この市民人数には含めない。
+          ROLE_INFO[role].team==="citizen"
 
-*/
+        );
+
+      }
+
+    );
+
+}
 
 function normalVictory(){
 
@@ -5892,11 +5940,7 @@ function normalVictory(){
 
     getCitizenTeamAlive().length;
 
-  if(
-
-    wolves===0
-
-  ){
+  if(wolves===0){
 
     return "citizen";
 
@@ -5904,7 +5948,9 @@ function normalVictory(){
 
   if(
 
-    wolves>=citizens
+    wolves>=citizens &&
+
+    citizens>0
 
   ){
 
@@ -5918,9 +5964,15 @@ function normalVictory(){
 
 /*
 
-  妖狐は通常勝利条件が成立した時点で
+  妖狐は単独で勝利条件を
 
-  生き残っていれば最終勝利。
+  発動させるのではなく、
+
+  「通常の勝利条件に到達した時点で
+
+   生存している妖狐」
+
+  がいれば勝利。
 
 */
 
@@ -5936,17 +5988,9 @@ function foxVictory(){
 
     );
 
-  if(
-
-    foxes.length===0
-
-  ){
-
-    return false;
-
-  }
-
   return(
+
+    foxes.length>0 &&
 
     normalVictory()!==null
 
@@ -5956,9 +6000,17 @@ function foxVictory(){
 
 /*
 
-  恋人は通常勝利条件が成立した時点で
+  恋人も同じ。
 
-  恋人2人がともに生きていれば勝利。
+  2人とも生存しているペアがあり、
+
+  かつ通常の勝利条件に到達した場合のみ
+
+  恋人勝利。
+
+  恋人が生きているだけでは
+
+  ゲーム終了しない。
 
 */
 
@@ -5974,13 +6026,9 @@ function loverVictory(){
 
   }
 
-  const normal=
-
-    normalVictory();
-
   if(
 
-    normal===null
+    normalVictory()===null
 
   ){
 
@@ -5992,6 +6040,8 @@ function loverVictory(){
 
     pair=>
 
+      pair.length===2 &&
+
       isAlive(pair[0]) &&
 
       isAlive(pair[1])
@@ -6002,19 +6052,31 @@ function loverVictory(){
 
 /*
 
-  最終勝利の優先順位
+  勝利判定は、
 
-  妖狐 ＞ 恋人 ＞ 人狼・市民
+  ①まず通常勝利条件に到達しているか
+
+  ②到達していれば
+
+     妖狐
+
+     恋人
+
+     人狼・市民
+
+  の順で勝利を決定。
+
+  これにより
+
+  恋人が生きているだけで
+
+  1日目にゲーム終了することを防ぐ。
 
 */
 
 function checkVictory(){
 
-  if(
-
-    state.gameOver
-
-  ){
+  if(state.gameOver){
 
     return true;
 
@@ -6024,45 +6086,19 @@ function checkVictory(){
 
     normalVictory();
 
-  if(
-
-    normal===null
-
-  ){
+  if(normal===null){
 
     return false;
 
   }
 
-  const lovers=
-
-    loverVictory();
-
   const fox=
 
     foxVictory();
 
-  /*
+  const lovers=
 
-    最終的な勝者を決定する。
-
-  */
-
-  let finalWinner;
-
-  if(fox){
-
-    finalWinner="fox";
-
-  }else if(lovers){
-
-    finalWinner="lovers";
-
-  }else{
-
-    finalWinner=normal;
-
-  }
+    loverVictory();
 
   state.winner={
 
@@ -6070,9 +6106,7 @@ function checkVictory(){
 
     lovers:lovers,
 
-    fox:fox,
-
-    final:finalWinner
+    fox:fox
 
   };
 
@@ -6082,6 +6116,8 @@ function checkVictory(){
 
   state.screen="win";
 
+  clearInterval(state.timer);
+
   render();
 
   return true;
@@ -6090,7 +6126,7 @@ function checkVictory(){
 
 /* =========================
 
-   勝利表示
+   勝利結果
 
 ========================= */
 
@@ -6100,17 +6136,23 @@ function getWinnerResults(){
 
   /*
 
-    通常勝利が成立している場合は
+    優先順位に従って表示する。
 
-    最初に必ず表示する。
+    通常勝利が成立したときは
+
+    まず人狼・市民。
+
+    その上に恋人、
+
+    さらに妖狐が成立していれば
+
+    最終的に妖狐。
+
+    途中結果にはバッテンを付ける。
 
   */
 
-  if(
-
-    state.winner.normal
-
-  ){
+  if(state.winner.normal){
 
     results.push({
 
@@ -6128,21 +6170,11 @@ function getWinnerResults(){
 
   }
 
-  /*
-
-    恋人が勝利条件を満たしていれば表示。
-
-  */
-
-  if(
-
-    state.winner.lovers
-
-  ){
+  if(state.winner.lovers){
 
     results.push({
 
-      key:"lovers",
+      key:"lover",
 
       text:"❤️ 恋人の勝利です！"
 
@@ -6150,17 +6182,7 @@ function getWinnerResults(){
 
   }
 
-  /*
-
-    妖狐が勝利条件を満たしていれば表示。
-
-  */
-
-  if(
-
-    state.winner.fox
-
-  ){
+  if(state.winner.fox){
 
     results.push({
 
@@ -6176,171 +6198,135 @@ function getWinnerResults(){
 
 }
 
-/*
+function getWinningTeams(){
 
-  最終勝者の陣営に属する人を
+  const teams=[];
 
-  生死に関係なく全員取得。
+  if(state.winner.normal){
 
-*/
+    teams.push(
 
-function getWinningPlayers(){
+      state.winner.normal
 
-  const final=
-
-    state.winner.final;
-
-  if(
-
-    final==="fox"
-
-  ){
-
-    return state.names
-
-      .map(
-
-        (_,index)=>index
-
-      )
-
-      .filter(
-
-        index=>
-
-          state.roles[index]==="fox"
-
-      );
+    );
 
   }
 
-  if(
+  if(state.winner.lovers){
 
-    final==="lovers"
-
-  ){
-
-    return state.names
-
-      .map(
-
-        (_,index)=>index
-
-      )
-
-      .filter(
-
-        index=>
-
-          state.lovers.includes(index)
-
-      );
+    teams.push("lover");
 
   }
 
-  if(
+  if(state.winner.fox){
 
-    final==="werewolf"
-
-  ){
-
-    return state.names
-
-      .map(
-
-        (_,index)=>index
-
-      )
-
-      .filter(
-
-        index=>
-
-          ROLE_INFO[
-
-            state.roles[index]
-
-          ].team==="werewolf"
-
-      );
+    teams.push("fox");
 
   }
 
-  if(
-
-    final==="citizen"
-
-  ){
-
-    return state.names
-
-      .map(
-
-        (_,index)=>index
-
-      )
-
-      .filter(
-
-        index=>
-
-          ROLE_INFO[
-
-            state.roles[index]
-
-          ].team==="citizen"
-
-      );
-
-  }
-
-  return [];
+  return teams;
 
 }
 
-function renderWinningNames(){
+function getWinningNames(team){
 
-  const players=
+  let indexes=[];
 
-    getWinningPlayers();
+  if(team==="werewolf"){
 
-  if(
+    indexes=
 
-    players.length===0
+      state.names
 
-  ){
+        .map((_,index)=>index)
 
-    return "";
-
-  }
-
-  return `
-
-    <div class="winnerNames">
-
-      <strong>
-
-        🏆 勝利した陣営のメンバー
-
-      </strong>
-
-      <br><br>
-
-      ${players
-
-        .map(
+        .filter(
 
           index=>
 
-            esc(state.names[index])
+            state.roles[index]==="werewolf" ||
 
-        )
+            state.roles[index]==="traitor" ||
 
-        .join("、")}
+            state.roles[index]==="informant"
 
-    </div>
+        );
 
-  `;
+  }
+
+  if(team==="citizen"){
+
+    indexes=
+
+      state.names
+
+        .map((_,index)=>index)
+
+        .filter(
+
+          index=>
+
+            ROLE_INFO[state.roles[index]] &&
+
+            ROLE_INFO[state.roles[index]].team==="citizen"
+
+        );
+
+  }
+
+  if(team==="lover"){
+
+    state.loverPairs.forEach(
+
+      pair=>{
+
+        if(
+
+          isAlive(pair[0]) &&
+
+          isAlive(pair[1])
+
+        ){
+
+          indexes.push(pair[0]);
+
+          indexes.push(pair[1]);
+
+        }
+
+      }
+
+    );
+
+  }
+
+  if(team==="fox"){
+
+    indexes=
+
+      playersWithRole("fox");
+
+  }
+
+  indexes=[
+
+    ...new Set(indexes)
+
+  ];
+
+  return indexes.map(
+
+    index=>({
+
+      index:index,
+
+      name:state.names[index],
+
+      alive:isAlive(index)
+
+    })
+
+  );
 
 }
 
@@ -6350,63 +6336,15 @@ function renderWin(){
 
     getWinnerResults();
 
-  /*
+  if(!results.length){
 
-    結果が存在しない場合の安全処理
-
-  */
-
-  if(
-
-    results.length===0
-
-  ){
-
-    showCard(
-
-      "🏆 ゲーム終了",
-
-      `
-
-        <div class="big">
-
-          ゲーム終了
-
-        </div>
-
-        <button onclick="location.reload()">
-
-          もう一度遊ぶ
-
-        </button>
-
-      `
-
-    );
+    location.reload();
 
     return;
 
   }
 
   let html="";
-
-  /*
-
-    winStage
-
-    0
-
-    → 最初の勝利表示
-
-    1
-
-    → 次の勝利表示
-
-    2
-
-    → 最終勝利表示
-
-  */
 
   for(
 
@@ -6439,12 +6377,6 @@ function renderWin(){
     `;
 
   }
-
-  /*
-
-    まだ次の勝利表示がある場合
-
-  */
 
   if(
 
@@ -6500,7 +6432,11 @@ function renderWin(){
 
   /*
 
-    最終勝者
+    最終勝利者を決定。
+
+    妖狐 ＞ 恋人 ＞ 人狼・市民
+
+    の最後の結果が最終勝利。
 
   */
 
@@ -6512,6 +6448,40 @@ function renderWin(){
 
     ];
 
+  let finalTeam="";
+
+  if(
+
+    state.winner.fox
+
+  ){
+
+    finalTeam="fox";
+
+  }else if(
+
+    state.winner.lovers
+
+  ){
+
+    finalTeam="lover";
+
+  }else{
+
+    finalTeam=
+
+      state.winner.normal;
+
+  }
+
+  const winningNames=
+
+    getWinningNames(
+
+      finalTeam
+
+    );
+
   html+=`
 
     <div class="notice">
@@ -6520,7 +6490,7 @@ function renderWin(){
 
       <br>
 
-      妖狐 ＞ 恋人 ＞ 人狼・市民
+      🦊 妖狐 ＞ ❤️ 恋人 ＞ 🐺 人狼・👤 市民
 
       <br><br>
 
@@ -6534,7 +6504,63 @@ function renderWin(){
 
       </strong>
 
-      ${renderWinningNames()}
+    </div>
+
+    <div class="notice">
+
+      <strong>
+
+        🏆 勝利した陣営のメンバー
+
+      </strong>
+
+      <div class="winNames">
+
+  `;
+
+  if(winningNames.length===0){
+
+    html+=`
+
+      該当者はいません。
+
+    `;
+
+  }else{
+
+    winningNames.forEach(
+
+      person=>{
+
+        html+=`
+
+          <div>
+
+            ${esc(person.name)}
+
+            ${
+
+              person.alive
+
+                ?"（生存）"
+
+                :"（死亡）"
+
+            }
+
+          </div>
+
+        `;
+
+      }
+
+    );
+
+  }
+
+  html+=`
+
+      </div>
 
     </div>
 
