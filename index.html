@@ -330,17 +330,35 @@ label{
 
 .winnerNames{
 
-  margin:18px 0;
+  margin-top:16px;
 
-  padding:16px;
+  padding:14px;
 
-  border-radius:14px;
+  border-radius:12px;
 
   background:#f0f0f0;
 
-  font-size:18px;
-
   line-height:1.8;
+
+}
+
+.deathNotice{
+
+  font-size:26px;
+
+  font-weight:bold;
+
+  margin:18px 0;
+
+}
+
+.alarm{
+
+  font-size:42px;
+
+  font-weight:bold;
+
+  margin:18px 0;
 
 }
 
@@ -608,6 +626,8 @@ const state={
 
   hunterReason:"",
 
+  hunterDeaths:[],
+
   gameOver:false,
 
   winner:null,
@@ -620,13 +640,7 @@ const state={
 
   cardRoles:[],
 
-  voteResultCounts:{},
-
-  voteResultTarget:null,
-
-  voteResultDeaths:[],
-
-  runoffResultCounts:{}
+  deathMessages:[]
 
 };
 
@@ -1506,12 +1520,6 @@ function renderRoles(){
 
 }
 
-/* =========================
-
-   役職枚数変更
-
-========================= */
-
 function changeRole(id,change){
 
   const current=
@@ -2108,11 +2116,19 @@ function startRoleConfirmation(){
 
   state.hunterUsed=[];
 
+  state.hunterIndex=null;
+
+  state.hunterReason="";
+
+  state.hunterDeaths=[];
+
   state.gameOver=false;
 
   state.winner=null;
 
   state.winStage=0;
+
+  state.deathMessages=[];
 
   state.screen="confirm";
 
@@ -2224,36 +2240,6 @@ function getConfirmationDetails(index){
 
   }
 
-  const pair=
-
-    loverPairOf(index);
-
-  if(pair){
-
-    const partner=
-
-      pair.find(
-
-        i=>i!==index
-
-      );
-
-    if(
-
-      partner!==undefined
-
-    ){
-
-      lines.push(
-
-        "恋人："+state.names[partner]
-
-      );
-
-    }
-
-  }
-
   if(
 
     role==="shared"
@@ -2285,6 +2271,36 @@ function getConfirmationDetails(index){
       lines.push(
 
         "もう1人の共有者："+partners.join("、")
+
+      );
+
+    }
+
+  }
+
+  const pair=
+
+    loverPairOf(index);
+
+  if(pair){
+
+    const partner=
+
+      pair.find(
+
+        i=>i!==index
+
+      );
+
+    if(
+
+      partner!==undefined
+
+    ){
+
+      lines.push(
+
+        "恋人："+state.names[partner]
 
       );
 
@@ -2616,7 +2632,13 @@ function chooseFirstSeerTarget(index){
 
     const deaths=
 
-      killPlayer(index);
+      killPlayer(
+
+        index,
+
+        "seer"
+
+      );
 
     deaths.forEach(
 
@@ -2740,7 +2762,7 @@ function renderInitialMorning(){
 
         html+=`
 
-          <div class="big">
+          <div class="deathNotice">
 
             ${esc(state.names[index])}さんが亡くなりました。
 
@@ -2812,7 +2834,7 @@ function goInitialDaySettings(){
 
 /* =========================
 
-   昼設定
+   昼
 
 ========================= */
 
@@ -3088,17 +3110,9 @@ function renderDay(){
 
     )[0];
 
-  /*
-
-    独裁者ボタンは、
-
-    独裁者が死亡していても昼画面から消さない。
-
-  */
-
   if(
 
-    hasRole("dictator") &&
+    dictator!==undefined &&
 
     !state.dictatorUsed
 
@@ -3258,33 +3272,33 @@ function useDictator(){
 
     executePlayer(target);
 
-  if(
+  state.voteResultDeaths=
 
-    resolveHunterIfNeeded(
+    deaths;
 
-      deaths,
+  showDeathMessages(
 
-      "day"
+    deaths,
 
-    )
+    "day",
 
-  ){
+    ()=>{
 
-    return;
+      if(
 
-  }
+        checkVictory()
 
-  if(
+      ){
 
-    checkVictory()
+        return;
 
-  ){
+      }
 
-    return;
+      beginNight();
 
-  }
+    }
 
-  beginNight();
+  );
 
 }
 
@@ -3646,25 +3660,29 @@ function renderVoteResultScreen(){
 
     state.voteResultTarget;
 
+  let html=`
+
+    ${voteSummaryHTML(
+
+      state.voteResultCounts
+
+    )}
+
+    <div class="deathNotice">
+
+      ${esc(state.names[target])}さんが追放されました。
+
+    </div>
+
+  `;
+
   showCard(
 
     "投票結果",
 
+    html+
+
     `
-
-      ${voteSummaryHTML(
-
-        state.voteResultCounts
-
-      )}
-
-      <div class="big">
-
-        ${esc(state.names[target])}さんが
-
-        追放されました。
-
-      </div>
 
       <button onclick="afterVoteResult()">
 
@@ -3680,33 +3698,29 @@ function renderVoteResultScreen(){
 
 function afterVoteResult(){
 
-  if(
+  showDeathMessages(
 
-    resolveHunterIfNeeded(
+    state.voteResultDeaths,
 
-      state.voteResultDeaths,
+    "day",
 
-      "day"
+    ()=>{
 
-    )
+      if(
 
-  ){
+        checkVictory()
 
-    return;
+      ){
 
-  }
+        return;
 
-  if(
+      }
 
-    checkVictory()
+      beginNight();
 
-  ){
+    }
 
-    return;
-
-  }
-
-  beginNight();
+  );
 
 }
 
@@ -3798,11 +3812,7 @@ function renderRunoff(){
 
             index=>
 
-              esc(
-
-                state.names[index]
-
-              )
+              esc(state.names[index])
 
           )
 
@@ -3912,7 +3922,9 @@ function finishRunoff(){
 
   ){
 
-    state.screen="runoffResult";
+    state.screen=
+
+      "runoffResult";
 
     state.runoffResultCounts=
 
@@ -3980,6 +3992,8 @@ function renderRunoffResultScreen(){
 
         決選投票でも同票のため、
 
+        <br>
+
         追放者はいません。
 
       </div>
@@ -4046,7 +4060,7 @@ function executePlayer(index){
 
 }
 
-function killPlayer(index){
+function killPlayer(index,reason="night"){
 
   if(
 
@@ -4120,6 +4134,132 @@ function killLoverPartner(index){
 
 /* =========================
 
+   死亡表示
+
+========================= */
+
+function showDeathMessages(
+
+  deaths,
+
+  reason,
+
+  callback
+
+){
+
+  const unique=[
+
+    ...new Set(
+
+      deaths.filter(
+
+        index=>
+
+          index!==undefined
+
+      )
+
+    )
+
+  ];
+
+  if(
+
+    unique.length===0
+
+  ){
+
+    callback();
+
+    return;
+
+  }
+
+  let html=`
+
+    <div class="notice">
+
+      ${reason==="day"
+
+        ?"追放による死亡"
+
+        :"夜の死亡"}
+
+    </div>
+
+  `;
+
+  unique.forEach(
+
+    index=>{
+
+      html+=`
+
+        <div class="deathNotice">
+
+          ${esc(state.names[index])}さんが
+
+          亡くなりました。
+
+        </div>
+
+      `;
+
+    }
+
+  );
+
+  html+=`
+
+    <button id="deathNextButton">
+
+      次へ
+
+    </button>
+
+  `;
+
+  showCard(
+
+    "💀 死亡",
+
+    html
+
+  );
+
+  speak(
+
+    unique
+
+      .map(
+
+        index=>
+
+          state.names[index]+
+
+          "さんが亡くなりました。"
+
+      )
+
+      .join("")
+
+  );
+
+  document
+
+    .getElementById(
+
+      "deathNextButton"
+
+    )
+
+    .onclick=callback;
+
+}
+
+/* =========================
+
    夜
 
 ========================= */
@@ -4184,7 +4324,11 @@ function renderNightIntro(){
 
 function startNightActions(){
 
-  runNightStep("werewolf");
+  runNightStep(
+
+    "werewolf"
+
+  );
 
 }
 
@@ -4218,7 +4362,9 @@ function runNightStep(step){
 
       "werewolf";
 
-    state.screen="nightAction";
+    state.screen=
+
+      "nightAction";
 
     render();
 
@@ -4232,11 +4378,7 @@ function runNightStep(step){
 
       );
 
-    if(
-
-      alive.length===0
-
-    ){
+    if(alive.length===0){
 
       speak(
 
@@ -4280,7 +4422,9 @@ function runNightStep(step){
 
       "bodyguard";
 
-    state.screen="nightAction";
+    state.screen=
+
+      "nightAction";
 
     render();
 
@@ -4294,11 +4438,7 @@ function runNightStep(step){
 
       );
 
-    if(
-
-      alive.length===0
-
-    ){
+    if(alive.length===0){
 
       speak(
 
@@ -4342,7 +4482,9 @@ function runNightStep(step){
 
       "seer";
 
-    state.screen="nightAction";
+    state.screen=
+
+      "nightAction";
 
     render();
 
@@ -4356,11 +4498,7 @@ function runNightStep(step){
 
       );
 
-    if(
-
-      alive.length===0
-
-    ){
+    if(alive.length===0){
 
       speak(
 
@@ -4404,7 +4542,9 @@ function runNightStep(step){
 
       "medium";
 
-    state.screen="nightAction";
+    state.screen=
+
+      "nightAction";
 
     render();
 
@@ -4418,11 +4558,7 @@ function runNightStep(step){
 
       );
 
-    if(
-
-      alive.length===0
-
-    ){
+    if(alive.length===0){
 
       speak(
 
@@ -4534,7 +4670,11 @@ function renderWerewolfNight(){
 
         </div>
 
-        <button onclick="runNightStep('bodyguard')">
+        <button
+
+          onclick="runNightStep('bodyguard')"
+
+        >
 
           確認しました。次へ
 
@@ -4616,7 +4756,11 @@ function chooseWolfTarget(index){
 
   state.wolfTarget=index;
 
-  runNightStep("bodyguard");
+  runNightStep(
+
+    "bodyguard"
+
+  );
 
 }
 
@@ -4664,7 +4808,11 @@ function renderBodyguardNight(){
 
         </div>
 
-        <button onclick="runNightStep('seer')">
+        <button
+
+          onclick="runNightStep('seer')"
+
+        >
 
           確認しました。次へ
 
@@ -4764,7 +4912,11 @@ function chooseGuardTarget(index){
 
     index;
 
-  runNightStep("seer");
+  runNightStep(
+
+    "seer"
+
+  );
 
 }
 
@@ -4812,7 +4964,11 @@ function renderSeerNight(){
 
         </div>
 
-        <button onclick="runNightStep('medium')">
+        <button
+
+          onclick="runNightStep('medium')"
+
+        >
 
           確認しました。次へ
 
@@ -4920,7 +5076,13 @@ function chooseNightSeerTarget(index){
 
     const deaths=
 
-      killPlayer(index);
+      killPlayer(
+
+        index,
+
+        "seer"
+
+      );
 
     deaths.forEach(
 
@@ -4948,7 +5110,11 @@ function chooseNightSeerTarget(index){
 
   );
 
-  runNightStep("medium");
+  runNightStep(
+
+    "medium"
+
+  );
 
 }
 
@@ -5154,7 +5320,13 @@ function finishNight(){
 
       const killed=
 
-        killPlayer(target);
+        killPlayer(
+
+          target,
+
+          "wolf"
+
+        );
 
       killed.forEach(
 
@@ -5258,13 +5430,33 @@ function resolveHunterIfNeeded(
 
     reason;
 
+  state.hunterDeaths=
+
+    [...deaths];
+
   state.screen="hunter";
 
   render();
 
   speak(
 
-    "ハンターの方、道連れにする人を選んでください。"
+    "ハンターです！"
+
+  );
+
+  setTimeout(
+
+    ()=>{
+
+      speak(
+
+        "ハンターの方、道連れにする人を選んでください。"
+
+      );
+
+    },
+
+    700
 
   );
 
@@ -5280,17 +5472,21 @@ function renderHunter(){
 
   let html=`
 
-    <div class="notice">
+    <div class="alarm">
 
-      ${esc(state.names[hunter])}さんの
-
-      死亡が確定しました。
+      🔫 ハンターです！
 
     </div>
 
-    <div class="big">
+    <div class="notice">
 
-      道連れにする人を選んでください。
+      ${esc(state.names[hunter])}さんは
+
+      ハンターです。
+
+      <br>
+
+      道連れにする人を1人選んでください。
 
     </div>
 
@@ -5340,7 +5536,7 @@ function renderHunter(){
 
   showCard(
 
-    "ハンター",
+    "🔫 ハンター",
 
     html
 
@@ -5362,73 +5558,71 @@ function chooseHunterTarget(index){
 
   const deaths=
 
-    killPlayer(index);
+    killPlayer(
 
-  if(
+      index,
 
-    state.hunterReason==="night"
-
-  ){
-
-    deaths.forEach(
-
-      i=>{
-
-        state.nightDeaths.push(i);
-
-      }
+      state.hunterReason
 
     );
 
-    state.nightDeaths=[
+  state.hunterDeaths.push(
 
-      ...new Set(
+    ...deaths
 
-        state.nightDeaths
+  );
 
-      )
+  state.hunterDeaths=[
 
-    ];
+    ...new Set(
 
-    if(
+      state.hunterDeaths
 
-      checkVictory()
+    )
 
-    ){
+  ];
 
-      return;
+  const continueAfter=
 
-    }
+    ()=>{
 
-    state.screen="morning";
+      if(
 
-    render();
+        checkVictory()
 
-    return;
+      ){
 
-  }
+        return;
 
-  if(
+      }
 
-    state.hunterReason==="day"
+      if(
 
-  ){
+        state.hunterReason==="night"
 
-    if(
+      ){
 
-      checkVictory()
+        state.screen="morning";
 
-    ){
+        render();
 
-      return;
+      }else{
 
-    }
+        beginNight();
 
-    beginNight();
+      }
 
-    return;
+    };
 
-  }
+  showDeathMessages(
+
+    deaths,
+
+    state.hunterReason,
+
+    continueAfter
+
+  );
 
 }
 
@@ -5496,7 +5690,7 @@ function renderMorning(){
 
         html+=`
 
-          <div class="big">
+          <div class="deathNotice">
 
             ${esc(state.names[index])}さんが
 
@@ -5598,43 +5792,25 @@ function goToNextDay(){
 
 }
 
-/* =========================================================
+/* =========================
 
    勝利判定
 
-========================================================= */
+========================= */
 
 /*
 
-  ここが今回の重要修正。
+  人狼陣営
 
-  人狼陣営：
+  ├ 人狼
 
-    ・人狼
+  ├ 裏切り者
 
-    ・裏切り者
+  └ 内通者
 
-    ・内通者
+  ※「人狼と市民の人数比較」では
 
-  ただし「人狼数 vs 市民側人数」の人数判定では、
-
-  裏切り者・内通者も市民側人数として数える。
-
-  つまり、
-
-  人狼1
-
-  内通者1
-
-  市民1
-
-  の場合、
-
-  人狼 1
-
-  市民側 2
-
-  なので、まだ人狼・市民の通常勝利にはならない。
+     裏切り者・内通者は市民人数に入れない。
 
 */
 
@@ -5650,19 +5826,11 @@ function getCitizenTeamAlive(){
 
           state.roles[index];
 
-        /*
+        return(
 
-          人狼本人だけを人狼数として扱い、
+          ROLE_INFO[role].team==="citizen"
 
-          それ以外の生存者は市民側人数として数える。
-
-          そのため、
-
-          裏切り者・内通者もここに入る。
-
-        */
-
-        return role!=="werewolf";
+        );
 
       }
 
@@ -5676,9 +5844,19 @@ function getWerewolfTeamAlive(){
 
     .filter(
 
-      index=>
+      index=>{
 
-        state.roles[index]==="werewolf"
+        const role=
+
+          state.roles[index];
+
+        return(
+
+          role==="werewolf"
+
+        );
+
+      }
 
     );
 
@@ -5686,19 +5864,21 @@ function getWerewolfTeamAlive(){
 
 /*
 
-  通常勝利
+  通常勝利判定
 
-  人狼0
+  人狼が0人
 
-    → 市民勝利
+    → 市民陣営勝利
 
-  人狼数 >= 市民側人数
+  人狼の人数が
 
-    → 人狼勝利
+  「市民陣営の人数以上」
 
-  ただし「市民側人数」には
+    → 人狼陣営勝利
 
-  裏切り者・内通者も含む。
+  裏切り者・内通者は
+
+  この市民人数には含めない。
 
 */
 
@@ -5738,11 +5918,9 @@ function normalVictory(){
 
 /*
 
-  妖狐は通常勝利条件が成立した時に
+  妖狐は通常勝利条件が成立した時点で
 
-  生存していれば勝利候補になる。
-
-  妖狐が生きているだけでは勝利しない。
+  生き残っていれば最終勝利。
 
 */
 
@@ -5778,15 +5956,9 @@ function foxVictory(){
 
 /*
 
-  恋人も、
+  恋人は通常勝利条件が成立した時点で
 
-  恋人が生きているだけでは勝利しない。
-
-  通常勝利条件が成立した時に
-
-  恋人2人が両方生存していれば
-
-  恋人勝利候補になる。
+  恋人2人がともに生きていれば勝利。
 
 */
 
@@ -5802,9 +5974,13 @@ function loverVictory(){
 
   }
 
+  const normal=
+
+    normalVictory();
+
   if(
 
-    normalVictory()===null
+    normal===null
 
   ){
 
@@ -5826,151 +6002,9 @@ function loverVictory(){
 
 /*
 
-  勝利したプレイヤー名を取得
-
-*/
-
-function getWinningNames(){
-
-  const names={
-
-    werewolf:[],
-
-    citizen:[],
-
-    lovers:[],
-
-    fox:[]
-
-  };
-
-  /*
-
-    人狼勝利の場合
-
-    人狼陣営の
-
-    ・人狼
-
-    ・裏切り者
-
-    ・内通者
-
-    を名前表示する。
-
-  */
-
-  state.names.forEach(
-
-    (_,index)=>{
-
-      if(
-
-        !isAlive(index)
-
-      ){
-
-        return;
-
-      }
-
-      const role=
-
-        state.roles[index];
-
-      if(
-
-        role==="werewolf" ||
-
-        role==="traitor" ||
-
-        role==="informant"
-
-      ){
-
-        names.werewolf.push(
-
-          state.names[index]
-
-        );
-
-      }
-
-      if(
-
-        ROLE_INFO[role] &&
-
-        ROLE_INFO[role].team==="citizen" &&
-
-        role!=="lover"
-
-      ){
-
-        names.citizen.push(
-
-          state.names[index]
-
-        );
-
-      }
-
-      if(
-
-        state.lovers.includes(index)
-
-      ){
-
-        names.lovers.push(
-
-          state.names[index]
-
-        );
-
-      }
-
-      if(
-
-        role==="fox"
-
-      ){
-
-        names.fox.push(
-
-          state.names[index]
-
-        );
-
-      }
-
-    }
-
-  );
-
-  return names;
-
-}
-
-/*
-
-  最終勝利判定
-
-  優先順位：
+  最終勝利の優先順位
 
   妖狐 ＞ 恋人 ＞ 人狼・市民
-
-  ただし画面演出は
-
-  人狼・市民
-
-  ↓
-
-  恋人
-
-  ↓
-
-  妖狐
-
-  の順で確認していく。
 
 */
 
@@ -5990,6 +6024,16 @@ function checkVictory(){
 
     normalVictory();
 
+  if(
+
+    normal===null
+
+  ){
+
+    return false;
+
+  }
+
   const lovers=
 
     loverVictory();
@@ -5998,17 +6042,25 @@ function checkVictory(){
 
     foxVictory();
 
-  if(
+  /*
 
-    !normal &&
+    最終的な勝者を決定する。
 
-    !lovers &&
+  */
 
-    !fox
+  let finalWinner;
 
-  ){
+  if(fox){
 
-    return false;
+    finalWinner="fox";
+
+  }else if(lovers){
+
+    finalWinner="lovers";
+
+  }else{
+
+    finalWinner=normal;
 
   }
 
@@ -6018,7 +6070,9 @@ function checkVictory(){
 
     lovers:lovers,
 
-    fox:fox
+    fox:fox,
+
+    final:finalWinner
 
   };
 
@@ -6034,11 +6088,11 @@ function checkVictory(){
 
 }
 
-/* =========================================================
+/* =========================
 
-   勝利結果
+   勝利表示
 
-========================================================= */
+========================= */
 
 function getWinnerResults(){
 
@@ -6046,7 +6100,9 @@ function getWinnerResults(){
 
   /*
 
-    最初に通常勝利を表示
+    通常勝利が成立している場合は
+
+    最初に必ず表示する。
 
   */
 
@@ -6058,7 +6114,7 @@ function getWinnerResults(){
 
     results.push({
 
-      type:"normal",
+      key:"normal",
 
       text:
 
@@ -6074,7 +6130,7 @@ function getWinnerResults(){
 
   /*
 
-    次に恋人
+    恋人が勝利条件を満たしていれば表示。
 
   */
 
@@ -6086,7 +6142,7 @@ function getWinnerResults(){
 
     results.push({
 
-      type:"lovers",
+      key:"lovers",
 
       text:"❤️ 恋人の勝利です！"
 
@@ -6096,7 +6152,7 @@ function getWinnerResults(){
 
   /*
 
-    最後に妖狐
+    妖狐が勝利条件を満たしていれば表示。
 
   */
 
@@ -6108,7 +6164,7 @@ function getWinnerResults(){
 
     results.push({
 
-      type:"fox",
+      key:"fox",
 
       text:"🦊 妖狐の勝利です！"
 
@@ -6120,183 +6176,171 @@ function getWinnerResults(){
 
 }
 
-function renderWinnerNames(){
+/*
 
-  const winners=
+  最終勝者の陣営に属する人を
 
-    getWinningNames();
+  生死に関係なく全員取得。
 
-  /*
+*/
 
-    最終的に残る勝利陣営は、
+function getWinningPlayers(){
 
-    優先順位の一番高いもの。
+  const final=
 
-    妖狐 ＞ 恋人 ＞ 人狼・市民
-
-  */
+    state.winner.final;
 
   if(
 
-    state.winner.fox
+    final==="fox"
 
   ){
 
-    if(
+    return state.names
 
-      winners.fox.length===0
+      .map(
 
-    ){
+        (_,index)=>index
 
-      return "";
+      )
 
-    }
+      .filter(
 
-    return `
+        index=>
 
-      <div class="winnerNames">
+          state.roles[index]==="fox"
 
-        🦊 妖狐陣営
-
-        <br><br>
-
-        <strong>
-
-          ${winners.fox
-
-            .map(esc)
-
-            .join("、")}
-
-        </strong>
-
-      </div>
-
-    `;
+      );
 
   }
 
   if(
 
-    state.winner.lovers
+    final==="lovers"
 
   ){
 
-    if(
+    return state.names
 
-      winners.lovers.length===0
+      .map(
 
-    ){
+        (_,index)=>index
 
-      return "";
+      )
 
-    }
+      .filter(
 
-    return `
+        index=>
 
-      <div class="winnerNames">
+          state.lovers.includes(index)
 
-        ❤️ 恋人
-
-        <br><br>
-
-        <strong>
-
-          ${winners.lovers
-
-            .map(esc)
-
-            .join("、")}
-
-        </strong>
-
-      </div>
-
-    `;
+      );
 
   }
 
   if(
 
-    state.winner.normal==="werewolf"
+    final==="werewolf"
 
   ){
 
-    if(
+    return state.names
 
-      winners.werewolf.length===0
+      .map(
 
-    ){
+        (_,index)=>index
 
-      return "";
+      )
 
-    }
+      .filter(
 
-    return `
+        index=>
 
-      <div class="winnerNames">
+          ROLE_INFO[
 
-        🐺 人狼陣営
+            state.roles[index]
 
-        <br><br>
+          ].team==="werewolf"
 
-        <strong>
-
-          ${winners.werewolf
-
-            .map(esc)
-
-            .join("、")}
-
-        </strong>
-
-      </div>
-
-    `;
+      );
 
   }
 
   if(
 
-    state.winner.normal==="citizen"
+    final==="citizen"
 
   ){
 
-    if(
+    return state.names
 
-      winners.citizen.length===0
+      .map(
 
-    ){
+        (_,index)=>index
 
-      return "";
+      )
 
-    }
+      .filter(
 
-    return `
+        index=>
 
-      <div class="winnerNames">
+          ROLE_INFO[
 
-        👤 市民陣営
+            state.roles[index]
 
-        <br><br>
+          ].team==="citizen"
 
-        <strong>
-
-          ${winners.citizen
-
-            .map(esc)
-
-            .join("、")}
-
-        </strong>
-
-      </div>
-
-    `;
+      );
 
   }
 
-  return "";
+  return [];
+
+}
+
+function renderWinningNames(){
+
+  const players=
+
+    getWinningPlayers();
+
+  if(
+
+    players.length===0
+
+  ){
+
+    return "";
+
+  }
+
+  return `
+
+    <div class="winnerNames">
+
+      <strong>
+
+        🏆 勝利した陣営のメンバー
+
+      </strong>
+
+      <br><br>
+
+      ${players
+
+        .map(
+
+          index=>
+
+            esc(state.names[index])
+
+        )
+
+        .join("、")}
+
+    </div>
+
+  `;
 
 }
 
@@ -6308,23 +6352,61 @@ function renderWin(){
 
   /*
 
-    通常勝利
-
-    ↓
-
-    少し待つ
-
-    ↓
-
-    バッテン
-
-    ↓
-
-    次の勝利
+    結果が存在しない場合の安全処理
 
   */
 
+  if(
+
+    results.length===0
+
+  ){
+
+    showCard(
+
+      "🏆 ゲーム終了",
+
+      `
+
+        <div class="big">
+
+          ゲーム終了
+
+        </div>
+
+        <button onclick="location.reload()">
+
+          もう一度遊ぶ
+
+        </button>
+
+      `
+
+    );
+
+    return;
+
+  }
+
   let html="";
+
+  /*
+
+    winStage
+
+    0
+
+    → 最初の勝利表示
+
+    1
+
+    → 次の勝利表示
+
+    2
+
+    → 最終勝利表示
+
+  */
 
   for(
 
@@ -6360,7 +6442,7 @@ function renderWin(){
 
   /*
 
-    まだ次の勝利判定がある場合
+    まだ次の勝利表示がある場合
 
   */
 
@@ -6418,11 +6500,17 @@ function renderWin(){
 
   /*
 
-    すべての勝利判定を表示した後、
-
-    最終勝利陣営を表示する。
+    最終勝者
 
   */
+
+  const finalResult=
+
+    results[
+
+      results.length-1
+
+    ];
 
   html+=`
 
@@ -6432,7 +6520,7 @@ function renderWin(){
 
       <br>
 
-      🦊 妖狐 ＞ ❤️ 恋人 ＞ 🐺 人狼・👤 市民
+      妖狐 ＞ 恋人 ＞ 人狼・市民
 
       <br><br>
 
@@ -6442,21 +6530,13 @@ function renderWin(){
 
       <strong>
 
-        ${
-
-          results.length
-
-            ?results[results.length-1].text
-
-            :""
-
-        }
+        ${finalResult.text}
 
       </strong>
 
-    </div>
+      ${renderWinningNames()}
 
-    ${renderWinnerNames()}
+    </div>
 
     <button onclick="location.reload()">
 
@@ -6474,19 +6554,9 @@ function renderWin(){
 
   );
 
-  if(
+  let voice=
 
-    results.length
-
-  ){
-
-    let voice=
-
-      results[
-
-        results.length-1
-
-      ].text
+    finalResult.text
 
       .replace(
 
@@ -6504,9 +6574,7 @@ function renderWin(){
 
       );
 
-    speak(voice);
-
-  }
+  speak(voice);
 
 }
 
