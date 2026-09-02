@@ -750,7 +750,7 @@ function alarm(){
 
       ctx.close();
 
-    },700);
+    },1500);
 
   }catch(e){}
 
@@ -1070,12 +1070,6 @@ function render(){
 
 }
 
-/* =========================
-
-   スタート
-
-========================= */
-
 function renderStart(){
 
   showCard(
@@ -1125,12 +1119,6 @@ function chooseMode(mode){
   render();
 
 }
-
-/* =========================
-
-   人数
-
-========================= */
 
 function renderCount(){
 
@@ -1255,12 +1243,6 @@ function savePlayerCount(){
   render();
 
 }
-
-/* =========================
-
-   名前
-
-========================= */
 
 function renderNames(){
 
@@ -1394,12 +1376,6 @@ function saveNames(){
 
 }
 
-/* =========================
-
-   恋人兼用
-
-========================= */
-
 function renderLoverMode(){
 
   showCard(
@@ -1459,12 +1435,6 @@ function setLoverCompatible(value){
   render();
 
 }
-
-/* =========================
-
-   役職
-
-========================= */
 
 function renderRoles(){
 
@@ -1734,12 +1704,6 @@ function finishRoleSelection(){
 
 }
 
-/* =========================
-
-   ランダム
-
-========================= */
-
 function createRolePool(){
 
   const pool=[];
@@ -1815,12 +1779,6 @@ function assignRandomRoles(){
   startRoleConfirmation();
 
 }
-
-/* =========================
-
-   カード
-
-========================= */
 
 function renderCardInput(){
 
@@ -2056,12 +2014,6 @@ function saveOneCard(){
 
 }
 
-/* =========================
-
-   恋人セット
-
-========================= */
-
 function setupLovers(){
 
   state.lovers=[];
@@ -2155,12 +2107,6 @@ function setupLovers(){
   }
 
 }
-
-/* =========================
-
-   役職確認
-
-========================= */
 
 function startRoleConfirmation(){
 
@@ -2748,12 +2694,6 @@ function finishConfirmation(){
 
 }
 
-/* =========================
-
-   初日の朝
-
-========================= */
-
 function renderInitialMorning(){
 
   const deaths=[
@@ -2905,12 +2845,6 @@ function goInitialDaySettings(){
   render();
 
 }
-
-/* =========================
-
-   昼
-
-========================= */
 
 function renderDaySettings(){
 
@@ -3218,12 +3152,6 @@ function renderDay(){
 
 }
 
-/* =========================
-
-   独裁者
-
-========================= */
-
 function useDictator(){
 
   const name=
@@ -3341,12 +3269,6 @@ function useDictator(){
   );
 
 }
-
-/* =========================
-
-   投票
-
-========================= */
 
 function openVote(){
 
@@ -3766,12 +3688,6 @@ function afterVoteResult(){
 
 }
 
-/* =========================
-
-   決選投票
-
-========================= */
-
 function renderRunoff(){
 
   if(
@@ -4034,12 +3950,6 @@ function continueAfterNoExecution(){
 
 }
 
-/* =========================
-
-   死亡処理
-
-========================= */
-
 function executePlayer(index){
 
   if(!isAlive(index)){
@@ -4139,12 +4049,6 @@ function killLoverPartner(index){
   return [];
 
 }
-
-/* =========================
-
-   死亡表示
-
-========================= */
 
 function showDeathResult(
 
@@ -4285,12 +4189,6 @@ function continueDeathResult(){
   );
 
 }
-
-/* =========================
-
-   ハンター連鎖処理
-
-========================= */
 
 function findPendingHunter(deaths){
 
@@ -4608,12 +4506,6 @@ function finishHunterContinuation(){
 
 }
 
-/* =========================
-
-   夜
-
-========================= */
-
 function beginNight(){
 
   if(checkVictory()){
@@ -4673,12 +4565,6 @@ function startNightActions(){
   runNightStep("werewolf");
 
 }
-
-/* =========================
-
-   夜の4段階
-
-========================= */
 
 function runNightStep(step){
 
@@ -4878,12 +4764,6 @@ function runNightStep(step){
 
 }
 
-/* =========================
-
-   夜画面
-
-========================= */
-
 function renderNightAction(){
 
   switch(
@@ -4919,12 +4799,6 @@ function renderNightAction(){
   }
 
 }
-
-/* =========================
-
-   人狼
-
-========================= */
 
 function renderWerewolfNight(){
 
@@ -5049,12 +4923,6 @@ function chooseWolfTarget(index){
   runNightStep("bodyguard");
 
 }
-
-/* =========================
-
-   ボディーガード
-
-========================= */
 
 function renderBodyguardNight(){
 
@@ -5195,12 +5063,6 @@ function chooseGuardTarget(index){
   runNightStep("seer");
 
 }
-
-/* =========================
-
-   予言者
-
-========================= */
 
 function renderSeerNight(){
 
@@ -5380,12 +5242,6 @@ function chooseNightSeerTarget(index){
 
 }
 
-/* =========================
-
-   霊媒師
-
-========================= */
-
 function renderMediumNight(){
 
   const medium=
@@ -5534,12 +5390,6 @@ function getMediumResult(index){
 
 }
 
-/* =========================
-
-   夜終了
-
-========================= */
-
 function finishNight(){
 
   const deaths=[
@@ -5601,12 +5451,6 @@ function finishNight(){
   render();
 
 }
-
-/* =========================
-
-   朝
-
-========================= */
 
 function renderMorning(){
 
@@ -5772,40 +5616,6 @@ function goToNextDay(){
 
 }
 
-/* =========================
-
-   勝利判定
-
-========================= */
-
-/*
-
-  通常勝利判定用。
-
-  🐺 実際の人狼だけを人狼として数える。
-
-  それ以外の生存者は、
-
-  通常勝利条件の比較では
-
-  「人狼ではない生存者」として数える。
-
-  そのため、
-
-  人狼1＋内通者1＋市民1
-
-  の場合は
-
-  人狼1
-
-  人狼ではない人2
-
-  となり、
-
-  まだ通常勝利には到達しない。
-
-*/
-
 function getWerewolfTeamAlive(){
 
   return alivePlayers()
@@ -5864,16 +5674,6 @@ function normalVictory(){
 
 }
 
-/*
-
-  妖狐は通常勝利条件に
-
-  到達した時点で生存していれば
-
-  勝利候補になる。
-
-*/
-
 function foxVictory(){
 
   if(
@@ -5895,16 +5695,6 @@ function foxVictory(){
   ).length>0;
 
 }
-
-/*
-
-  恋人は2人とも生存している場合のみ。
-
-  恋人が1人でも死亡していれば
-
-  恋人勝利にはならない。
-
-*/
 
 function loverVictory(){
 
@@ -5991,12 +5781,6 @@ function checkVictory(){
   return true;
 
 }
-
-/* =========================
-
-   勝利結果
-
-========================= */
 
 function getWinnerResults(){
 
@@ -6430,7 +6214,7 @@ function renderWin(){
 
     <button onclick="location.reload()">
 
-      もう一度遊ぶ
+      次のゲームを開始する
 
     </button>
 
