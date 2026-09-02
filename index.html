@@ -5950,11 +5950,21 @@ function renderWin(){
 
   }
 
+  /*
+
+    勝利結果を順番に表示する。
+
+    最後の結果まで表示したら、
+
+    必ず「次のゲームを開始する」ボタンを表示する。
+
+  */
+
   if(
 
     state.winStage<
 
-    results.length
+    results.length-1
 
   ){
 
@@ -5992,25 +6002,15 @@ function renderWin(){
 
     }
 
-    if(
+    html+=`
 
-      state.winStage<
+      <div class="small">
 
-      results.length-1
+        勝利判定を確認しています…
 
-    ){
+      </div>
 
-      html+=`
-
-        <div class="small">
-
-          勝利判定を確認しています…
-
-        </div>
-
-      `;
-
-    }
+    `;
 
     showCard(
 
@@ -6020,37 +6020,31 @@ function renderWin(){
 
     );
 
-    if(
+    setTimeout(
 
-      state.winStage<
+      ()=>{
 
-      results.length-1
+        if(
 
-    ){
+          state.screen==="win" &&
 
-      setTimeout(
+          state.winStage<
 
-        ()=>{
+          results.length-1
 
-          if(
+        ){
 
-            state.screen==="win"
+          state.winStage++;
 
-          ){
+          render();
 
-            state.winStage++;
+        }
 
-            render();
+      },
 
-          }
+      1800
 
-        },
-
-        1800
-
-      );
-
-    }
+    );
 
     return;
 
@@ -6212,7 +6206,11 @@ function renderWin(){
 
     </div>
 
-    <button onclick="location.reload()">
+    <button
+
+      onclick="startNextGame()"
+
+    >
 
       次のゲームを開始する
 
@@ -6249,6 +6247,30 @@ function renderWin(){
       );
 
   speak(voice);
+
+}
+
+/*
+
+  ゲーム終了後の「次のゲームを開始する」処理。
+
+  ページを再読み込みして、完全に新しいゲームとして
+
+  最初の画面から開始する。
+
+*/
+
+function startNextGame(){
+
+  clearInterval(state.timer);
+
+  try{
+
+    speechSynthesis.cancel();
+
+  }catch(e){}
+
+  location.reload();
 
 }
 
