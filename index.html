@@ -650,6 +650,8 @@ const state={
 
   winStage:0,
 
+  winSoundPlayed:false,
+
   currentNightStep:"",
 
   cardIndex:0,
@@ -686,6 +688,12 @@ const state={
 
 const app=document.getElementById("app");
 
+/* =========================
+
+   GM音声
+
+========================= */
+
 function speak(text){
 
   try{
@@ -705,6 +713,654 @@ function speak(text){
   }catch(e){}
 
 }
+
+/* =========================
+
+   BGM・効果音
+
+========================= */
+
+let audioContext=null;
+
+let bgmGain=null;
+
+let bgmTimer=null;
+
+let currentBGM="";
+
+function getAudioContext(){
+
+  try{
+
+    const AudioContext=
+
+      window.AudioContext ||
+
+      window.webkitAudioContext;
+
+    if(!AudioContext){
+
+      return null;
+
+    }
+
+    if(!audioContext){
+
+      audioContext=new AudioContext();
+
+    }
+
+    if(
+
+      audioContext.state==="suspended"
+
+    ){
+
+      audioContext.resume();
+
+    }
+
+    return audioContext;
+
+  }catch(e){
+
+    return null;
+
+  }
+
+}
+
+function stopBGM(){
+
+  try{
+
+    if(bgmTimer){
+
+      clearInterval(bgmTimer);
+
+      bgmTimer=null;
+
+    }
+
+    currentBGM="";
+
+    if(bgmGain){
+
+      const ctx=audioContext;
+
+      const now=ctx.currentTime;
+
+      bgmGain.gain.cancelScheduledValues(now);
+
+      bgmGain.gain.setValueAtTime(
+
+        bgmGain.gain.value,
+
+        now
+
+      );
+
+      bgmGain.gain.linearRampToValueAtTime(
+
+        0,
+
+        now+.2
+
+      );
+
+      const oldGain=bgmGain;
+
+      bgmGain=null;
+
+      setTimeout(()=>{
+
+        try{
+
+          oldGain.disconnect();
+
+        }catch(e){}
+
+      },250);
+
+    }
+
+  }catch(e){
+
+    bgmTimer=null;
+
+    bgmGain=null;
+
+    currentBGM="";
+
+  }
+
+}
+
+function playNote(
+
+  frequency,
+
+  duration,
+
+  type,
+
+  volume,
+
+  destination
+
+){
+
+  try{
+
+    const ctx=getAudioContext();
+
+    if(!ctx){
+
+      return;
+
+    }
+
+    const oscillator=
+
+      ctx.createOscillator();
+
+    const gain=
+
+      ctx.createGain();
+
+    oscillator.type=
+
+      type||"sine";
+
+    oscillator.frequency.value=
+
+      frequency;
+
+    gain.gain.value=0;
+
+    oscillator.connect(gain);
+
+    gain.connect(
+
+      destination||ctx.destination
+
+    );
+
+    const now=ctx.currentTime;
+
+    gain.gain.setValueAtTime(
+
+      0,
+
+      now
+
+    );
+
+    gain.gain.linearRampToValueAtTime(
+
+      volume||.08,
+
+      now+.04
+
+    );
+
+    gain.gain.linearRampToValueAtTime(
+
+      0,
+
+      now+duration
+
+    );
+
+    oscillator.start(now);
+
+    oscillator.stop(
+
+      now+duration+.05
+
+    );
+
+  }catch(e){}
+
+}
+
+function playBGM(type){
+
+  if(currentBGM===type){
+
+    return;
+
+  }
+
+  stopBGM();
+
+  currentBGM=type;
+
+  try{
+
+    const ctx=getAudioContext();
+
+    if(!ctx){
+
+      return;
+
+    }
+
+    bgmGain=
+
+      ctx.createGain();
+
+    bgmGain.gain.value=.045;
+
+    bgmGain.connect(
+
+      ctx.destination
+
+    );
+
+    let notes=[];
+
+    let interval=900;
+
+    let oscillatorType="sine";
+
+    if(type==="night"){
+
+      notes=[
+
+        110,
+
+        130.81,
+
+        98,
+
+        116.54,
+
+        103.83,
+
+        87.31
+
+      ];
+
+      interval=1250;
+
+      oscillatorType="sine";
+
+    }
+
+    if(type==="day"){
+
+      notes=[
+
+        196,
+
+        220,
+
+        246.94,
+
+        196,
+
+        174.61,
+
+        220
+
+      ];
+
+      interval=750;
+
+      oscillatorType="triangle";
+
+    }
+
+    if(!notes.length){
+
+      return;
+
+    }
+
+    let index=0;
+
+    const playNext=()=>{
+
+      try{
+
+        if(!bgmGain){
+
+          return;
+
+        }
+
+        playNote(
+
+          notes[index],
+
+          .65,
+
+          oscillatorType,
+
+          .65,
+
+          bgmGain
+
+        );
+
+        index=
+
+          (index+1)%notes.length;
+
+      }catch(e){}
+
+    };
+
+    playNext();
+
+    bgmTimer=
+
+      setInterval(
+
+        playNext,
+
+        interval
+
+      );
+
+  }catch(e){
+
+    currentBGM="";
+
+  }
+
+}
+
+function playVoteSound(){
+
+  stopBGM();
+
+  playNote(
+
+    220,
+
+    .18,
+
+    "square",
+
+    .10
+
+  );
+
+  setTimeout(()=>{
+
+    playNote(
+
+      330,
+
+      .18,
+
+      "square",
+
+      .10
+
+    );
+
+  },220);
+
+  setTimeout(()=>{
+
+    playNote(
+
+      220,
+
+      .32,
+
+      "square",
+
+      .10
+
+    );
+
+  },440);
+
+}
+
+function playDeathSound(){
+
+  stopBGM();
+
+  playNote(
+
+    180,
+
+    .30,
+
+    "sawtooth",
+
+    .11
+
+  );
+
+  setTimeout(()=>{
+
+    playNote(
+
+      110,
+
+      .60,
+
+      "sawtooth",
+
+      .11
+
+    );
+
+  },260);
+
+}
+
+function playWinSound(){
+
+  stopBGM();
+
+  playNote(
+
+    523.25,
+
+    .20,
+
+    "triangle",
+
+    .12
+
+  );
+
+  setTimeout(()=>{
+
+    playNote(
+
+      659.25,
+
+      .20,
+
+      "triangle",
+
+      .12
+
+    );
+
+  },180);
+
+  setTimeout(()=>{
+
+    playNote(
+
+      783.99,
+
+      .30,
+
+      "triangle",
+
+      .12
+
+    );
+
+  },360);
+
+  setTimeout(()=>{
+
+    playNote(
+
+      1046.50,
+
+      .75,
+
+      "triangle",
+
+      .12
+
+    );
+
+  },580);
+
+}
+
+function playFoxWinSound(){
+
+  stopBGM();
+
+  playNote(
+
+    392,
+
+    .18,
+
+    "sine",
+
+    .10
+
+  );
+
+  setTimeout(()=>{
+
+    playNote(
+
+      523.25,
+
+      .18,
+
+      "sine",
+
+      .10
+
+    );
+
+  },180);
+
+  setTimeout(()=>{
+
+    playNote(
+
+      659.25,
+
+      .18,
+
+      "sine",
+
+      .10
+
+    );
+
+  },360);
+
+  setTimeout(()=>{
+
+    playNote(
+
+      783.99,
+
+      .55,
+
+      "sine",
+
+      .13
+
+    );
+
+  },540);
+
+}
+
+function playLoverWinSound(){
+
+  stopBGM();
+
+  playNote(
+
+    523.25,
+
+    .25,
+
+    "sine",
+
+    .10
+
+  );
+
+  setTimeout(()=>{
+
+    playNote(
+
+      659.25,
+
+      .25,
+
+      "sine",
+
+      .10
+
+    );
+
+  },250);
+
+  setTimeout(()=>{
+
+    playNote(
+
+      783.99,
+
+      .25,
+
+      "sine",
+
+      .10
+
+    );
+
+  },500);
+
+  setTimeout(()=>{
+
+    playNote(
+
+      1046.50,
+
+      .80,
+
+      "sine",
+
+      .13
+
+    );
+
+  },750);
+
+}
+
+/* =========================
+
+   🔫 ハンターアラーム
+
+   今までの仕様をそのまま維持
+
+========================= */
 
 function alarm(){
 
@@ -2148,6 +2804,8 @@ function startRoleConfirmation(){
 
   state.winStage=0;
 
+  state.winSoundPlayed=false;
+
   state.previousGuardTarget=null;
 
   state.nightDeaths=[];
@@ -2938,6 +3596,8 @@ function startFirstDay(){
 
 function startDiscussion(){
 
+  playBGM("day");
+
   state.screen="day";
 
   state.seconds=
@@ -3273,6 +3933,8 @@ function useDictator(){
 function openVote(){
 
   clearInterval(state.timer);
+
+  playVoteSound();
 
   state.voteVoters=
 
@@ -4078,6 +4740,8 @@ function showDeathResult(
 
 function renderDeathResult(){
 
+  playDeathSound();
+
   const deaths=
 
     state.pendingDeaths;
@@ -4508,6 +5172,8 @@ function finishHunterContinuation(){
 
 function beginNight(){
 
+  stopBGM();
+
   if(checkVictory()){
 
     return;
@@ -4561,6 +5227,8 @@ function renderNightIntro(){
 }
 
 function startNightActions(){
+
+  playBGM("night");
 
   runNightStep("werewolf");
 
@@ -5772,6 +6440,8 @@ function checkVictory(){
 
   state.winStage=0;
 
+  state.winSoundPlayed=false;
+
   state.screen="win";
 
   clearInterval(state.timer);
@@ -5949,16 +6619,6 @@ function renderWin(){
     return;
 
   }
-
-  /*
-
-    勝利結果を順番に表示する。
-
-    最後の結果まで表示したら、
-
-    必ず「次のゲームを開始する」ボタンを表示する。
-
-  */
 
   if(
 
@@ -6226,6 +6886,32 @@ function renderWin(){
 
   );
 
+  /*
+
+    勝利音は最終勝利画面で1回だけ。
+
+  */
+
+  if(!state.winSoundPlayed){
+
+    state.winSoundPlayed=true;
+
+    if(state.winner.fox){
+
+      playFoxWinSound();
+
+    }else if(state.winner.lovers){
+
+      playLoverWinSound();
+
+    }else{
+
+      playWinSound();
+
+    }
+
+  }
+
   let voice=
 
     finalResult.text
@@ -6252,17 +6938,17 @@ function renderWin(){
 
 /*
 
-  ゲーム終了後の「次のゲームを開始する」処理。
+  ゲーム終了後の
 
-  ページを再読み込みして、完全に新しいゲームとして
-
-  最初の画面から開始する。
+  「次のゲームを開始する」処理。
 
 */
 
 function startNextGame(){
 
   clearInterval(state.timer);
+
+  stopBGM();
 
   try{
 
