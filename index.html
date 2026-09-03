@@ -950,7 +950,7 @@ function playBGM(type){
 
       ctx.createGain();
 
-    bgmGain.gain.value=.075;
+    bgmGain.gain.value=.75;
 
     bgmGain.connect(
 
@@ -5252,33 +5252,11 @@ function runNightStep(step){
 
     render();
 
-    const alive=
+    speak(
 
-      playersWithRole(
+      "人狼の方、目を覚ましてください。"
 
-        "werewolf",
-
-        true
-
-      );
-
-    if(alive.length===0){
-
-      speak(
-
-        "人狼の方、目を覚ましてください。現在、人狼は全員死亡しているため行動できません。"
-
-      );
-
-    }else{
-
-      speak(
-
-        "人狼の方、目を覚ましてください。今夜襲撃する人を選んでください。"
-
-      );
-
-    }
+    );
 
     return;
 
@@ -5300,33 +5278,11 @@ function runNightStep(step){
 
     render();
 
-    const alive=
+    speak(
 
-      playersWithRole(
+      "ボディーガードの方、目を覚ましてください。"
 
-        "bodyguard",
-
-        true
-
-      );
-
-    if(alive.length===0){
-
-      speak(
-
-        "ボディーガードの方、目を覚ましてください。現在、死亡しているため行動できません。"
-
-      );
-
-    }else{
-
-      speak(
-
-        "ボディーガードの方、目を覚ましてください。今夜守る人を選んでください。"
-
-      );
-
-    }
+    );
 
     return;
 
@@ -5348,33 +5304,11 @@ function runNightStep(step){
 
     render();
 
-    const alive=
+    speak(
 
-      playersWithRole(
+      "予言者の方、目を覚ましてください。"
 
-        "seer",
-
-        true
-
-      );
-
-    if(alive.length===0){
-
-      speak(
-
-        "予言者の方、目を覚ましてください。現在、死亡しているため行動できません。"
-
-      );
-
-    }else{
-
-      speak(
-
-        "予言者の方、目を覚ましてください。今夜占う人を選んでください。"
-
-      );
-
-    }
+    );
 
     return;
 
@@ -5396,33 +5330,11 @@ function runNightStep(step){
 
     render();
 
-    const alive=
+    speak(
 
-      playersWithRole(
+      "霊媒師の方、目を覚ましてください。"
 
-        "medium",
-
-        true
-
-      );
-
-    if(alive.length===0){
-
-      speak(
-
-        "霊媒師の方、目を覚ましてください。現在、死亡しているため行動できません。"
-
-      );
-
-    }else{
-
-      speak(
-
-        "霊媒師の方、目を覚ましてください。"
-
-      );
-
-    }
+    );
 
     return;
 
@@ -6886,12 +6798,6 @@ function renderWin(){
 
   );
 
-  /*
-
-    勝利音は最終勝利画面で1回だけ。
-
-  */
-
   if(!state.winSoundPlayed){
 
     state.winSoundPlayed=true;
@@ -6935,14 +6841,6 @@ function renderWin(){
   speak(voice);
 
 }
-
-/*
-
-  ゲーム終了後の
-
-  「次のゲームを開始する」処理。
-
-*/
 
 function startNextGame(){
 
